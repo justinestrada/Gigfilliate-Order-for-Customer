@@ -90,6 +90,61 @@ class Gigfilliate_Order_For_Customer_Public {
     <div style="margin-bottom: 1rem;">
       <h1><?php echo $this->settings->affiliate_term ?> Customers</h1>
       <div>
+        <p>TODO:</p>
+        <h3>Get Customers</h3>
+        <ul>
+          <li>Get current user affiliate id</li>
+          <li>Get Orders where v_order_affiliate_id = affiliate_id</li>
+          <li>Get Customer Details from Orders</li>
+        </ul>
+        <h3>List Customers</h3>
+        <ul>
+          <li>Filter customers</li>
+          <li>
+            Customers listing
+            <br>
+            <ul>
+              <li>Full Name, Email, Button [Place Order]</li>
+            </ul>
+          </li>
+          <li>Add Customer Button</li>
+        </ul>
+        <h3>Place Order For Customer</h3>
+        <ul>
+          <li>On Click Place Order (Do you think we should use usermeta or a cookie)</li>
+          <!-- <li>Update current logged in user meta, ex<br>
+            <pre>
+            update_user_meta($current_user_id, 'v_placing_order_for_customer', $customer_user_id);
+            </pre>
+          </li> -->
+          <li>
+            Create a Cookie 'GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER' store customer_user_id
+          </li>
+          <li>
+            Show a notice and show an exit [Exit 'Place Order For Customer' Mode] button
+            <br>
+            "You're placing an order for {CUSTOMER_NAME}. You can use your {Affiliate_Term} customer coupon, but not your personal {Affiliate_Term} coupon."
+          </li>
+          <li>
+            [Exit 'Place Order For Customer' Mode]
+            <br>
+            <ul>
+              <li>On click - delete cookie 'GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER'</li>
+            </ul>
+            <!-- <ul>
+              <li>On click - set the user meta 'v_placing_order_for_customer' to null</li>
+            </ul> -->
+          </li>
+          <li>
+            List all products (We'll need admin settings for this to exclude products)
+            <br>
+            <ul>
+              <li>Product Name, Price & Add To Cart (No subscription options)</li>
+            </ul>
+          </li>
+          <li>In the Right Sidebar Cart there should also be a big notice saying "You're placing an order for {CUSTOMER_NAME}."...</li>
+        </ul>
+        <p>Okay that's a lot of instructions for now.</p>
       </div>
     </div>
     <?php
