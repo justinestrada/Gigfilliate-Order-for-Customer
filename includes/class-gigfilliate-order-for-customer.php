@@ -114,13 +114,13 @@ class Gigfilliate_Order_For_Customer {
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-gigfilliate-order-for-customer-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-gigfilliate-order-for-customer-public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-public.php';
 
 		$this->loader = new Gigfilliate_Order_For_Customer_Loader();
 
