@@ -4,7 +4,7 @@
  * Fired during plugin deactivation
  *
  * @link       https://partners.vitalibis.com/login
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    Gigfilliate_Order_For_Customer
  * @subpackage Gigfilliate_Order_For_Customer/includes
@@ -15,7 +15,7 @@
  *
  * This class defines all code necessary to run during the plugin's deactivation.
  *
- * @since      1.0.0
+ * @since      0.0.1
  * @package    Gigfilliate_Order_For_Customer
  * @subpackage Gigfilliate_Order_For_Customer/includes
  * @author     Gigfilliate <justin@justinestrada.com>
@@ -27,7 +27,7 @@ class Gigfilliate_Order_For_Customer_Deactivator {
 	 *
 	 * Long Description.
 	 *
-	 * @since    1.0.0
+	 * @since    0.0.1
 	 */
 	public static function deactivate() {
 

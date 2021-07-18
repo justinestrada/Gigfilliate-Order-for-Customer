@@ -6,7 +6,7 @@
  * This file is used to markup the public-facing aspects of the plugin.
  *
  * @link       https://partners.vitalibis.com/login
- * @since      1.0.0
+ * @since      0.0.1
  *
  * @package    Gigfilliate_Order_For_Customer
  * @subpackage Gigfilliate_Order_For_Customer/public/partials
