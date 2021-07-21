@@ -38,7 +38,12 @@ class Gigfilliate_Order_For_Customer_Public {
 		$this->version = $version;
     $this->settings = json_decode(get_option('vitalibis_settings'));
     $this->new_account_page();
-	}
+    add_action('admin_post_customer_order_form_submit',[$this,'customer_order_form_submit']);
+    add_action('admin_post_exit_customer_form_submit',[$this,'exit_customer_form_submit']);
+    add_action('woocommerce_before_calculate_totals', [$this,'customer_notice']);
+    add_action('cfw_after_customer_info_tab_login','customer_notice',10, 3);
+    add_action('cfw_checkout_after_login','customer_notice',10, 3);
+  }
 
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
@@ -89,6 +94,9 @@ class Gigfilliate_Order_For_Customer_Public {
   public function new_account_page_content() { ?>
     <div style="margin-bottom: 1rem;">
       <h1><?php echo $this->settings->affiliate_term ?> Customers</h1>
+      <?php
+        require_once WP_PLUGIN_DIR."/gigfilliate-order-for-customer/public/views/gigfilliate_order_for_customer_page.php";
+      ?>
       <div>
         <p>TODO:</p>
         <h3>Get Customers</h3>
@@ -148,6 +156,28 @@ class Gigfilliate_Order_For_Customer_Public {
       </div>
     </div>
     <?php
+  }
+  public function customer_order_form_submit(){
+    if (isset($_POST['customer']) && $_POST['customer'] != null) {
+      setcookie("GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER", $_POST['customer'], time() + (86400 * 30), "/");
+    }
+    header('Location: ' . $_SERVER['HTTP_REFERER']);
+  }
+  public function exit_customer_form_submit(){
+    if (isset($_POST['exit_customer'])) {
+      setcookie("GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER",null, time() - 3600,"/");
+    }
+    header('Location: ' . $_SERVER['HTTP_REFERER']);
+  }
+  public function customer_notice(){
+    if(isset($_COOKIE["GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER"])) {
+      $customer = get_user_by("ID", $_COOKIE["GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER"]);
+      ?>
+      <div class="alert alert-info" role="alert">
+      You're placing an order for <?php echo $customer->first_name.' '.$customer->last_name;?>.
+      </div>
+      <?php
+    }
   }
 }
 
