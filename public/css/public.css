@@ -2,3 +2,137 @@
  * All of the CSS for your public-facing functionality should be
  * included in this file.
  */
+
+ .gofc-customer-search h4 {
+	color: #ffffff;
+	margin: 5px 0px;
+}
+
+.gofc-customers-list-item-name,
+.gofc-customers-list-item-last-order-date,
+.gofc-customers-list-item-form {
+	display: block;
+	margin-bottom: 10px;
+}
+
+.secondary-text {
+	color: #989898;
+}
+
+.gofc-customers-list-item-place-order-btn {
+	width: 100%;
+}
+
+.gofc-products-list-item-add-to-cart-btn .added_to_cart_label,
+.gofc-products-list-item-add-to-cart-btn .adding_to_cart_label,
+.gofc-products-list-item-add-to-cart-btn.added .add_to_cart_label,
+.gofc-products-list-item-add-to-cart-btn.added .adding_to_cart_label,
+.gofc-products-list-item-add-to-cart-btn.loading .add_to_cart_label {
+	display: none;
+}
+
+.gofc-products-list-item-add-to-cart-btn.added .added_to_cart_label,
+.gofc-products-list-item-add-to-cart-btn.loading .adding_to_cart_label {
+	display: block;
+}
+
+.gofc-products-list-item-add-to-cart-btn.added {
+	background: #b20838;
+	color: #ffffff;
+	pointer-events: none;
+}
+
+.gofc-products-list-item-thumbnail,
+.gofc-products-list-item-name,
+.gofc-products-list-item-add-to-cart-btn {
+	width: 100%;
+	display: block;
+	margin-bottom: 10px;
+}
+
+.gofc-products-list-item-price {
+	display: block;
+	font-weight: bold;
+}
+
+@media (min-width: 800px) {
+	.gofc-customers-list-item {
+		display: flex !important;
+		align-items: center;
+	}
+	.gofc-customers-list-item-name {
+		flex: 50%;
+	}
+	.gofc-customers-list-item-last-order-date {
+		flex: 30%;
+	}
+	.gofc-customers-list-item-form {
+		flex: 20%;
+	}
+	.gofc-customers-list-item-place-order-btn {
+		display: block !important;
+		margin-left: auto;
+		margin-right: 0px;
+	}
+	.gofc-products-list-item {
+		display: flex !important;
+		align-items: center;
+	}
+	.gofc-products-list-item-thumbnail {
+		flex: 10%;
+		width: 10%;
+	}
+	.gofc-products-list-item-name {
+		flex: 60%;
+		padding: 0 8px;
+	}
+	.gofc-products-list-item-add-to-cart-btn {
+		flex: 30%;
+	}
+}
+
+@keyframes loading-animation {
+	0% {
+		transform: rotate(0deg)
+	}
+	50% {
+		transform: rotate(180deg)
+	}
+	100% {
+		transform: rotate(360deg)
+	}
+}
+
+.loading-animation div {
+	position: absolute;
+	animation: loading-animation 1s linear infinite;
+	width: 160px;
+	height: 160px;
+	top: 20px;
+	left: 20px;
+	border-radius: 50%;
+	box-shadow: 0 4px 0 0 #b21938;
+	transform-origin: 80px 82px;
+}
+
+.loading-spinner {
+	width: 200px;
+	height: 200px;
+	display: inline-block;
+	overflow: hidden;
+	background: none;
+	margin: 0 auto;
+}
+
+.loading-animation {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	transform: translateZ(0) scale(1);
+	backface-visibility: hidden;
+	transform-origin: 0 0;
+}
+
+.loading-animation div {
+	box-sizing: content-box;
+}

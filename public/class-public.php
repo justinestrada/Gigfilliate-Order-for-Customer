@@ -40,6 +40,7 @@ class Gigfilliate_Order_For_Customer_Public {
     $this->new_account_page();
     add_action('admin_post_customer_order_form_submit',[$this,'customer_order_form_submit']);
     add_action('admin_post_exit_customer_form_submit',[$this,'exit_customer_form_submit']);
+    add_action('wp_ajax_gofc_search_product',[$this,'gofc_search_product']);
     add_action('woocommerce_before_calculate_totals', [$this,'customer_notice']);
     add_action('cfw_after_customer_info_tab_login','customer_notice',10, 3);
     add_action('cfw_checkout_after_login','customer_notice',10, 3);
@@ -61,7 +62,9 @@ class Gigfilliate_Order_For_Customer_Public {
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/public.js', array( 'jquery' ), $this->version, false );
-	}
+    wp_localize_script( $this->plugin_name, 'my_gofc_object',
+    array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+  }
 
   public function new_account_page() {
     // $affiliate_term_slug = str_replace(' ', '-', strtolower($this->settings->affiliate_term)); // TODO: the page url should use the affiliate_term_slug
@@ -91,11 +94,14 @@ class Gigfilliate_Order_For_Customer_Public {
     });
   }
 
-  public function new_account_page_content() { ?>
+  public function new_account_page_content() { 
+    ?>
     <div style="margin-bottom: 1rem;">
       <h1><?php echo $this->settings->affiliate_term ?> Customers</h1>
       <?php
+      ob_start();
         require_once WP_PLUGIN_DIR."/gigfilliate-order-for-customer/public/views/gigfilliate_order_for_customer_page.php";
+      echo ob_get_clean();
       ?>
       <div>
         <p>TODO:</p>
@@ -179,9 +185,31 @@ class Gigfilliate_Order_For_Customer_Public {
       <?php
     }
   }
+
+  public function gofc_search_product(){
+    $args = array(
+      'post_type' => 'product',
+      'posts_per_page' => 15,
+      'order' => 'ASC',
+      's'=>$_GET["search"]
+    );
+    $to_return = [];
+    foreach ((new WP_Query( $args ))->posts as $post) {
+      $product = wc_get_product($post->ID);
+      $to_return[] = [
+        "id"=>$post->ID,
+        "thumbnail_url"=>wp_get_attachment_url($product->get_image_id()),
+        "name"=>$product->get_name(),
+        "price"=>$product->get_regular_price(),
+        "sku"=>$product->get_sku(),
+        "add_to_cart_url"=>$product->add_to_cart_url(),
+        "is_in_stock"=>$product->is_in_stock()
+      ];
+    }
+    echo json_encode($to_return);
+    wp_die();
+  }
 }
 
 
 
-
-  
