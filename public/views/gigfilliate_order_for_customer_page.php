@@ -12,7 +12,7 @@ $orders = wc_get_orders( array(
 ));
 $customers = [];
 foreach ($orders as $key => $order) {
-  if (!isset($customers[$order->get_user()->ID])) {
+  if ($order->get_user() != null) {
     $customers[$order->get_user()->ID] = ["user"=>$order->get_user(),"last_order"=>$order];
   }
 }

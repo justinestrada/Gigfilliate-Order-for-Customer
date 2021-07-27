@@ -136,3 +136,9 @@
 .loading-animation div {
 	box-sizing: content-box;
 }
+
+.GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE {
+  position: fixed;
+  bottom: 90px;
+  right: 0;
+}
