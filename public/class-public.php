@@ -38,7 +38,18 @@ class Gigfilliate_Order_For_Customer_Public {
 		$this->version = $version;
     $this->settings = json_decode(get_option('vitalibis_settings'));
     $this->new_account_page();
-	}
+    add_action('admin_post_customer_order_form_submit',[$this,'customer_order_form_submit']);
+    add_action('admin_post_exit_customer_form_submit',[$this,'exit_customer_form_submit']);
+    add_action('wp_ajax_gofc_search_product',[$this,'gofc_search_product']);
+    add_action('woocommerce_before_cart_contents', [$this,'customer_notice']);
+    add_action('cfw_after_customer_info_tab_login',[$this,'customer_notice'],10, 3);
+    add_action('cfw_checkout_after_login',[$this,'customer_notice'],10, 3);
+    add_action("wp_footer",array($this,"toast"));
+    add_action("xoo_wsc_cart_after_head",[$this,'customer_notice'],10, 3);
+    add_action('woocommerce_checkout_update_order_meta',[$this,'woocommerce_checkout_update_order_meta']);
+    add_action("woocommerce_admin_order_data_after_billing_address",[$this,'woocommerce_admin_order_data_after_billing_address'],10,1);
+    add_action("woocommerce_checkout_process",[$this,'woocommerce_checkout_process']);
+  }
 
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
@@ -56,7 +67,9 @@ class Gigfilliate_Order_For_Customer_Public {
 	 */
 	public function enqueue_scripts() {
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/public.js', array( 'jquery' ), $this->version, false );
-	}
+    wp_localize_script( $this->plugin_name, 'my_gofc_object',
+    array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+  }
 
   public function new_account_page() {
     // $affiliate_term_slug = str_replace(' ', '-', strtolower($this->settings->affiliate_term)); // TODO: the page url should use the affiliate_term_slug
@@ -86,9 +99,15 @@ class Gigfilliate_Order_For_Customer_Public {
     });
   }
 
-  public function new_account_page_content() { ?>
+  public function new_account_page_content() { 
+    ?>
     <div style="margin-bottom: 1rem;">
       <h1><?php echo $this->settings->affiliate_term ?> Customers</h1>
+      <?php
+      ob_start();
+        require_once WP_PLUGIN_DIR."/gigfilliate-order-for-customer/public/views/gigfilliate_order_for_customer_page.php";
+      echo ob_get_clean();
+      ?>
       <div>
         <p>TODO:</p>
         <h3>Get Customers</h3>
@@ -149,9 +168,111 @@ class Gigfilliate_Order_For_Customer_Public {
     </div>
     <?php
   }
+  public function customer_order_form_submit(){
+    if (isset($_POST['customer']) && $_POST['customer'] != null) {
+      setcookie("GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER", $_POST['customer'], (time() + (86400 * 30)), "/");
+    }
+    header('Location: ' . $_SERVER['HTTP_REFERER']);
+  }
+  public function exit_customer_form_submit(){
+    if (isset($_POST['exit_customer'])) {
+      setcookie("GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER",null, time() - 3600,"/");
+    }
+    header('Location: ' . $_SERVER['HTTP_REFERER']);
+  }
+  public function customer_notice(){
+    if(isset($_COOKIE["GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER"])) {
+      $customer = get_user_by("ID", $_COOKIE["GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER"]);
+      ?>
+      <div class="alert alert-info" role="alert">
+      You're placing an order for <?php echo $customer->first_name.' '.$customer->last_name;?>.
+      </div>
+       <input type="hidden" name="new_billing_email" value="<?php echo $customer->user_email;?>">
+      <?php
+    }
+  }
+
+  public function gofc_search_product(){
+    $args = array(
+      'post_type' => 'product',
+      'posts_per_page' => 15,
+      'order' => 'ASC',
+      's'=>$_GET["search"]
+    );
+    $to_return = [];
+    foreach ((new WP_Query( $args ))->posts as $post) {
+      $product = wc_get_product($post->ID);
+      $to_return[] = [
+        "id"=>$post->ID,
+        "thumbnail_url"=>wp_get_attachment_url($product->get_image_id()),
+        "name"=>$product->get_name(),
+        "price"=>$product->get_regular_price(),
+        "sku"=>$product->get_sku(),
+        "add_to_cart_url"=>$product->add_to_cart_url(),
+        "is_in_stock"=>$product->is_in_stock()
+      ];
+    }
+    exit( json_encode($to_return) );
+  }
+  public function toast(){
+    if(!isset($_COOKIE["GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER"])) {
+      return;
+    }
+    $customer = new WC_Customer($_COOKIE["GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER"]);
+      ?>
+      <span id="gofc_customer_billing" 
+      data-email="<?php echo $customer->get_billing_email();?>"
+      data-firstName="<?php echo $customer->get_billing_first_name();?>"
+      data-lastName="<?php echo $customer->get_billing_last_name();?>"
+      data-company="<?php echo $customer->get_billing_company();?>"
+      data-address1="<?php echo $customer->get_billing_address_1();?>"
+      data-address2 ="<?php echo $customer->get_billing_address_2();?>"
+      data-city="<?php echo $customer->get_billing_city();?>"
+      data-state="<?php echo $customer->get_billing_state();?>"
+      data-postcode="<?php echo $customer->get_billing_postcode();?>"
+      data-country="<?php echo $customer->get_billing_country();?>"
+      data-phone="<?php echo $customer->get_billing_phone();?>"
+      ></span>
+  <div class="toast ml-auto GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE" data-autohide="false">
+    <div class="toast-header">
+      <strong class="mr-auto text-primary">Exited</strong>
+      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+    </div>
+    <div class="toast-body">
+      You have been exited from the Order for Customer mood.
+    </div>
+  </div>
+    <?php
+  }
+  public function woocommerce_checkout_process() {
+    if(isset($_POST['new_billing_email']) && $_POST['new_billing_email'] != null){
+      if(!email_exists($_POST['new_billing_email'])){
+        $arr = explode("/", $_POST['new_billing_email'], 2);
+        $login_name = $arr[0];
+        wp_create_user($login_name, md5(time()."_temp"), $_POST['new_billing_email']);
+        wp_mail($_POST['new_billing_email'], "New Order And Account", "BP Ordered for you and we created your account please set your password by going on this link. https://radicalskincare.com/wp-login.php?action=lostpassword");
+      }
+    }
+}
+  public function woocommerce_checkout_update_order_meta($order_id){
+    if ( isset($_POST['new_billing_email']) ) {
+      update_post_meta( $order_id, 'ordered_by', wp_get_current_user()->user_email); 
+      update_post_meta( $order_id, '_customer_user', esc_attr(get_current_user_id()));
+    }
+  }
+
+  public function woocommerce_admin_order_data_after_billing_address($order) {
+    $ordered_by = get_post_meta( $order->get_id(), 'ordered_by', true ); 
+    if ($ordered_by) {
+      ?>
+      <p>
+        <strong>Ordered By</strong><br>
+        <?php echo $ordered_by; ?>
+      </p>
+      <?php
+    }
+  }
 }
 
 
 
-
-  
