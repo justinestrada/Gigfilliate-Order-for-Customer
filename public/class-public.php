@@ -212,8 +212,7 @@ class Gigfilliate_Order_For_Customer_Public {
         "is_in_stock"=>$product->is_in_stock()
       ];
     }
-    echo json_encode($to_return);
-    wp_die();
+    exit( json_encode($to_return) );
   }
   public function toast(){
     if(!isset($_COOKIE["GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER"])) {
