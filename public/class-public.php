@@ -25,6 +25,8 @@ class Gigfilliate_Order_For_Customer_Public {
 	private $plugin_name;
 	private $version;
   public $settings;
+  public $cookie_name = "GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER";
+
 
 	/**
 	 * Initialize the class and set its properties.
@@ -170,24 +172,24 @@ class Gigfilliate_Order_For_Customer_Public {
   }
   public function customer_order_form_submit(){
     if (isset($_POST['customer']) && $_POST['customer'] != null) {
-      setcookie("GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER", $_POST['customer'], (time() + (86400 * 30)), "/");
+      setcookie($this->cookie_name, $_POST['customer'], (time() + (86400 * 30)), "/");
     }
     header('Location: ' . $_SERVER['HTTP_REFERER']);
   }
   public function exit_customer_form_submit(){
     if (isset($_POST['exit_customer'])) {
-      setcookie("GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER",null, time() - 3600,"/");
+      setcookie($this->cookie_name,null, time() - 3600,"/");
     }
     header('Location: ' . $_SERVER['HTTP_REFERER']);
   }
   public function customer_notice(){
-    if(isset($_COOKIE["GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER"])) {
-      $customer = get_user_by("ID", $_COOKIE["GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER"]);
+    if(isset($_COOKIE[$this->cookie_name])) {
+      $customer = get_user_by("email", $_COOKIE[$this->cookie_name]);
       ?>
       <div class="alert alert-info" role="alert">
-      You're placing an order for <?php echo $customer->first_name.' '.$customer->last_name;?>.
+      You're placing an order for <?php echo ($customer != null?($customer->first_name.' '.$customer->last_name):$_COOKIE[$this->cookie_name]);?>.
       </div>
-       <input type="hidden" name="new_billing_email" value="<?php echo $customer->user_email;?>">
+       <input type="hidden" name="new_billing_email" value="<?php echo ($customer != null?$customer->user_email:$_COOKIE[$this->cookie_name]);?>">
       <?php
     }
   }
@@ -215,10 +217,12 @@ class Gigfilliate_Order_For_Customer_Public {
     exit( json_encode($to_return) );
   }
   public function toast(){
-    if(!isset($_COOKIE["GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER"])) {
+    if(!isset($_COOKIE[$this->cookie_name])) {
       return;
     }
-    $customer = new WC_Customer($_COOKIE["GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER"]);
+    $user = get_user_by("email",$_COOKIE[$this->cookie_name]);
+    if($user != null){
+      $customer = new WC_Customer($user->ID);
       ?>
       <span id="gofc_customer_billing" 
       data-email="<?php echo $customer->get_billing_email();?>"
@@ -233,6 +237,16 @@ class Gigfilliate_Order_For_Customer_Public {
       data-country="<?php echo $customer->get_billing_country();?>"
       data-phone="<?php echo $customer->get_billing_phone();?>"
       ></span>
+      <?php
+    }else{
+      ?>
+      <span id="gofc_customer_billing" 
+      data-email="<?php echo $_COOKIE[$this->cookie_name];?>"
+      ></span>
+      <?php
+    }
+      ?>
+
   <div class="toast ml-auto GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE" data-autohide="false">
     <div class="toast-header">
       <strong class="mr-auto text-primary">Exited</strong>
