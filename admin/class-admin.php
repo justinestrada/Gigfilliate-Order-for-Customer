@@ -35,8 +35,31 @@ class Gigfilliate_Order_For_Customer_Admin {
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+    add_action('admin_menu', [$this,'admin_menu'],20);
+    add_action('vitalibis_settings_dashboard_row', [$this,'vitalibis_settings_dashboard_row'], 10, 2 );
+    add_action("on_save_vitalibis_settings_dashboard_row",[$this,"on_save_vitalibis_settings_dashboard_row"],10,2);
+  }
+
+  public function admin_menu()
+	{
+    add_submenu_page('vitalibis', 'Order For Customer', 'Order For Customer', 'manage_options', '/admin.php?page=vitalibis&tab=settings&status_view=dashboard');
 	}
 
+  public function vitalibis_settings_dashboard_row($settings){
+    ?>
+      <tr>
+        <th><label for="excluded_product_ids_from_order_for_customer">Excluded Products From Order For Customer</label></th>
+        <td>
+          <input type="text" id="excluded_product_ids_from_order_for_customer" name="excluded_product_ids_from_order_for_customer" class="large-text" value="<?php echo (isset($_POST['excluded_product_ids_from_order_for_customer'])) ? $_POST['excluded_product_ids_from_order_for_customer'] : (isset($settings->dashboard->excluded_product_ids_from_order_for_customer) ?$settings->dashboard->excluded_product_ids_from_order_for_customer:''); ?>"/>
+          <p class="description">You can add ids of products here seprated by (,) . If you dont want them to be visible in orders for customer section.</p>
+        </td>
+      </tr>
+    <?php
+  }
+
+  public function on_save_vitalibis_settings_dashboard_row($settings){
+    $settings->dashboard->excluded_product_ids_from_order_for_customer = isset($_POST['excluded_product_ids_from_order_for_customer']) ? $_POST['excluded_product_ids_from_order_for_customer'] : '';
+  }
 	/**
 	 * Register the stylesheets for the admin area.
 	 *

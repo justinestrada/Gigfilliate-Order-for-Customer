@@ -195,12 +195,17 @@ class Gigfilliate_Order_For_Customer_Public {
   }
 
   public function gofc_search_product(){
+    $settings = json_decode(get_option('vitalibis_settings'));
     $args = array(
       'post_type' => 'product',
       'posts_per_page' => 15,
       'order' => 'ASC',
       's'=>$_GET["search"]
     );
+    if(isset($settings->dashboard->excluded_product_ids_from_order_for_customer) && $settings->dashboard->excluded_product_ids_from_order_for_customer != null){
+      $args['post__not_in'] = explode(",",$settings->dashboard->excluded_product_ids_from_order_for_customer);
+    }
+    
     $to_return = [];
     foreach ((new WP_Query( $args ))->posts as $post) {
       $product = wc_get_product($post->ID);
