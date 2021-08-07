@@ -157,8 +157,8 @@
     };
 
     let valid_pages = ['/my-account/brand-partner-customers/','/checkout/','/cart/'];
-    if(!valid_pages.includes(window.location.pathname) && Cookie.read("GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER") != null){
-      Cookie.erase("GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER");
+    if(!valid_pages.includes(window.location.pathname) && Cookie.read(my_gofc_object.cookie_name) != null){
+      Cookie.erase(my_gofc_object.cookie_name);
       jQuery('.GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE').toast('show');
     }
   });
