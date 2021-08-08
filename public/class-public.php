@@ -236,6 +236,9 @@ class Gigfilliate_Order_For_Customer_Public {
       return;
     }
     $notification = vitalibis_get_notification_by_slug("new-customer-by-bp");
+    if(!$notification->enabled){
+      return;
+    }
     $current_user = wp_get_current_user();
     $template_tags = [];
     $template_tags['{site_name}'] = get_bloginfo('name');
