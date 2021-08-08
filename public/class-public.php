@@ -226,14 +226,32 @@ class Gigfilliate_Order_For_Customer_Public {
         $arr = explode("/", $_POST['new_billing_email'], 2);
         $login_name = $arr[0];
         wp_create_user($login_name, md5(time() . "_temp"), $_POST['new_billing_email']);
-        wp_mail($_POST['new_billing_email'], "New Order And Account", "BP Ordered for you and we created your account please set your password by going on this link. https://radicalskincare.com/wp-login.php?action=lostpassword");
+        $this->send_new_customer_from_bp_email($_POST['new_billing_email']);
       }
     }
+  }
+
+  public function send_new_customer_from_bp_email($email){
+    if(!function_exists("vitalibis_send_email") || !function_exists("vitalibis_get_notification_by_slug")){
+      return;
+    }
+    $notification = vitalibis_get_notification_by_slug("new-customer-by-bp");
+    $current_user = wp_get_current_user();
+    $template_tags = [];
+    $template_tags['{site_name}'] = get_bloginfo('name');
+    $template_tags['{site_url}'] = get_site_url();
+    $template_tags['{affiliate_first_name}'] = $current_user->user_firstname;
+    $template_tags['{affiliate_last_name}'] = $current_user->user_firstname;
+    $template_tags['{affiliate_email}'] = $current_user->user_email;
+    $template_tags['{new_user_email}'] = $email;
+    $template_tags['{password_change_url}'] = get_site_url().'/wp-login.php?action=lostpassword'; // default value
+    vitalibis_send_email($email,$notification,$template_tags);
   }
 
   public function woocommerce_checkout_update_order_meta($order_id)
   {
     if (isset($_POST['new_billing_email'])) {
+      update_post_meta($order_id, 'v_order_affiliate_id', (int)get_user_meta(get_current_user_id(), 'v_affiliate_id', true));
       update_post_meta($order_id, 'ordered_by', wp_get_current_user()->user_email);
       update_post_meta($order_id, '_customer_user', esc_attr(get_current_user_id()));
     }
