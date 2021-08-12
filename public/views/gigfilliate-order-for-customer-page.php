@@ -15,8 +15,8 @@ foreach ($orders as $key => $order) {
     $customers[$order->get_user()->ID] = ["user" => $order->get_user(), "last_order" => $order];
   }
 }
-if (!isset($_COOKIE[$this->cookie_name])) {
 ?>
+<div id="gofc_customer_section" style="display: <?php echo (!isset($_COOKIE[$this->cookie_name]) ? 'block' : 'none'); ?> ;">
   <h3>Select Customer:</h3>
   <button type="button" class="v-btn v-btn-outline-primary" data-toggle="modal" data-target="#addNewCustomerModal">
     Add New Customer
@@ -43,11 +43,9 @@ if (!isset($_COOKIE[$this->cookie_name])) {
           <li class="list-group-item gofc-customers-list-item" data-customer_name="<?php echo $customer["user"]->display_name; ?>">
             <span class="gofc-customers-list-item-name"><b><?php echo $customer["user"]->display_name . '</b><br><span class="secondary-text">' . $customer["user"]->user_email . '</span>'; ?></span>
             <span class="gofc-customers-list-item-last-order-date"><b>Last Order Date</b> <br> <span class="secondary-text"><?php echo $customer["last_order"]->get_date_created()->date("m/d/y"); ?></span></span>
-            <form class="gofc-customers-list-item-form" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
-              <input name='action' type="hidden" value='customer_order_form_submit'>
-              <input name='customer' type="hidden" value='<?php echo $customer["user"]->user_email; ?>'>
-              <button type="submit" class="v-btn v-btn-outline-primary gofc-customers-list-item-place-order-btn">Place Order</button>
-            </form>
+            <div class="gofc-customers-list-item-form">
+              <button type="button" class="v-btn v-btn-outline-primary gofc-customers-list-item-place-order-btn gfc_add_customer" data-customer_email="<?php echo $customer["user"]->user_email; ?>">Place Order</button>
+            </div>
           </li>
         <?php
         }
@@ -58,7 +56,7 @@ if (!isset($_COOKIE[$this->cookie_name])) {
 
   <div class="modal fade" id="addNewCustomerModal" tabindex="-1" role="dialog" aria-labelledby="addNewCustomerModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
-      <form class="modal-content" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
+      <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="addNewCustomerModalLabel">Add New Customer</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -68,48 +66,41 @@ if (!isset($_COOKIE[$this->cookie_name])) {
         <div class="modal-body">
           <input name='action' type="hidden" value='customer_order_form_submit'>
           <div class="form-group">
-            <label for="exampleInputEmail1">Email address</label>
-            <input type="email" name="customer" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" required>
+            <label for="new_gofc_customer">Email address</label>
+            <input type="email" name="new_gofc_customer" class="form-control" id="new_gofc_customer" aria-describedby="emailHelp" placeholder="Enter email" required>
             <small id="emailHelp" class="form-text text-muted">Please enter the email of the customer.</small>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="v-btn v-btn-outline-primary">Add</button>
-        </div>
-      </form>
-    </div>
-  </div>
-<?php
-  return;
-}
-
-
-$customer = get_user_by("email", $_COOKIE[$this->cookie_name]);
-?>
-<div class="alert alert-info" role="alert">
-  You're placing an order for <?php echo ($customer != null ? ($customer->first_name . ' ' . $customer->last_name) : $_COOKIE[$this->cookie_name]); ?>. You can use your <?php echo $this->core_settings->affiliate_term; ?> customer coupon, but not your personal <?php echo $this->core_settings->affiliate_term; ?> coupon
-</div>
-<form action="<?php echo esc_url(admin_url('admin-post.php')); ?>" method="post">
-  <input type="hidden" name="exit_customer" value="true">
-  <input name='action' type="hidden" value='exit_customer_form_submit'>
-  <button type="submit" class="v-btn v-btn-primary">Exit 'Place Order For Customer' Mode</button>
-</form>
-<br>
-<h3>Select Product:</h3>
-<div class="card gofc-customer-search">
-  <div class="card-body">
-    <div class="card-header">
-      <div class="row">
-        <div class="col-sm-6">
-          <h4>Filter By Name:</h4>
-        </div>
-        <div class="col-sm-6">
-          <input type="text" name="search_product" id="search_product" class="form-control">
+          <button type="button" class="v-btn v-btn-outline-primary gfc_add_customer" data-input_element="#new_gofc_customer">Add</button>
         </div>
       </div>
     </div>
-    <ul class="list-group list-group-flush gofc-products-list">
+  </div>
+</div>
 
-    </ul>
+<div id="gofc_products_section" style="display: <?php echo (isset($_COOKIE[$this->cookie_name]) ? 'block' : 'none'); ?> ;">
+  <div class="alert alert-info" role="alert" id="alert-placing-for-customer">
+    You're placing an order for <?php echo isset($_COOKIE[$this->cookie_name]) ? $_COOKIE[$this->cookie_name] : '{customer_email}'; ?>. You can use your <?php echo $this->core_settings->affiliate_term; ?> customer coupon, but not your personal <?php echo $this->core_settings->affiliate_term; ?> coupon
+  </div>
+    <button class="v-btn v-btn-primary gofc_exit_place_order_for_customer">Exit 'Place Order For Customer' Mode</button>
+  <br>
+  <h3>Select Product:</h3>
+  <div class="card gofc-customer-search">
+    <div class="card-body">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-sm-6">
+            <h4>Filter By Name:</h4>
+          </div>
+          <div class="col-sm-6">
+            <input type="text" name="search_product" id="search_product" class="form-control">
+          </div>
+        </div>
+      </div>
+      <ul class="list-group list-group-flush gofc-products-list">
+
+      </ul>
+    </div>
   </div>
 </div>

@@ -20,7 +20,8 @@
  * @subpackage Gigfilliate_Order_For_Customer/public
  * @author     Gigfilliate <justin@justinestrada.com>
  */
-class Gigfilliate_Order_For_Customer_Public {
+class Gigfilliate_Order_For_Customer_Public
+{
 
   private $plugin_name;
   private $version;
@@ -40,8 +41,6 @@ class Gigfilliate_Order_For_Customer_Public {
     $this->version = $version;
     $this->core_settings = json_decode(get_option('vitalibis_settings'));
     $this->new_account_page();
-    add_action('admin_post_customer_order_form_submit', [$this, 'customer_order_form_submit']);
-    add_action('admin_post_exit_customer_form_submit', [$this, 'exit_customer_form_submit']);
     add_action('wp_ajax_gofc_search_product', [$this, 'gofc_search_product']);
     add_action('woocommerce_before_cart_contents', [$this, 'customer_notice']);
     add_action('cfw_after_customer_info_tab_login', [$this, 'customer_notice'], 10, 3);
@@ -74,8 +73,10 @@ class Gigfilliate_Order_For_Customer_Public {
     wp_localize_script(
       $this->plugin_name,
       'my_gofc_object',
-      ['ajax_url' => admin_url('admin-ajax.php'),
-      'cookie_name' => $this->cookie_name]
+      [
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'cookie_name' => $this->cookie_name
+      ]
     );
   }
 
@@ -109,7 +110,7 @@ class Gigfilliate_Order_For_Customer_Public {
 
   public function new_account_page_content()
   {
-  ?>
+?>
     <div style="margin-bottom: 1rem;">
       <h1><?php echo $this->core_settings->affiliate_term ?> Customers</h1>
       <?php
@@ -121,25 +122,10 @@ class Gigfilliate_Order_For_Customer_Public {
     <?php
   }
 
-  public function customer_order_form_submit()
-  {
-    if (isset($_POST['customer']) && $_POST['customer'] != null) {
-      setcookie($this->cookie_name, $_POST['customer'], (time() + (86400 * 30)), "/");
-    }
-    header('Location: ' . $_SERVER['HTTP_REFERER']);
-  }
-
-  public function exit_customer_form_submit()
-  {
-    if (isset($_POST['exit_customer'])) {
-      setcookie($this->cookie_name, null, time() - 3600, "/");
-    }
-    header('Location: ' . $_SERVER['HTTP_REFERER']);
-  }
-
   public function customer_notice()
   {
     if (isset($_COOKIE[$this->cookie_name])) {
+      $this->apply_default_coupon();
       $customer = get_user_by("email", $_COOKIE[$this->cookie_name]);
     ?>
       <div class="alert alert-info" role="alert">
@@ -148,6 +134,15 @@ class Gigfilliate_Order_For_Customer_Public {
       <input type="hidden" name="new_billing_email" value="<?php echo ($customer != null ? $customer->user_email : $_COOKIE[$this->cookie_name]); ?>">
     <?php
     }
+  }
+
+  public function apply_default_coupon()
+  {
+    $coupon_code = get_user_meta(get_current_user_id(), 'primary_affiliate_coupon_code', true);;
+    if (!$coupon_code || WC()->cart->has_discount($coupon_code)) return;
+    WC()->cart->remove_coupons();
+    WC()->cart->apply_coupon($coupon_code);
+    wc_print_notices();
   }
 
   public function gofc_search_product()
@@ -187,18 +182,7 @@ class Gigfilliate_Order_For_Customer_Public {
     if ($user != null) {
       $customer = new WC_Customer($user->ID);
     ?>
-      <span id="gofc_customer_billing" 
-      data-email="<?php echo $customer->get_billing_email(); ?>" 
-      data-firstName="<?php echo $customer->get_billing_first_name(); ?>" 
-      data-lastName="<?php echo $customer->get_billing_last_name(); ?>" 
-      data-company="<?php echo $customer->get_billing_company(); ?>" 
-      data-address1="<?php echo $customer->get_billing_address_1(); ?>" 
-      data-address2="<?php echo $customer->get_billing_address_2(); ?>" 
-      data-city="<?php echo $customer->get_billing_city(); ?>" 
-      data-state="<?php echo $customer->get_billing_state(); ?>" 
-      data-postcode="<?php echo $customer->get_billing_postcode(); ?>" 
-      data-country="<?php echo $customer->get_billing_country(); ?>" 
-      data-phone="<?php echo $customer->get_billing_phone(); ?>"></span>
+      <span id="gofc_customer_billing" data-email="<?php echo $customer->get_billing_email(); ?>" data-firstName="<?php echo $customer->get_billing_first_name(); ?>" data-lastName="<?php echo $customer->get_billing_last_name(); ?>" data-company="<?php echo $customer->get_billing_company(); ?>" data-address1="<?php echo $customer->get_billing_address_1(); ?>" data-address2="<?php echo $customer->get_billing_address_2(); ?>" data-city="<?php echo $customer->get_billing_city(); ?>" data-state="<?php echo $customer->get_billing_state(); ?>" data-postcode="<?php echo $customer->get_billing_postcode(); ?>" data-country="<?php echo $customer->get_billing_country(); ?>" data-phone="<?php echo $customer->get_billing_phone(); ?>"></span>
     <?php
     } else {
     ?>
@@ -231,12 +215,13 @@ class Gigfilliate_Order_For_Customer_Public {
     }
   }
 
-  public function send_new_customer_from_bp_email($email){
-    if(!function_exists("vitalibis_send_email") || !function_exists("vitalibis_get_notification_by_slug")){
+  public function send_new_customer_from_bp_email($email)
+  {
+    if (!function_exists("vitalibis_send_email") || !function_exists("vitalibis_get_notification_by_slug")) {
       return;
     }
     $notification = vitalibis_get_notification_by_slug("new-customer-by-bp");
-    if(!$notification->enabled){
+    if (!$notification->enabled) {
       return;
     }
     $current_user = wp_get_current_user();
@@ -247,8 +232,8 @@ class Gigfilliate_Order_For_Customer_Public {
     $template_tags['{affiliate_last_name}'] = $current_user->user_firstname;
     $template_tags['{affiliate_email}'] = $current_user->user_email;
     $template_tags['{new_user_email}'] = $email;
-    $template_tags['{password_change_url}'] = get_site_url().'/wp-login.php?action=lostpassword'; // default value
-    vitalibis_send_email($email,$notification,$template_tags);
+    $template_tags['{password_change_url}'] = get_site_url() . '/wp-login.php?action=lostpassword'; // default value
+    vitalibis_send_email($email, $notification, $template_tags);
   }
 
   public function woocommerce_checkout_update_order_meta($order_id)
@@ -269,7 +254,7 @@ class Gigfilliate_Order_For_Customer_Public {
         <strong>Ordered By</strong><br>
         <?php echo $ordered_by; ?>
       </p>
-    <?php
+<?php
     }
   }
 }

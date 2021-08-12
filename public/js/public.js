@@ -161,5 +161,37 @@
       Cookie.erase(my_gofc_object.cookie_name);
       jQuery('.GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE').toast('show');
     }
+
+    $(".gfc_add_customer").on("click",function(e){
+      e.preventDefault();
+      e = $(this);
+      let email = null;
+      if(e.data("input_element")){
+        email = $(e.data("input_element")).val();
+        if(email.trim() == ""){
+          alert("Email is required.");
+        }else{
+          $('#addNewCustomerModal').modal('hide');
+        }
+      }
+      if(e.data("customer_email")){
+        email = e.data("customer_email");
+      }
+      if(!email){
+        return;
+      }
+      
+      Cookie.create(my_gofc_object.cookie_name,email,1);
+      $("#gofc_customer_section").slideUp();
+      $("#gofc_products_section").slideDown();
+      let alert_placing_for_customer = $("#alert-placing-for-customer").html();
+      alert_placing_for_customer = alert_placing_for_customer.replace("{customer_email}", email);
+      $("#alert-placing-for-customer").html(alert_placing_for_customer);
+    });
+    $(".gofc_exit_place_order_for_customer").on("click",function(e){
+      Cookie.erase(my_gofc_object.cookie_name);
+      $("#gofc_customer_section").slideDown();
+      $("#gofc_products_section").slideUp();
+    });
   });
 })(jQuery);

@@ -55,6 +55,10 @@
 	font-weight: bold;
 }
 
+.gofc-products-list .added_to_cart.wc-forward {
+  display: none;
+}
+
 @media (min-width: 800px) {
 	.gofc-customers-list-item {
 		display: flex !important;
