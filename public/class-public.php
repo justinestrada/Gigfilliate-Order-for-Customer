@@ -42,6 +42,7 @@ class Gigfilliate_Order_For_Customer_Public
     $this->core_settings = json_decode(get_option('vitalibis_settings'));
     $this->new_account_page();
     add_action('wp_ajax_gofc_search_product', [$this, 'gofc_search_product']);
+    add_action('wp_ajax_gofc_reset_cart', [$this, 'gofc_reset_cart']);
     add_action('woocommerce_before_cart_contents', [$this, 'customer_notice']);
     add_action('cfw_after_customer_info_tab_login', [$this, 'customer_notice'], 10, 3);
     add_action('cfw_checkout_after_login', [$this, 'customer_notice'], 10, 3);
@@ -142,7 +143,12 @@ class Gigfilliate_Order_For_Customer_Public
     if (!$coupon_code || WC()->cart->has_discount($coupon_code)) return;
     WC()->cart->remove_coupons();
     WC()->cart->apply_coupon($coupon_code);
-    wc_print_notices();
+  }
+
+  public function gofc_reset_cart(){
+    WC()->cart->remove_coupons();
+    WC()->cart->empty_cart();
+    wp_die(true);
   }
 
   public function gofc_search_product()
@@ -191,10 +197,11 @@ class Gigfilliate_Order_For_Customer_Public
     }
     ?>
 
-    <div class="toast ml-auto GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE" data-autohide="false">
-      <div class="toast-header">
-        <strong class="mr-auto text-primary">Exited</strong>
-        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+    <div class="toast ml-auto GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE bg-info text-white" data-autohide="false">
+      <div class="toast-header bg-info">
+        <i class="fa fa-info-circle text-white h6 mb-0 mr-1"></i>  
+        <strong class="mr-auto text-white">Exited</strong>
+        <button type="button" class="ml-2 mb-1 text-white close" data-dismiss="toast">&times;</button>
       </div>
       <div class="toast-body">
         You have been exited from the Order for Customer mood.

@@ -18,7 +18,7 @@ foreach ($orders as $key => $order) {
 ?>
 <div id="gofc_customer_section" style="display: <?php echo (!isset($_COOKIE[$this->cookie_name]) ? 'block' : 'none'); ?> ;">
   <h3>Select Customer:</h3>
-  <button type="button" class="v-btn v-btn-outline-primary" data-toggle="modal" data-target="#addNewCustomerModal">
+  <button type="button" class="v-btn v-btn-outline-primary mb-2" data-toggle="modal" data-target="#addNewCustomerModal">
     Add New Customer
   </button>
   <div class="card gofc-customer-search w-100">
@@ -83,7 +83,7 @@ foreach ($orders as $key => $order) {
   <div class="alert alert-info" role="alert" id="alert-placing-for-customer">
     You're placing an order for <?php echo isset($_COOKIE[$this->cookie_name]) ? $_COOKIE[$this->cookie_name] : '{customer_email}'; ?>. You can use your <?php echo $this->core_settings->affiliate_term; ?> customer coupon, but not your personal <?php echo $this->core_settings->affiliate_term; ?> coupon
   </div>
-    <button class="v-btn v-btn-primary gofc_exit_place_order_for_customer">Exit 'Place Order For Customer' Mode</button>
+    <button class="v-btn v-btn-outline-primary mb-2 gofc_exit_place_order_for_customer pull-right">Exit 'Place Order For Customer' Mode</button>
   <br>
   <h3>Select Product:</h3>
   <div class="card gofc-customer-search">
