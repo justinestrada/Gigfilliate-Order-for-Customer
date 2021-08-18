@@ -62,7 +62,7 @@
         this.searchProduct()
         this.getProducts();
       }
-      if ($('#gofc_customer_billing').length) {
+      if ($('#$gofc_customer_billing').length) {
         this.setupGofcCustomerBilling()
       }
       if ($('.gfc_add_customer').length) {
@@ -105,7 +105,7 @@
         search: to_search
       };
       let products_list = $('.gofc-products-list');
-      products_list.html('<div class="loading-spinner"><div class="loading-animation"><div></div></div></div>');
+      products_list.html('<div class="loading-spinner"><div class="loading-animation"><div></div></div></div>'); // TODO: Use skeleton loaders
       $.get(my_gofc_object.ajax_url, data, function(response) {
         products_list.html('');
         if (response == 0) {
@@ -127,50 +127,50 @@
       });
     },
     setupGofcCustomerBilling: function() {
-      let gofc_customer_billing = $('#gofc_customer_billing');
-      let billing_email = $('[name="billing_email"]');
-      let first_name = $('[name="first_name"]');
-      let last_name = $('[name="last_name"]');
-      let billing_address_1 = $('[name="billing_address_1"]');
-      let billing_address_2 = $('[name="billing_address_2"]');
-      let billing_company = $('[name="billing_company"]');
-      let billing_country = $('[name="billing_country"]');
-      let billing_postcode = $('[name="billing_postcode"]');
-      let billing_state = $('[name="billing_state"]');
-      let billing_city = $('[name="billing_city"]');
-      let billing_phone = $('[name="billing_phone"]');
+      const $gofc_customer_billing = $('#gofc_customer_billing');
+      const billing_email = $('[name="billing_email"]');
+      const first_name = $('[name="first_name"]');
+      const last_name = $('[name="last_name"]');
+      const billing_address_1 = $('[name="billing_address_1"]');
+      const billing_address_2 = $('[name="billing_address_2"]');
+      const billing_company = $('[name="billing_company"]');
+      const billing_country = $('[name="billing_country"]');
+      const billing_postcode = $('[name="billing_postcode"]');
+      const billing_state = $('[name="billing_state"]');
+      const billing_city = $('[name="billing_city"]');
+      const billing_phone = $('[name="billing_phone"]');
       if (billing_email.length) {
-        billing_email.val(gofc_customer_billing.data('email'));
+        billing_email.val($gofc_customer_billing.data('email'));
       }
       if (first_name.length) {
-        first_name.val(gofc_customer_billing.data('firstname'));
+        first_name.val($gofc_customer_billing.data('firstname'));
       }
       if (last_name.length) {
-        last_name.val(gofc_customer_billing.data('lastname'));
+        last_name.val($gofc_customer_billing.data('lastname'));
       }
       if (billing_address_1.length) {
-        billing_address_1.val(gofc_customer_billing.data('address1'));
+        billing_address_1.val($gofc_customer_billing.data('address1'));
       }
       if (billing_address_2.length) {
-        billing_address_2.val(gofc_customer_billing.data('address2'));
+        billing_address_2.val($gofc_customer_billing.data('address2'));
       }
       if (billing_company.length) {
-        billing_company.val(gofc_customer_billing.data('company'));
+        billing_company.val($gofc_customer_billing.data('company'));
       }
       if (billing_country.length) {
-        billing_country.val(gofc_customer_billing.data('country')).change();
+        billing_country.val($gofc_customer_billing.data('country')).change();
       }
       if (billing_postcode.length) {
-        billing_postcode.val(gofc_customer_billing.data('postcode'));
+        billing_postcode.val($gofc_customer_billing.data('postcode'));
       }
       if (billing_state.length) {
-        billing_state.val(gofc_customer_billing.data('state')).change();
+        billing_state.val($gofc_customer_billing.data('state')).change();
       }
       if (billing_city.length) {
-        billing_city.val(gofc_customer_billing.data('city'));
+        billing_city.val($gofc_customer_billing.data('city'));
       }
       if (billing_phone.length) {
-        billing_phone.val(gofc_customer_billing.data('phone'));
+        billing_phone.val($gofc_customer_billing.data('phone'));
       }
     },
     addNewCustomer: function() {
