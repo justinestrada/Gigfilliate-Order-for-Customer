@@ -174,6 +174,7 @@
       }
     },
     addNewCustomer: function() {
+      let self = this;
       $('.gfc_add_customer').on('click', function(e) {
         e.preventDefault();
         e = $(this);
@@ -182,6 +183,8 @@
           email = $(e.data('input_element')).val();
           if (email.trim() == '') {
             alert('Email is required.');
+          } else if(!self.validateEmail(email.trim())) {
+            alert('Please enter a valid email.');
           } else {
             $('#addNewCustomerModal').modal('hide');
           }
@@ -189,16 +192,18 @@
         if (e.data('customer_email')) {
           email = e.data('customer_email');
         }
-        if (!email) {
+        if (!email || !self.validateEmail(email.trim())) {
           return;
         }
         Cookie.create(my_gofc_object.cookie_name, email, 1);
         $('#gofc_customer_section').slideUp();
         $('#gofc_products_section').slideDown();
-        let alert_placing_for_customer = $('#alert-placing-for-customer').html();
-        alert_placing_for_customer = alert_placing_for_customer.replace('{customer_email}', email);
-        $('#alert-placing-for-customer').html(alert_placing_for_customer);
+        $('#alert-placing-for-customer #alert_customer_email').html(email);
       });
+    },
+    validateEmail: function(email){
+      const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(email).toLowerCase());
     },
     exitPlaceOrderForCustomer: function() {
       $('.gofc_exit_place_order_for_customer').on('click', function(e) {
