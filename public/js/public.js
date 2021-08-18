@@ -62,7 +62,7 @@
         this.searchProduct()
         this.getProducts();
       }
-      if ($('#$gofc_customer_billing').length) {
+      if ($('#gofc_customer_billing').length) {
         this.setupGofcCustomerBilling()
       }
       if ($('.gfc_add_customer').length) {
