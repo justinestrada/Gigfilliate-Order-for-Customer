@@ -3,24 +3,21 @@
  * included in this file.
  */
 
- .gofc-customer-search h4 {
-	color: #ffffff;
-	margin: 5px 0px;
-}
-
-.gofc-customers-list-item-name,
-.gofc-customers-list-item-last-order-date,
-.gofc-customers-list-item-form {
-	display: block;
-	margin-bottom: 10px;
-}
-
 .secondary-text {
 	color: #989898;
 }
 
-.gofc-customers-list-item-place-order-btn {
-	width: 100%;
+@media (min-width: 992px) {
+  .gofc-text-lg-right {
+    text-align: right;
+  }
+}
+
+.gofc-customers-list_item {
+  padding: 1rem 0.5rem;
+  background-color: #f2f2f2;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
 }
 
 .gofc-products-list-item-add-to-cart-btn .added_to_cart_label,
@@ -42,14 +39,6 @@
 	pointer-events: none;
 }
 
-.gofc-products-list-item-thumbnail,
-.gofc-products-list-item-name,
-.gofc-products-list-item-add-to-cart-btn {
-	width: 100%;
-	display: block;
-	margin-bottom: 10px;
-}
-
 .gofc-products-list-item-price {
 	display: block;
 	font-weight: bold;
@@ -59,50 +48,16 @@
   display: none;
 }
 
-@media (min-width: 800px) {
-	.gofc-customers-list-item {
-		display: flex !important;
-		align-items: center;
-	}
-	.gofc-customers-list-item-name {
-		flex: 50%;
-	}
-	.gofc-customers-list-item-last-order-date {
-		flex: 30%;
-	}
-	.gofc-customers-list-item-form {
-		flex: 20%;
-	}
-	.gofc-customers-list-item-place-order-btn {
-		display: block !important;
-		margin-left: auto;
-		margin-right: 0px;
-	}
-	.gofc-products-list-item {
-		display: flex !important;
-		align-items: center;
-	}
-	.gofc-products-list-item-thumbnail {
-		flex: 10%;
-		width: 10%;
-	}
-	.gofc-products-list-item-name {
-		flex: 60%;
-		padding: 0 8px;
-	}
-	.gofc-products-list-item-add-to-cart-btn {
-		flex: 30%;
-	}
-}
-
 @keyframes loading-animation {
 	0% {
 		transform: rotate(0deg)
 	}
-	50% {
+
+  50% {
 		transform: rotate(180deg)
 	}
-	100% {
+
+  100% {
 		transform: rotate(360deg)
 	}
 }

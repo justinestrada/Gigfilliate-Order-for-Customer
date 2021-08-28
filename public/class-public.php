@@ -26,7 +26,9 @@ class Gigfilliate_Order_For_Customer_Public
   private $plugin_name;
   private $version;
   public $cookie_name = 'GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER';
-
+  public $is_user_logged_in;
+  public $current_user_id;
+  public $primary_affiliate_coupon_code;
 
   /**
    * Initialize the class and set its properties.
@@ -58,8 +60,7 @@ class Gigfilliate_Order_For_Customer_Public
    *
    * @since    0.0.1
    */
-  public function enqueue_styles()
-  {
+  public function enqueue_styles() {
     wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/public.css', [], $this->version, 'all');
   }
 
@@ -68,8 +69,7 @@ class Gigfilliate_Order_For_Customer_Public
    *
    * @since    0.0.1
    */
-  public function enqueue_scripts()
-  {
+  public function enqueue_scripts() {
     wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/public.js', ['jquery'], $this->version, false);
     wp_localize_script(
       $this->plugin_name,
@@ -81,8 +81,7 @@ class Gigfilliate_Order_For_Customer_Public
     );
   }
 
-  public function new_account_page()
-  {
+  public function new_account_page() {
     // Register new endpoint to use for My Account page
     // Any change here resave Permalinks or it will give 404 error
     add_action('init', function () {
@@ -109,26 +108,35 @@ class Gigfilliate_Order_For_Customer_Public
     });
   }
 
-  public function new_account_page_content()
-  {
-?>
+  public function new_account_page_content() {
+    $this->is_user_logged_in = is_user_logged_in();
+    if ($this->is_user_logged_in) {
+      $this->current_user_id = get_current_user_id();
+      $this->primary_affiliate_coupon_code = get_user_meta($this->current_user_id, 'primary_affiliate_coupon_code', true);  
+    }
+    ?>
     <div style="margin-bottom: 1rem;">
       <h1><?php echo $this->core_settings->affiliate_term ?> Customers</h1>
       <?php
       ob_start();
-      require_once WP_PLUGIN_DIR . "/gigfilliate-order-for-customer/public/views/gigfilliate-order-for-customer-page.php";
+      if (!$this->is_user_logged_in) {
+        ?>
+        <p>Not logged in, you must be logged in and an active <?php echo $this->core_settings->affiliate_term ?> to see your customers.</p>
+        <?php
+      } else {
+        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/gigfilliate-order-for-customer-page.php';
+      }
       echo ob_get_clean();
       ?>
     </div>
     <?php
   }
 
-  public function customer_notice()
-  {
+  public function customer_notice() {
     if (isset($_COOKIE[$this->cookie_name])) {
       $this->apply_default_coupon();
-      $customer = get_user_by("email", $_COOKIE[$this->cookie_name]);
-    ?>
+      $customer = get_user_by('email', $_COOKIE[$this->cookie_name]);
+      ?>
       <div class="alert alert-info" role="alert">
         You're placing an order for <?php echo ($customer != null ? ($customer->first_name . ' ' . $customer->last_name) : $_COOKIE[$this->cookie_name]); ?>.
       </div>
@@ -137,22 +145,20 @@ class Gigfilliate_Order_For_Customer_Public
     }
   }
 
-  public function apply_default_coupon()
-  {
+  public function apply_default_coupon() {
     $coupon_code = get_user_meta(get_current_user_id(), 'primary_affiliate_coupon_code', true);;
     if (!$coupon_code || WC()->cart->has_discount($coupon_code)) return;
     WC()->cart->remove_coupons();
     WC()->cart->apply_coupon($coupon_code);
   }
 
-  public function gofc_reset_cart(){
+  public function gofc_reset_cart() {
     WC()->cart->remove_coupons();
     WC()->cart->empty_cart();
     wp_die(true);
   }
 
-  public function gofc_search_product()
-  {
+  public function gofc_search_product() {
     $args = [
       'post_type' => 'product',
       'posts_per_page' => 15,
@@ -162,7 +168,6 @@ class Gigfilliate_Order_For_Customer_Public
     if (isset($this->core_settings->dashboard->excluded_product_ids_from_order_for_customer) && $this->core_settings->dashboard->excluded_product_ids_from_order_for_customer != null) {
       $args['post__not_in'] = explode(",", $this->core_settings->dashboard->excluded_product_ids_from_order_for_customer);
     }
-
     $to_return = [];
     foreach ((new WP_Query($args))->posts as $post) {
       $product = wc_get_product($post->ID);
@@ -179,24 +184,21 @@ class Gigfilliate_Order_For_Customer_Public
     exit(json_encode($to_return));
   }
 
-  public function toast()
-  {
+  public function toast() {
     if (!isset($_COOKIE[$this->cookie_name])) {
       return;
     }
     $user = get_user_by("email", $_COOKIE[$this->cookie_name]);
     if ($user != null) {
-      $customer = new WC_Customer($user->ID);
-    ?>
+      $customer = new WC_Customer($user->ID); ?>
       <span id="gofc_customer_billing" data-email="<?php echo $customer->get_billing_email(); ?>" data-firstName="<?php echo $customer->get_billing_first_name(); ?>" data-lastName="<?php echo $customer->get_billing_last_name(); ?>" data-company="<?php echo $customer->get_billing_company(); ?>" data-address1="<?php echo $customer->get_billing_address_1(); ?>" data-address2="<?php echo $customer->get_billing_address_2(); ?>" data-city="<?php echo $customer->get_billing_city(); ?>" data-state="<?php echo $customer->get_billing_state(); ?>" data-postcode="<?php echo $customer->get_billing_postcode(); ?>" data-country="<?php echo $customer->get_billing_country(); ?>" data-phone="<?php echo $customer->get_billing_phone(); ?>"></span>
-    <?php
+      <?php
     } else {
-    ?>
+      ?>
       <span id="gofc_customer_billing" data-email="<?php echo $_COOKIE[$this->cookie_name]; ?>"></span>
-    <?php
+      <?php
     }
     ?>
-
     <div class="toast ml-auto GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE bg-info text-white" data-autohide="false">
       <div class="toast-header bg-info">
         <i class="fa fa-info-circle text-white h6 mb-0 mr-1"></i>  
@@ -210,8 +212,7 @@ class Gigfilliate_Order_For_Customer_Public
     <?php
   }
 
-  public function woocommerce_checkout_process()
-  {
+  public function woocommerce_checkout_process() {
     if (isset($_POST['new_billing_email']) && $_POST['new_billing_email'] != null) {
       if (!email_exists($_POST['new_billing_email'])) {
         $arr = explode("/", $_POST['new_billing_email'], 2);
@@ -222,8 +223,7 @@ class Gigfilliate_Order_For_Customer_Public
     }
   }
 
-  public function send_new_customer_from_bp_email($email)
-  {
+  public function send_new_customer_from_bp_email($email) {
     if (!function_exists("vitalibis_send_email") || !function_exists("vitalibis_get_notification_by_slug")) {
       return;
     }
@@ -243,8 +243,7 @@ class Gigfilliate_Order_For_Customer_Public
     vitalibis_send_email($email, $notification, $template_tags);
   }
 
-  public function woocommerce_checkout_update_order_meta($order_id)
-  {
+  public function woocommerce_checkout_update_order_meta($order_id) {
     if (isset($_POST['new_billing_email'])) {
       update_post_meta($order_id, 'v_order_affiliate_id', (int)get_user_meta(get_current_user_id(), 'v_affiliate_id', true));
       update_post_meta($order_id, 'ordered_by', wp_get_current_user()->user_email);
@@ -252,16 +251,15 @@ class Gigfilliate_Order_For_Customer_Public
     }
   }
 
-  public function woocommerce_admin_order_data_after_billing_address($order)
-  {
+  public function woocommerce_admin_order_data_after_billing_address($order) {
     $ordered_by = get_post_meta($order->get_id(), 'ordered_by', true);
     if ($ordered_by) {
-    ?>
+      ?>
       <p>
         <strong>Ordered By</strong><br>
         <?php echo $ordered_by; ?>
       </p>
-<?php
+      <?php
     }
   }
 }
