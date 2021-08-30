@@ -45,7 +45,7 @@ class Gigfilliate_Order_For_Customer_Public
     $this->core_settings = json_decode(get_option('vitalibis_settings'));
     $this->new_account_page();
     add_action('wp_ajax_gofc_check_email_exists', [$this, 'ajax_check_email_exists']);
-    add_action('wp_ajax_gofc_search_product', [$this, 'gofc_search_product']);
+    add_action('wp_ajax_gofc_get_products', [$this, 'gofc_get_products']);
     add_action('wp_ajax_gofc_reset_cart', [$this, 'gofc_reset_cart']);
     add_action('woocommerce_before_cart_contents', [$this, 'customer_notice']);
     add_action('cfw_after_customer_info_tab_login', [$this, 'customer_notice'], 10, 3);
@@ -214,20 +214,32 @@ class Gigfilliate_Order_For_Customer_Public
     wp_die(true);
   }
 
-  public function gofc_search_product() {
+  public function gofc_get_products() {
+    $res = ['success' => false, 'products' => []];
+    if (!isset($_POST['action']) || $_POST['action'] !== 'gofc_get_products') {
+      exit(json_encode($res));
+    }
     $args = [
       'post_type' => 'product',
-      'posts_per_page' => 15,
+      'posts_per_page' => -1,
       'order' => 'ASC',
-      's' => $_GET["search"]
+      'post_status' => array('publish'),
+      // TODO: Only get Woo Products with Visibility Shop & Catalogue
     ];
+    if (isset($_POST['search'])) {
+      $args['s'] = $_POST['search'];
+    }
     if (isset($this->core_settings->dashboard->excluded_product_ids_from_order_for_customer) && $this->core_settings->dashboard->excluded_product_ids_from_order_for_customer != null) {
       $args['post__not_in'] = explode(",", $this->core_settings->dashboard->excluded_product_ids_from_order_for_customer);
     }
-    $to_return = [];
-    foreach ((new WP_Query($args))->posts as $post) {
+    $products = (new WP_Query($args))->posts;
+    $res['success'] = true;
+    if (empty($products)) {
+      exit(json_encode($res));      
+    }
+    foreach ($products as $post) {
       $product = wc_get_product($post->ID);
-      $to_return[] = [
+      $res['products'][] = [
         "id" => $post->ID,
         "thumbnail_url" => wp_get_attachment_url($product->get_image_id()),
         "name" => $product->get_name(),
@@ -237,7 +249,7 @@ class Gigfilliate_Order_For_Customer_Public
         "is_in_stock" => $product->is_in_stock()
       ];
     }
-    exit(json_encode($to_return));
+    exit(json_encode($res));
   }
 
   public function toast() {

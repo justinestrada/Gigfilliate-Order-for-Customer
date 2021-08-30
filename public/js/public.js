@@ -51,29 +51,37 @@ const OrderForCustomer = {
         return
       }
       res = JSON.parse(res);
-      res.forEach( element => {
-        let new_product = '<div class="gofc-products-list-item">\
-            <div class="v-row">\
-              <div class="v-col-md-3 v-col-lg-2">\
-                <div class="gofc-products-list-item_thumbnail-wrap">\
-                  <img class="gofc-products-list-item_thumbnail" src="' + element['thumbnail_url'] + '" alt="' + element['name'] + '"/>\
+      if (res.success) {
+        if (res.products.length) {
+          res.products.forEach( element => {
+            let new_product = '<div class="gofc-products-list-item">\
+                <div class="v-row">\
+                  <div class="v-col-md-3 v-col-lg-2">\
+                    <div class="gofc-products-list-item_thumbnail-wrap">\
+                      <img class="gofc-products-list-item_thumbnail" src="' + element['thumbnail_url'] + '" alt="' + element['name'] + '"/>\
+                    </div>\
+                  </div>\
+                  <div class="v-col-md-5 v-col-lg-6 d-flex align-items-center">\
+                    <span class="gofc-products-list-item-name">\
+                      ' + element["name"] + '\
+                      <span class="gofc-products-list-item-price">$' + element['price'] + '</span>\
+                    </span>\
+                  </div>\
+                  <div class="v-col-4 d-flex align-items-center justify-content-sm-end">\
+                    <a href="' + (element['is_in_stock'] ? element['add_to_cart_url'] : 'javascript:void(0)') + '" value="' + element['id'] + '" data-product_id="' + element['id'] + '" data-product_sku="' + element['sku'] + '" aria-label="Add ' + element["name"] + ' to your cart"class="' + (element['is_in_stock'] ? 'ajax_add_to_cart add_to_cart_button' : '') + ' v-btn v-btn-primary gofc-products-list-item-add-to-cart-btn" ' + (element['is_in_stock'] ? '' : 'disabled') + '>\
+                      ' + (element['is_in_stock'] ? '<span class="added_to_cart_label">Added to Cart</span><span class="adding_to_cart_label">Adding to Cart</span><span class="add_to_cart_label">Add to Cart</span>' : 'Out Of Stock') + '\
+                    </a>\
+                  </div>\
                 </div>\
-              </div>\
-              <div class="v-col-md-5 v-col-lg-6 d-flex align-items-center">\
-                <span class="gofc-products-list-item-name">\
-                  ' + element["name"] + '\
-                  <span class="gofc-products-list-item-price">$' + element['price'] + '</span>\
-                </span>\
-              </div>\
-              <div class="v-col-4 d-flex align-items-center justify-content-sm-end">\
-                <a href="' + (element['is_in_stock'] ? element['add_to_cart_url'] : 'javascript:void(0)') + '" value="' + element['id'] + '" data-product_id="' + element['id'] + '" data-product_sku="' + element['sku'] + '" aria-label="Add ' + element["name"] + ' to your cart"class="' + (element['is_in_stock'] ? 'ajax_add_to_cart add_to_cart_button' : '') + ' v-btn v-btn-primary gofc-products-list-item-add-to-cart-btn" ' + (element['is_in_stock'] ? '' : 'disabled') + '>\
-                  ' + (element['is_in_stock'] ? '<span class="added_to_cart_label">Added to Cart</span><span class="adding_to_cart_label">Adding to Cart</span><span class="add_to_cart_label">Add to Cart</span>' : 'Out Of Stock') + '\
-                </a>\
-              </div>\
-            </div>\
-          </div>'
-        $products_list.append(new_product)
-      })
+              </div>'
+            $products_list.append(new_product)
+          })
+        } else {
+          $products_list.html('<p>No products found.</p>')
+        }
+      } else {
+        console.error(res)
+      }
     }).catch(function(err) {
       console.error(err)
     })
@@ -83,7 +91,7 @@ const OrderForCustomer = {
       $.ajax({
         url: GOFC.ajax_url,
         data: {
-          action: 'gofc_search_product',
+          action: 'gofc_get_products',
           search: $('#search_product').val()
         },
         type: 'POST',
