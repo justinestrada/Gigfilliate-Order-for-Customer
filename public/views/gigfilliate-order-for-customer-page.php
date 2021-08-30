@@ -20,7 +20,7 @@ foreach ($orders as $key => $order) {
 }
 ?>
 <section id="gofc_customer_section" style="display: <?php echo (!isset($_COOKIE[$this->cookie_name]) ? 'block' : 'none'); ?>;">
-  <div class="v-card gofc-customer-search w-100">
+  <div id="gofc-customer-search" class="v-card gofc-customer-search">
     <div class="v-card-body">
       <div class="v-row mb-3">
         <div class="v-col-md-6 mb-3 mb-md-0">
@@ -31,7 +31,7 @@ foreach ($orders as $key => $order) {
         </div>
         <div class="v-col-md-6 v-text-right">
           <button type="button" class="v-btn v-btn-outline-primary mt-2" data-toggle="modal" data-target="#addNewCustomerModal">
-            Add New Customer
+            <i class="fa fa-plus mr-1" aria-hidden="true"></i>Add New Customer
           </button>
         </div>
       </div>
@@ -47,14 +47,14 @@ foreach ($orders as $key => $order) {
               <div class="gofc-customers-list-item-name v-col-lg-4">
                 <strong style="text-transform: capitalize;"><?php echo $customer['user']->display_name; ?></strong>
                 <br>
-                <span class="secondary-text"><?php echo $customer['user']->user_email; ?></span>
+                <span><?php echo $customer['user']->user_email; ?></span>
               </div>
               <div class="gofc-customers-list-item-last-order-date v-col-lg-4">
                 Last Order Date
-                <div class="secondary-text"><?php echo $customer['last_order']->get_date_created()->date('F j, Y, g:i:a'); ?></div>
+                <div><?php echo $customer['last_order']->get_date_created()->date('F j, Y, g:i:a'); ?></div>
               </div>
-              <div class="gofc-customers-list-item-form v-col-lg-4 gofc-text-lg-right">
-                <button type="button" class="v-btn v-btn-outline-primary gofc-customers-list-item-place-order-btn gfc_add_customer" data-customer_email="<?php echo $customer['user']->user_email; ?>">Place Order</button>
+              <div class="gofc-customers-list-item-form v-col-lg-4 gofc-text-lg-right d-flex justify-content-end align-items-center">
+                <button type="button" class="gofc-btn-place-order v-btn v-btn-primary gofc-customers-list-item-place-order-btn" customer-email="<?php echo $customer['user']->user_email; ?>">Place Order</button>
               </div>
             </div>
           </div>
@@ -76,15 +76,18 @@ foreach ($orders as $key => $order) {
         </button>
       </div>
       <div class="modal-body">
-        <input name="action" type="hidden" value="customer_order_form_submit"/>
-        <div class="form-group md-form">
-          <label for="new_gofc_customer">New Email address</label>
-          <input type="email" name="new_gofc_customer" class="form-control" id="new_gofc_customer" aria-describedby="emailHelp" required/>
-          <!-- <small id="emailHelp" class="form-text text-muted">Please enter the email of the customer.</small> -->
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="v-btn v-btn-primary gfc_add_customer" data-input_element="#new_gofc_customer">Add New Customer</button>
+        <form id="gofc-add-customer-form" action="POST">
+          <div class="v-skeleton-block" style="display: none; height: 40px; margin-bottom: 1rem;">
+            <div class="v-line" style="height: 40px; margin: 0;"></div>
+          </div>
+          <div class="form-group md-form">
+            <label for="new-gofc-customer">New Email Address</label>
+            <input type="email" id="new-gofc-customer" name="new_gofc_customer" class="form-control" aria-describedby="emailHelp" required/>
+            <div class="invalid-feedback">Please enter a valid email.</div>
+          </div>
+          <input name="action" type="hidden" value="customer_order_form_submit"/>
+          <button type="submit" class="v-btn v-btn-primary"><i class="fa fa-plus mr-1" aria-hidden="true"></i>Add New Customer</button>
+        </form>
       </div>
     </div>
   </div>
@@ -92,12 +95,12 @@ foreach ($orders as $key => $order) {
 
 <div id="gofc_products_section" style="display: <?php echo (isset($_COOKIE[$this->cookie_name]) ? 'block' : 'none'); ?> ;">
   <div class="alert alert-info" role="alert" id="alert-placing-for-customer">
-    <i class="fa fa-info-circle" aria-hidden="true"></i>
-    You're placing an order for <span id="alert_customer_email"><?php echo isset($_COOKIE[$this->cookie_name]) ? $_COOKIE[$this->cookie_name] : ''; ?></span>. You can use your <?php echo $this->core_settings->affiliate_term; ?> customer coupon, but not your personal <?php echo $this->core_settings->affiliate_term; ?> coupon.
+    <i class="fa fa-info-circle mr-1" aria-hidden="true"></i>
+    You're placing an order for <span id="alert_customer_email"><?php echo isset($_COOKIE[$this->cookie_name]) ? $_COOKIE[$this->cookie_name] : ''; ?></span>. You can use your <?php echo $this->core_settings->affiliate_term; ?> customer coupon: <strong><?php echo $this->primary_affiliate_coupon_code; ?></strong>, but not your personal <?php echo $this->core_settings->affiliate_term; ?> coupon.
   </div>
-  <div class="card gofc-customer-search">
+  <div id="gofc-customer-search" class="card gofc-customer-search">
     <div class="card-body">
-      <div class="row">
+      <div class="row mb-3">
         <div class="col-sm-6">
           <div class="form-group md-form mt-2 mb-0">
             <label for="search_product">Filter by Product Name</label>

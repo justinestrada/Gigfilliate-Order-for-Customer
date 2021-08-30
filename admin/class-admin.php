@@ -33,8 +33,7 @@ class Gigfilliate_Order_For_Customer_Admin
    * @param      string    $plugin_name       The name of this plugin.
    * @param      string    $version    The version of this plugin.
    */
-  public function __construct($plugin_name, $version)
-  {
+  public function __construct($plugin_name, $version) {
     $this->plugin_name = $plugin_name;
     $this->version = $version;
     add_action('admin_menu', [$this, 'admin_menu'], 20);
@@ -43,14 +42,12 @@ class Gigfilliate_Order_For_Customer_Admin
     add_filter("vitalibis_notification_template_tags", [$this, "vitalibis_notification_template_tags"],20,2);
   }
 
-  public function admin_menu()
-  {
+  public function admin_menu() {
     add_submenu_page('vitalibis', 'Order For Customer', 'Order For Customer', 'manage_options', '/admin.php?page=vitalibis&tab=settings&status_view=dashboard');
   }
 
-  public function vitalibis_settings_dashboard_row($settings)
-  {
-?>
+  public function vitalibis_settings_dashboard_row($settings) {
+    ?>
     <tr>
       <th><label for="excluded_product_ids_from_order_for_customer">Excluded Products From Order For Customer</label></th>
       <td>
@@ -58,7 +55,7 @@ class Gigfilliate_Order_For_Customer_Admin
         <p class="description">You can add ids of products here seprated by (,) . If you dont want them to be visible in orders for customer section.</p>
       </td>
     </tr>
-<?php
+    <?php
   }
 
   public function on_save_vitalibis_settings_dashboard_row($settings)
@@ -66,9 +63,7 @@ class Gigfilliate_Order_For_Customer_Admin
     $settings->dashboard->excluded_product_ids_from_order_for_customer = isset($_POST['excluded_product_ids_from_order_for_customer']) ? $_POST['excluded_product_ids_from_order_for_customer'] : '';
   }
 
-  public function vitalibis_notification_template_tags($template_tags, $notification)
-  {
-    
+  public function vitalibis_notification_template_tags($template_tags, $notification) {
     if ($notification->slug == "new-customer-by-bp") {
       $template_tags['{site_name}'] = get_bloginfo('name'); // default value
       $template_tags['{site_url}'] = get_site_url(); // default value
@@ -86,8 +81,7 @@ class Gigfilliate_Order_For_Customer_Admin
    *
    * @since    0.0.1
    */
-  public function enqueue_styles()
-  {
+  public function enqueue_styles() {
     wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/admin.css', array(), $this->version, 'all');
   }
 
@@ -96,8 +90,7 @@ class Gigfilliate_Order_For_Customer_Admin
    *
    * @since    0.0.1
    */
-  public function enqueue_scripts()
-  {
+  public function enqueue_scripts() {
     wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/admin.js', array('jquery'), $this->version, false);
   }
 }

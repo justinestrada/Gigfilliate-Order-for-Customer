@@ -1,49 +1,17 @@
 (function($) {
-  'use strict';
+'use strict';
 
-const Cookie = {
-  read: function(name) {
-    var nameEQ = name + '=';
-    var ca = document.cookie.split(';');
-    for (var i = 0; i < ca.length; i++) {
-      var c = ca[i];
-      while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
-  },
-  create: function(name, value, days) {
-    let expires = '';
-    if (days) {
-      var date = new Date();
-      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-      expires = '; expires=' + date.toGMTString();
-    } else {
-      expires = '';
-    }
-    document.cookie = name + '=' + value + expires + '; path=/';
-  },
-  erase: function(name) {
-    Cookie.create(name, '', -1);
-  },
-};
 const OrderForCustomer = {
   init: function() {
-    if ($('#search_customer').length) {
+    if ($('body.woocommerce-account .woocommerce-MyAccount-content.account.brand-partner-customers').length) {
       this.searchCustomer();
-    }
-    if ($('#search_product').length) {
       this.searchProduct()
-      this.getProducts();
+      this.onGetProducts();
+      this.onAddNewCustomer();
+      this.onExitPlaceOrderForCustomer();
     }
     if ($('#gofc_customer_billing').length) {
       this.setupCustomerBilling()
-    }
-    if ($('.gfc_add_customer').length) {
-      this.addNewCustomer();
-    }
-    if ($('.gofc_exit_place_order_for_customer').length) {
-      this.exitPlaceOrderForCustomer();
     }
     this.giveWarningWhenLeavingTheCheckout();
     this.exitFromOrderForCustomerIfNotOnValidPage();
@@ -57,7 +25,7 @@ const OrderForCustomer = {
         if (new RegExp(to_search.val(), 'i').test(customer.data('customer_name'))) {
           customer.attr('style', '');
         } else {
-          customer.attr('style', 'display:none !important;');
+          customer.attr('style', 'display: none !important;');
         }
       }
     });
@@ -68,47 +36,64 @@ const OrderForCustomer = {
     $('#search_product').on('keyup', function() {
       clearTimeout(timeout);
       timeout = setTimeout(function() {
-        let to_search = $('#search_product').val();
-        self.getProducts(to_search);
-      }, 800)
+        self.onGetProducts();
+      }, 750)
     });
   },
-  getProducts: function(to_search = '') {
-    var data = {
-      action: 'gofc_search_product',
-      search: to_search
-    };
+  onGetProducts: function() {
     let $products_list = $('.gofc-products-list');
     $products_list.html('<div class="loading-spinner"><div class="loading-animation"><div></div></div></div>'); // TODO: Use skeleton loaders
-    $.get(my_gofc_object.ajax_url, data, function(response) {
-      $products_list.html('');
-      if (response == 0) {
+    this.getProducts().then( function(res) {
+      $products_list.html('')
+      if (!res || res === 0) {
         alert('Network Error. Try Again.')
-        return;
+        return
       }
-      response = JSON.parse(response);
-      response.forEach( element => {
+      res = JSON.parse(res);
+      res.forEach( element => {
         let new_product = '<div class="gofc-products-list-item">\
             <div class="v-row">\
-              <div class="v-col-4">\
-                <img class="gofc-products-list-item-thumbnail" src="' + element["thumbnail_url"] + '" alt="' + element["name"] + '"/>\
+              <div class="v-col-md-3 v-col-lg-2">\
+                <div class="gofc-products-list-item_thumbnail-wrap">\
+                  <img class="gofc-products-list-item_thumbnail" src="' + element['thumbnail_url'] + '" alt="' + element['name'] + '"/>\
+                </div>\
               </div>\
-              <div class="v-col-4">\
+              <div class="v-col-md-5 v-col-lg-6 d-flex align-items-center">\
                 <span class="gofc-products-list-item-name">\
                   ' + element["name"] + '\
-                  <span class="gofc-products-list-item-price">$' + element["price"] + '</span>\
+                  <span class="gofc-products-list-item-price">$' + element['price'] + '</span>\
                 </span>\
               </div>\
               <div class="v-col-4 d-flex align-items-center justify-content-sm-end">\
-                <a href="' + (element['is_in_stock'] ? element["add_to_cart_url"] : 'javascript:void(0)') + '" value="' + element["id"] + '" data-product_id="' + element['id'] + '" data-product_sku="' + element['sku'] + '" aria-label="Add ' + element["name"] + ' to your cart"class="' + (element['is_in_stock'] ? 'ajax_add_to_cart add_to_cart_button' : '') + ' v-btn v-btn-outline-primary gofc-products-list-item-add-to-cart-btn" ' + (element['is_in_stock'] ? '' : 'disabled') + '>\
+                <a href="' + (element['is_in_stock'] ? element['add_to_cart_url'] : 'javascript:void(0)') + '" value="' + element['id'] + '" data-product_id="' + element['id'] + '" data-product_sku="' + element['sku'] + '" aria-label="Add ' + element["name"] + ' to your cart"class="' + (element['is_in_stock'] ? 'ajax_add_to_cart add_to_cart_button' : '') + ' v-btn v-btn-primary gofc-products-list-item-add-to-cart-btn" ' + (element['is_in_stock'] ? '' : 'disabled') + '>\
                   ' + (element['is_in_stock'] ? '<span class="added_to_cart_label">Added to Cart</span><span class="adding_to_cart_label">Adding to Cart</span><span class="add_to_cart_label">Add to Cart</span>' : 'Out Of Stock') + '\
                 </a>\
               </div>\
             </div>\
-          </div>';
-        $products_list.append(new_product);
-      });
-    });
+          </div>'
+        $products_list.append(new_product)
+      })
+    }).catch(function(err) {
+      console.error(err)
+    })
+  },
+  getProducts: function() {
+    return new Promise( (resolve, reject) => {
+      $.ajax({
+        url: GOFC.ajax_url,
+        data: {
+          action: 'gofc_search_product',
+          search: $('#search_product').val()
+        },
+        type: 'POST',
+        config: { headers: {'Content-Type': 'multipart/form-data' }},
+      }).done(function(res) {
+        // const json_res = JSON.parse(res)
+        resolve(res)
+      }).fail(function(err) {
+        reject(err)
+      })
+    })
   },
   setupCustomerBilling: function() {
     const $gofc_customer_billing = $('#gofc_customer_billing');
@@ -157,42 +142,95 @@ const OrderForCustomer = {
       $billing_phone.val($gofc_customer_billing.data('phone'));
     }
   },
-  addNewCustomer: function() {
-    let self = this;
-    $('.gfc_add_customer').on('click', function(e) {
-      e.preventDefault();
-      e = $(this);
+  onAddNewCustomer: function() {
+    const self = this
+    $('#addNewCustomerModal').on('shown.bs.modal', function (e) {
+      setTimeout(function() {  
+        $('#new-gofc-customer').focus()
+      }, 500)
+    })
+    $('label[for="new-gofc-customer"]').on('click', function() {
+      $(this).addClass('active')
+      $('#new-gofc-customer').focus()
+    })
+    $('#gofc-add-customer-form').on('submit', function(e) {
+      e.preventDefault()
+      const $input = $('#new-gofc-customer')
       let email = null;
-      if (e.data('input_element')) {
-        email = $(e.data('input_element')).val();
-        if (email.trim() == '') {
-          alert('Email is required.');
-        } else if(!self.validateEmail(email.trim())) {
-          alert('Please enter a valid email.');
-        } else {
-          $('#addNewCustomerModal').modal('hide');
-        }
+      email = $input.val()
+      let is_invalid = false
+      let invalid_feedback = ''
+      if (email.trim() === '') {
+        is_invalid = true
+        invalid_feedback = 'An email address is required.'
+      } else if (!Utilities.isEmailValid(email.trim())) {
+        is_invalid = true
+        invalid_feedback = 'Please enter a valid email.'
       }
-      if (e.data('customer_email')) {
-        email = e.data('customer_email');
+      if (is_invalid) {
+        $input.parent().addClass('is-invalid')    
+        $input.next().text(invalid_feedback).show()      
+        $input.focus()
+        return
+      } else {
+        $('#gofc-add-customer-form').find('[type="submit"]').prop('disabled', true)
+        $('#gofc-add-customer-form').find('.v-skeleton-block').show()
+        $('#gofc-add-customer-form').find('.form-group').hide()
+        self.checkEmailExist(email).then( function(res) {
+          res = JSON.parse(res)
+          if (res.exists) {
+            is_invalid = true
+            $input.parent().addClass('is-invalid')    
+            $input.next().text('This customer email already exists.').show()      
+            $input.focus()
+          } else {
+            // else email doesnt exist can create new customer
+            $('#addNewCustomerModal').modal('hide')
+            // can create new customer enter 'Place Order for Customer' mode
+            self.startPlaceOrderForCustomer(email)
+          }
+          $('#gofc-add-customer-form').find('[type="submit"]').prop('disabled', false).removeAttr('disabled')
+          $('#gofc-add-customer-form').find('.v-skeleton-block').hide()
+          $('#gofc-add-customer-form').find('.form-group').show()
+        }).catch(function(err) {
+          console.error(err)
+        })
       }
-      if (!email || !self.validateEmail(email.trim())) {
-        return;
-      }
-      Cookie.create(my_gofc_object.cookie_name, email, 1);
-      $('#gofc_customer_section').slideUp();
-      $('#gofc_products_section').slideDown();
-      $('#alert-placing-for-customer #alert_customer_email').html(email);
     });
   },
-  validateEmail: function(email){
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
+  onBtnClickPlaceOrder: function() {
+    $('.gofc-btn-place-order').on('click', function() {
+      const email = $(this).attr('customer-email')
+      self.startPlaceOrderForCustomer(email)
+    })
   },
-  exitPlaceOrderForCustomer: function() {
+  checkEmailExist: function(email) {
+    return new Promise( (resolve, reject) => {
+      $.ajax({
+        url: GOFC.ajax_url,
+        data: {
+          action: 'gofc_check_email_exists',
+          email: email
+        },
+        type: 'POST',
+        config: { headers: {'Content-Type': 'multipart/form-data' }},
+      }).done(function(res) {
+        resolve(res)
+      }).fail(function(err) {
+        reject(err)
+      })
+    })
+  },
+  startPlaceOrderForCustomer: function( email ) {
+    Cookie.create(GOFC.cookie_name, email, 1)
+    $('#gofc_customer_section').slideUp()
+    $('#gofc_products_section').slideDown()
+    $('#alert-placing-for-customer #alert_customer_email').html(email)
+  },
+  onExitPlaceOrderForCustomer: function() {
     $('.gofc_exit_place_order_for_customer').on('click', function(e) {
-      Cookie.erase(my_gofc_object.cookie_name);
-      $.get(my_gofc_object.ajax_url, {
+      Cookie.erase(GOFC.cookie_name);
+      $.get(GOFC.ajax_url, {
         action: 'gofc_reset_cart'
       });
       $('#gofc_customer_section').slideDown();
@@ -202,24 +240,70 @@ const OrderForCustomer = {
     });
   },
   exitFromOrderForCustomerIfNotOnValidPage: function() {
-    let valid_pages = ['/my-account/brand-partner-customers/', '/checkout/', '/cart/'];
-    if (!valid_pages.includes(window.location.pathname) && Cookie.read(my_gofc_object.cookie_name) != null) {
-      $.get(my_gofc_object.ajax_url, {
+    if (!this.isCurrentURLValid() && Cookie.read(GOFC.cookie_name) !== null) {
+      $.get(GOFC.ajax_url, {
         action: 'gofc_reset_cart'
       });
-      Cookie.erase(my_gofc_object.cookie_name);
-      $('.GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE').toast('show');
+      Cookie.erase(GOFC.cookie_name);
+      $('.GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE').toast('show')
     }
   },
+  isCurrentURLValid: function() {
+    const location_href = window.location.href
+    // TODO: Checkout /{affiliate-term}-customers
+    const valid_pages = ['/account/brand-partner-customers/', '/my-account/brand-partner-customers/', '/checkout/', '/cart/'];
+    let is_valid = false
+    valid_pages.forEach(function(valid_page) {
+      if (location_href.includes(valid_page)) {
+        is_valid = true
+      }
+    })
+    return is_valid
+  },
   giveWarningWhenLeavingTheCheckout: function() {
-    if (window.location.pathname == '/checkout/' && Cookie.read(my_gofc_object.cookie_name)) {
+    if (window.location.pathname == '/checkout/' && Cookie.read(GOFC.cookie_name)) {
       window.onbeforeunload = function() {
-        return 'You have attempted to leave this page. And if you leave it you will be exites from place order for customer mode. Are you sure you want to exit this page?';
-      };
+        return "You are attempting to leave this page. When you leave you exit 'Place Order for Customer' mode. Are you sure you want to exit this page?"
+      }
     }
   }
 }
-$(window).load(function() {
-  OrderForCustomer.init();
-});
+
+const Cookie = {
+  read: function(name) {
+    var nameEQ = name + '=';
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  },
+  create: function(name, value, days) {
+    let expires = '';
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = '; expires=' + date.toGMTString();
+    } else {
+      expires = '';
+    }
+    document.cookie = name + '=' + value + expires + '; path=/';
+  },
+  erase: function(name) {
+    Cookie.create(name, '', -1);
+  },
+}
+
+const Utilities = {
+  isEmailValid: function(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    return re.test(String(email).toLowerCase())
+  },  
+}
+
+$(document).ready(function() {
+  OrderForCustomer.init()
+})
 })(jQuery);
