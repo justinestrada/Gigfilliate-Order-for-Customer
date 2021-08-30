@@ -4,39 +4,40 @@
 const OrderForCustomer = {
   init: function() {
     if ($('body.woocommerce-account .woocommerce-MyAccount-content.account.brand-partner-customers').length) {
-      this.searchCustomer();
-      this.searchProduct()
-      this.onGetProducts();
-      this.onAddNewCustomer();
-      this.onExitPlaceOrderForCustomer();
+      this.onSearchCustomers()
+      this.onSearchProducts()
+      this.onGetProducts()
+      this.onAddNewCustomer()
+      this.onBtnClickPlaceOrder()
+      this.onExitPlaceOrderForCustomer()
     }
     if ($('#gofc_customer_billing').length) {
       this.setupCustomerBilling()
     }
-    this.giveWarningWhenLeavingTheCheckout();
-    this.exitFromOrderForCustomerIfNotOnValidPage();
+    this.giveWarningWhenLeavingTheCheckout()
+    this.exitFromOrderForCustomerIfNotOnValidPage()
   },
-  searchCustomer: function() {
+  onSearchCustomers: function() {
     $('#search_customer').on('keyup', function() {
-      let to_search = $(this);
-      let customers = $('.gofc-customers-list-item');
+      let to_search = $(this)
+      let customers = $('.gofc-customers-list-item')
       for (let i = 0; i < customers.length; i++) {
-        const customer = $(customers[i]);
+        const customer = $(customers[i])
         if (new RegExp(to_search.val(), 'i').test(customer.data('customer_name'))) {
-          customer.attr('style', '');
+          customer.attr('style', '')
         } else {
-          customer.attr('style', 'display: none !important;');
+          customer.attr('style', 'display: none !important;')
         }
       }
-    });
+    })
   },
-  searchProduct: function() {
-    let timeout = null;
-    let self = this;
+  onSearchProducts: function() {
+    let timeout = null
+    const self = this
     $('#search_product').on('keyup', function() {
-      clearTimeout(timeout);
+      clearTimeout(timeout)
       timeout = setTimeout(function() {
-        self.onGetProducts();
+        self.onGetProducts()
       }, 750)
     });
   },
@@ -96,50 +97,50 @@ const OrderForCustomer = {
     })
   },
   setupCustomerBilling: function() {
-    const $gofc_customer_billing = $('#gofc_customer_billing');
-    const $billing_email = $('[name="billing_email"]');
-    const $first_name = $('[name="first_name"]');
-    const $last_name = $('[name="last_name"]');
-    const $billing_address_1 = $('[name="billing_address_1"]');
-    const $billing_address_2 = $('[name="billing_address_2"]');
-    const $billing_company = $('[name="billing_company"]');
-    const $billing_country = $('[name="billing_country"]');
-    const $billing_postcode = $('[name="billing_postcode"]');
-    const $billing_state = $('[name="billing_state"]');
-    const $billing_city = $('[name="billing_city"]');
-    const $billing_phone = $('[name="billing_phone"]');
+    const $gofc_customer_billing = $('#gofc_customer_billing')
+    const $billing_email = $('[name="billing_email"]')
+    const $first_name = $('[name="first_name"]')
+    const $last_name = $('[name="last_name"]')
+    const $billing_address_1 = $('[name="billing_address_1"]')
+    const $billing_address_2 = $('[name="billing_address_2"]')
+    const $billing_company = $('[name="billing_company"]')
+    const $billing_country = $('[name="billing_country"]')
+    const $billing_postcode = $('[name="billing_postcode"]')
+    const $billing_state = $('[name="billing_state"]')
+    const $billing_city = $('[name="billing_city"]')
+    const $billing_phone = $('[name="billing_phone"]')
     if ($billing_email.length) {
-      $billing_email.val($gofc_customer_billing.data('email'));
+      $billing_email.val($gofc_customer_billing.data('email'))
     }
     if ($first_name.length) {
-      $first_name.val($gofc_customer_billing.data('firstname'));
+      $first_name.val($gofc_customer_billing.data('firstname'))
     }
     if ($last_name.length) {
-      $last_name.val($gofc_customer_billing.data('lastname'));
+      $last_name.val($gofc_customer_billing.data('lastname'))
     }
     if ($billing_address_1.length) {
-      $billing_address_1.val($gofc_customer_billing.data('address1'));
+      $billing_address_1.val($gofc_customer_billing.data('address1'))
     }
     if ($billing_address_2.length) {
-      $billing_address_2.val($gofc_customer_billing.data('address2'));
+      $billing_address_2.val($gofc_customer_billing.data('address2'))
     }
     if ($billing_company.length) {
-      $billing_company.val($gofc_customer_billing.data('company'));
+      $billing_company.val($gofc_customer_billing.data('company'))
     }
     if ($billing_country.length) {
-      $billing_country.val($gofc_customer_billing.data('country')).change();
+      $billing_country.val($gofc_customer_billing.data('country')).change()
     }
     if ($billing_postcode.length) {
-      $billing_postcode.val($gofc_customer_billing.data('postcode'));
+      $billing_postcode.val($gofc_customer_billing.data('postcode'))
     }
     if ($billing_state.length) {
-      $billing_state.val($gofc_customer_billing.data('state')).change();
+      $billing_state.val($gofc_customer_billing.data('state')).change()
     }
     if ($billing_city.length) {
-      $billing_city.val($gofc_customer_billing.data('city'));
+      $billing_city.val($gofc_customer_billing.data('city'))
     }
     if ($billing_phone.length) {
-      $billing_phone.val($gofc_customer_billing.data('phone'));
+      $billing_phone.val($gofc_customer_billing.data('phone'))
     }
   },
   onAddNewCustomer: function() {
@@ -201,7 +202,7 @@ const OrderForCustomer = {
   onBtnClickPlaceOrder: function() {
     $('.gofc-btn-place-order').on('click', function() {
       const email = $(this).attr('customer-email')
-      self.startPlaceOrderForCustomer(email)
+      OrderForCustomer.startPlaceOrderForCustomer(email)
     })
   },
   checkEmailExist: function(email) {

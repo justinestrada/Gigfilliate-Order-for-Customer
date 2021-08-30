@@ -1,24 +1,4 @@
-<?php
-$orders = wc_get_orders([
-  'orderby'   => 'date',
-  'order'     => 'DESC',
-  'meta_query' => [
-    [
-      'key' => 'v_order_affiliate_id',
-      'value' => (int)get_user_meta($this->current_user_id, 'v_affiliate_id', true),
-    ]
-  ]
-]);
-$customers = [];
-foreach ($orders as $key => $order) {
-  if ($order->get_user() != null) {
-    $customers[$order->get_user()->ID] = [
-      'user' => $order->get_user(),
-      'last_order'  => $order
-    ];
-  }
-}
-?>
+
 <section id="gofc_customer_section" style="display: <?php echo (!isset($_COOKIE[$this->cookie_name]) ? 'block' : 'none'); ?>;">
   <div id="gofc-customer-search" class="v-card gofc-customer-search">
     <div class="v-card-body">
@@ -37,30 +17,29 @@ foreach ($orders as $key => $order) {
       </div>
       <div class="gofc-customers-list">
         <?php
-        foreach ($customers as $key => $customer) {
-          if (!$customer['user']) {
-            break;
-          }
-          ?>
-          <div class="gofc-customers-list_item" data-customer_name="<?php echo $customer['user']->display_name; ?>">
-            <div class=" v-row">
-              <div class="gofc-customers-list-item-name v-col-lg-4">
-                <strong style="text-transform: capitalize;"><?php echo $customer['user']->display_name; ?></strong>
-                <br>
-                <span><?php echo $customer['user']->user_email; ?></span>
-              </div>
-              <div class="gofc-customers-list-item-last-order-date v-col-lg-4">
-                Last Order Date
-                <div><?php echo $customer['last_order']->get_date_created()->date('F j, Y, g:i:a'); ?></div>
-              </div>
-              <div class="gofc-customers-list-item-form v-col-lg-4 gofc-text-lg-right d-flex justify-content-end align-items-center">
-                <button type="button" class="gofc-btn-place-order v-btn v-btn-primary gofc-customers-list-item-place-order-btn" customer-email="<?php echo $customer['user']->user_email; ?>">Place Order</button>
+        if (!empty($this->my_customers)) {
+          foreach ($this->my_customers as $key => $customer) { ?>
+            <div class="gofc-customers-list_item" data-customer_name="<?php echo $customer['user']->display_name; ?>">
+              <div class=" v-row">
+                <div class="gofc-customers-list-item-name v-col-lg-4">
+                  <strong style="text-transform: capitalize;"><?php echo $customer['user']->display_name; ?></strong>
+                  <br>
+                  <span><?php echo $customer['user']->user_email; ?></span>
+                </div>
+                <div class="gofc-customers-list-item-last-order-date v-col-lg-4">
+                  Last Order Date
+                  <div><?php echo $customer['last_order']->get_date_created()->date('F j, Y, g:i:a'); ?></div>
+                </div>
+                <div class="gofc-customers-list-item-form v-col-lg-4 gofc-text-lg-right d-flex justify-content-end align-items-center">
+                  <button type="button" class="gofc-btn-place-order v-btn v-btn-primary gofc-customers-list-item-place-order-btn" customer-email="<?php echo $customer['user']->user_email; ?>">Place Order</button>
+                </div>
               </div>
             </div>
-          </div>
-        <?php
-        }
-        ?>
+          <?php
+          }
+        } else { ?>
+          <p>You do not have any <?php $this->core_settings->affiliate_term; ?> referred customers, yet.</p>
+        <?php } ?>
       </div>
     </div>
   </div>
@@ -80,7 +59,7 @@ foreach ($orders as $key => $order) {
           <div class="v-skeleton-block" style="display: none; height: 40px; margin-bottom: 1rem;">
             <div class="v-line" style="height: 40px; margin: 0;"></div>
           </div>
-          <div class="form-group md-form">
+          <div class="form-group md-form mt-2">
             <label for="new-gofc-customer">New Email Address</label>
             <input type="email" id="new-gofc-customer" name="new_gofc_customer" class="form-control" aria-describedby="emailHelp" required/>
             <div class="invalid-feedback">Please enter a valid email.</div>

@@ -29,6 +29,7 @@ class Gigfilliate_Order_For_Customer_Public
   public $is_user_logged_in;
   public $current_user_id;
   public $primary_affiliate_coupon_code;
+  public $my_customers;
 
   /**
    * Initialize the class and set its properties.
@@ -122,13 +123,54 @@ class Gigfilliate_Order_For_Customer_Public
         <?php
       } else {
         $this->current_user_id = get_current_user_id();
+        $this->current_user = wp_get_current_user();
         $this->primary_affiliate_coupon_code = get_user_meta($this->current_user_id, 'primary_affiliate_coupon_code', true);
+        $this->my_customers = $this->get_my_customers();
         require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/gigfilliate-order-for-customer-page.php';
       }
       echo ob_get_clean();
       ?>
     </div>
     <?php
+  }
+
+  public function get_my_customers() {
+    $orders = wc_get_orders([
+      'orderby'   => 'date',
+      'order'     => 'DESC',
+      'meta_query' => [
+        [
+          'key' => 'v_order_affiliate_id',
+          'value' => (int)get_user_meta($this->current_user_id, 'v_affiliate_id', true),
+        ]
+      ]
+    ]);
+    $customers = [];
+    if (empty($orders)) {
+      return $customers;
+    }
+    foreach ($orders as $key => $order) {
+      $order_user = $order->get_user();
+      if ($order_user !== null) {
+        // TODO: I think we want to show customers even if they don't have a user record ... thinking
+        if (!$order_user) {
+          continue;
+        }
+        // Skip if customer is current user
+        if ($this->current_user->user_email === $order_user->user_email) {
+          continue;
+        }
+        // Skip if past customer is now an active affiliate
+        if (vitalibis_is_active_affiliate((int)$order_user->ID)) {
+          continue;
+        }
+        $customers[$order_user->ID] = [
+          'user' => $order_user,
+          'last_order'  => $order
+        ];
+      }
+    }
+    return $customers;
   }
 
   public function ajax_check_email_exists( ) {
