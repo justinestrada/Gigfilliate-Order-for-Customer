@@ -52,7 +52,6 @@
           <p>You do not have any <?php $this->core_settings->affiliate_term; ?> referred customers, yet.</p>
         <?php } ?>
       </div>
-      </div>
       <div id="gofc-no-results-found" style="display: none;">
         <p>No customers found.</p>
       </div>

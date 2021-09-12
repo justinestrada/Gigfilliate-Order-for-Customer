@@ -40,7 +40,7 @@ const OrderForCustomer = {
           let new_customers = ''
           Object.keys(customers_obj).forEach( key => {
             const customer = customers_obj[key]
-            new_customers += '<div class="gofc-customers-list_item">\
+            new_customers += '<div class="gofc-customers-list_item" customer_email="' + customer.email + '" customer_display-name="' + ((customer.user) ? customer.user.data.display_name : '') + '">\
               <div class="v-row">\
                 <div class="gofc-customers-list-item-name v-col-lg-4">\
                   <strong style="text-transform: capitalize;">';
