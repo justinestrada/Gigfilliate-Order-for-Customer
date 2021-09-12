@@ -57,6 +57,8 @@ class Gigfilliate_Order_For_Customer {
 	 */
 	protected $version;
 
+	public $helpers;
+
 	/**
 	 * Define the core functionality of the plugin.
 	 *
@@ -112,6 +114,11 @@ class Gigfilliate_Order_For_Customer {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-gigfilliate-order-for-customer-i18n.php';
 
 		/**
+		 * Helpers
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-gigfilliate-order-for-customer-helpers.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-admin.php';
@@ -123,6 +130,7 @@ class Gigfilliate_Order_For_Customer {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-public.php';
 
 		$this->loader = new Gigfilliate_Order_For_Customer_Loader();
+		$this->helpers = new Gigfilliate_Order_For_Customer_Helpers();
 
 	}
 
@@ -152,9 +160,9 @@ class Gigfilliate_Order_For_Customer {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Gigfilliate_Order_For_Customer_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new Gigfilliate_Order_For_Customer_Admin( $this->get_plugin_name(), $this->get_version(), $this->helpers );
 
-		// $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		// $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
 	}
@@ -168,7 +176,7 @@ class Gigfilliate_Order_For_Customer {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Gigfilliate_Order_For_Customer_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new Gigfilliate_Order_For_Customer_Public( $this->get_plugin_name(), $this->get_version(), $this->helpers );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
@@ -214,5 +222,4 @@ class Gigfilliate_Order_For_Customer {
 	public function get_version() {
 		return $this->version;
 	}
-
 }

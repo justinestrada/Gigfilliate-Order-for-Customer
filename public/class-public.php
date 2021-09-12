@@ -25,7 +25,8 @@ class Gigfilliate_Order_For_Customer_Public
 
   private $plugin_name;
   private $version;
-  public $cookie_name = 'GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER';
+  public $helpers;
+  public $cookie_name;
   public $is_user_logged_in;
   public $current_user_id;
   public $primary_affiliate_coupon_code;
@@ -38,15 +39,17 @@ class Gigfilliate_Order_For_Customer_Public
    * @param      string    $plugin_name       The name of the plugin.
    * @param      string    $version    The version of this plugin.
    */
-  public function __construct($plugin_name, $version)
+  public function __construct($plugin_name, $version, $helpers)
   {
     $this->plugin_name = $plugin_name;
     $this->version = $version;
+    $this->helpers = $helpers;
+    $this->cookie_name = 'GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER';
     $this->core_settings = json_decode(get_option('vitalibis_settings'));
     $this->new_account_page();
     add_action('wp_ajax_gofc_check_email_exists', [$this, 'ajax_check_email_exists']);
-    add_action('wp_ajax_gofc_get_products', [$this, 'gofc_get_products']);
-    add_action('wp_ajax_gofc_reset_cart', [$this, 'gofc_reset_cart']);
+    add_action('wp_ajax_gofc_get_products', [$this, 'ajax_get_products']);
+    add_action('wp_ajax_gofc_reset_cart', [$this, 'ajax_reset_cart']);
     add_action('woocommerce_before_cart_contents', [$this, 'customer_notice']);
     add_action('cfw_after_customer_info_tab_login', [$this, 'customer_notice'], 10, 3);
     add_action('cfw_checkout_after_login', [$this, 'customer_notice'], 10, 3);
@@ -125,8 +128,8 @@ class Gigfilliate_Order_For_Customer_Public
         $this->current_user_id = get_current_user_id();
         $this->current_user = wp_get_current_user();
         $this->primary_affiliate_coupon_code = get_user_meta($this->current_user_id, 'primary_affiliate_coupon_code', true);
-        $this->my_customers = $this->get_my_customers();
-        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/gigfilliate-order-for-customer-page.php';
+        $this->my_customers = $this->helpers->get_customers($this->current_user_id, $this->current_user);
+        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/customers.php';
       }
       echo ob_get_clean();
       ?>
@@ -134,6 +137,8 @@ class Gigfilliate_Order_For_Customer_Public
     <?php
   }
 
+  /*
+   * Moved to /includes/class-gigfilliate-order-for-customer-helpers.php
   public function get_my_customers() {
     $orders = wc_get_orders([
       'orderby'   => 'date',
@@ -172,6 +177,7 @@ class Gigfilliate_Order_For_Customer_Public
     }
     return $customers;
   }
+  */
 
   public function ajax_check_email_exists( ) {
     $res = array( 'success' => false );
@@ -208,13 +214,13 @@ class Gigfilliate_Order_For_Customer_Public
     WC()->cart->apply_coupon($coupon_code);
   }
 
-  public function gofc_reset_cart() {
+  public function ajax_reset_cart() {
     WC()->cart->remove_coupons();
     WC()->cart->empty_cart();
     wp_die(true);
   }
 
-  public function gofc_get_products() {
+  public function ajax_get_products() {
     $res = ['success' => false, 'products' => []];
     if (!isset($_POST['action']) || $_POST['action'] !== 'gofc_get_products') {
       exit(json_encode($res));

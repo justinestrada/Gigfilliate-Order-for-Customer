@@ -25,6 +25,8 @@ class Gigfilliate_Order_For_Customer_Admin
 
   private $plugin_name;
   private $version;
+  private $helpers;
+  public $site_url;
 
   /**
    * Initialize the class and set its properties.
@@ -33,13 +35,17 @@ class Gigfilliate_Order_For_Customer_Admin
    * @param      string    $plugin_name       The name of this plugin.
    * @param      string    $version    The version of this plugin.
    */
-  public function __construct($plugin_name, $version) {
+  public function __construct($plugin_name, $version, $helpers) {
     $this->plugin_name = $plugin_name;
     $this->version = $version;
+    $this->helpers = $helpers;
+    $this->site_url = get_site_url();
     add_action('admin_menu', [$this, 'admin_menu'], 20);
     add_action('vitalibis_settings_dashboard_row', [$this, 'vitalibis_settings_dashboard_row'], 10, 2);
-    add_action("on_save_vitalibis_settings_dashboard_row", [$this, "on_save_vitalibis_settings_dashboard_row"], 10, 2);
-    add_filter("vitalibis_notification_template_tags", [$this, "vitalibis_notification_template_tags"],20,2);
+    add_action('on_save_vitalibis_settings_dashboard_row', [$this, 'on_save_vitalibis_settings_dashboard_row'], 10, 2);
+    add_filter('vitalibis_notification_template_tags', [$this, 'vitalibis_notification_template_tags'], 20, 2);
+    add_action('gigfilliate_edit_affiliate_tabs', [$this, 'edit_affiliate_tabs'], 10, 2);
+    add_action('gigfilliate_edit_affiliate_tab_content', [$this, 'edit_affiliate_tab_content'], 10, 2);
   }
 
   public function admin_menu() {
@@ -58,8 +64,7 @@ class Gigfilliate_Order_For_Customer_Admin
     <?php
   }
 
-  public function on_save_vitalibis_settings_dashboard_row($settings)
-  {
+  public function on_save_vitalibis_settings_dashboard_row($settings) {
     $settings->dashboard->excluded_product_ids_from_order_for_customer = isset($_POST['excluded_product_ids_from_order_for_customer']) ? $_POST['excluded_product_ids_from_order_for_customer'] : '';
   }
 
@@ -92,5 +97,30 @@ class Gigfilliate_Order_For_Customer_Admin
    */
   public function enqueue_scripts() {
     wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/admin.js', array('jquery'), $this->version, false);
+  }
+
+  public function edit_affiliate_tabs() {
+    $affiliate_tab = isset($_GET['affiliate_tab']) ? $_GET['affiliate_tab']: 'details'; ?>
+    <a href="<?php echo $this->site_url; ?>/wp-admin/admin.php?page=vitalibis&tab=affiliates&affiliate_id=<?php echo $_GET['affiliate_id']; ?>&action=edit&affiliate_tab=customers" class="nav-tab <?php echo ($affiliate_tab === 'customers') ? 'nav-tab-active' : ''; ?>">Customers</a>
+    <?php
+  }
+
+  public function edit_affiliate_tab_content() {
+    $affiliate_id = (int)$_GET['affiliate_id'];
+    $affiliate_user_id = vitalibis_get_user_id_by_affiliate_id( $affiliate_id );
+    $affiliate_tab = isset($_GET['affiliate_tab']) ? $_GET['affiliate_tab']: 'details';
+    if ($affiliate_tab === 'customers') { ?>
+      <div id="postbox-container-2" class="postbox-container">
+        <div id="normal-sortables" class="meta-box-sortables ui-sortable">
+          <div class="postbox">
+            <div class="inside" style="overflow: auto;">
+              <?php
+              require_once( plugin_dir_path( __FILE__ ) . 'partials/edit/customers.php' ); ?> 
+            </div> 
+          </div>
+        </div>   
+      </div>
+      <?php
+    }
   }
 }
