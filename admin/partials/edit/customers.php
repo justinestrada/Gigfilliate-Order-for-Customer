@@ -22,7 +22,7 @@ $customers_data = $this->helpers->get_customers($affiliate_user_id);
           <div class="v-row">
             <div class="gofc-customers-list-item-name v-col-lg-6">
               <strong style="text-transform: capitalize;">
-                <?php echo isset($customer['user']) ? $customer['user']->display_name : $customer['email']; ?>
+                <?php echo $customer['full_name']; ?>
               </strong>
               <br>
               <span><?php echo $customer['email']; ?></span>
