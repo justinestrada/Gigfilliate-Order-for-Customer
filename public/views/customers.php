@@ -41,10 +41,10 @@
                 Orders Count
               </div>
               <div class="v-col-lg-2 gwp-text-center">
-                Average Order Value<!--(AOV)-->
+                Total Spend
               </div>
               <div class="v-col-lg-2 gwp-text-center">
-                Total Spend
+                Average Order Value<!--(AOV)-->
               </div>
               <!-- <div class="v-col-lg-2">
                 Sort
