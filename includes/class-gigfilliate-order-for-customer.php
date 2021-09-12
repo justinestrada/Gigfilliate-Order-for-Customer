@@ -163,7 +163,7 @@ class Gigfilliate_Order_For_Customer {
 		$plugin_admin = new Gigfilliate_Order_For_Customer_Admin( $this->get_plugin_name(), $this->get_version(), $this->helpers );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		// $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
 	}
 

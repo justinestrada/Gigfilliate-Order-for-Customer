@@ -46,6 +46,7 @@ class Gigfilliate_Order_For_Customer_Admin
     add_filter('vitalibis_notification_template_tags', [$this, 'vitalibis_notification_template_tags'], 20, 2);
     add_action('gigfilliate_edit_affiliate_tabs', [$this, 'edit_affiliate_tabs'], 10, 2);
     add_action('gigfilliate_edit_affiliate_tab_content', [$this, 'edit_affiliate_tab_content'], 10, 2);
+    add_action('wp_ajax_gofc_get_customers', [$this, 'ajax_get_customers']);
   }
 
   public function admin_menu() {
@@ -118,9 +119,27 @@ class Gigfilliate_Order_For_Customer_Admin
               require_once( plugin_dir_path( __FILE__ ) . 'partials/edit/customers.php' ); ?> 
             </div> 
           </div>
-        </div>   
+        </div>
       </div>
       <?php
     }
+  }
+
+  public function ajax_get_customers() {
+    $res = array( 'success' => false );
+    if (!isset($_POST['action']) || $_POST['action'] !== 'gofc_get_customers') {
+      exit(json_encode($res));
+    }
+    if (!isset($_POST['affiliate_user_id'])) {
+      $res['msg'] = 'Affiliate ID is required.';
+      exit(json_encode($res));
+    }
+    $affiliate_user_id = $_POST['affiliate_user_id'];
+    $offset = (isset($_POST['offset'])) ? $_POST['offset'] : false;
+    $limit = (isset($_POST['limit'])) ? $_POST['limit'] : 10;
+    $res['customers_data'] = $this->helpers->get_customers( $affiliate_user_id, false, $limit, $offset );
+    // $res['success'] = !empty($res['customers_data']['customers']) ? true : false;
+    $res['success'] = true;
+    exit(json_encode($res));
   }
 }

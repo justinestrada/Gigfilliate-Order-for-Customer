@@ -3,7 +3,7 @@
 
 const OrderForCustomer = {
   init: function() {
-    if ($('body.woocommerce-account .woocommerce-MyAccount-content.account.brand-partner-customers').length) {
+    if ($('.woocommerce-MyAccount-content.account.brand-partner-customers').length) {
       this.onSearchCustomers()
       this.onSearchProducts()
       this.onGetProducts()

@@ -18,7 +18,7 @@
       <div class="gofc-customers-list">
         <?php
         if (!empty($this->my_customers)) {
-          foreach ($this->my_customers as $key => $customer) { ?>
+          foreach ($this->my_customers['customers'] as $key => $customer) { ?>
             <div class="gofc-customers-list_item" customer_email="<?php echo $customer['email']; ?>" customer_display-name="<?php echo (isset($customer['user'])) ? $customer['user']->display_name : ''; ?>">
               <div class=" v-row">
                 <div class="gofc-customers-list-item-name v-col-lg-4">
@@ -37,9 +37,11 @@
                 </div>
               </div>
             </div>
-          <?php
-          }
-        } else { ?>
+          <?php } ?>
+          <div>
+            <button type="button" class="v-btn v-btn-primary" onclick="alert('todo')" offset="<?php echo $this->my_customers['orders_found']; ?>">Load More Customers</button>
+          </div>
+        <?php } else { ?>
           <p>You do not have any <?php $this->core_settings->affiliate_term; ?> referred customers, yet.</p>
         <?php } ?>
       </div>
