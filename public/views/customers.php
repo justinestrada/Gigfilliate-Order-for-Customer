@@ -46,7 +46,7 @@
             <?php } ?>
           </div>
           <div>
-            <button type="button" id="load-more-customers" class="v-btn v-btn-primary" onclick="alert('todo')" offset="<?php echo $this->my_customers['orders_found']; ?>" affiliate-user-id="<?php echo $this->current_user_id; ?>">Load More Customers</button>
+            <button type="button" id="load-more-customers" class="v-btn v-btn-primary" offset="<?php echo $this->my_customers['orders_found']; ?>" affiliate-user-id="<?php echo $this->current_user_id; ?>">Load More Customers</button>
           </div>
         <?php } else { ?>
           <p>You do not have any <?php $this->core_settings->affiliate_term; ?> referred customers, yet.</p>
