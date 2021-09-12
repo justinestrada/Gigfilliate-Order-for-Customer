@@ -280,7 +280,7 @@ class Gigfilliate_Order_For_Customer_Public
         <button type="button" class="ml-2 mb-1 text-white close" data-dismiss="toast">&times;</button>
       </div>
       <div class="toast-body">
-        You have been exited from the Order for Customer mood.
+        <p class="mb-0">You exited from 'Place Order for Customer' mode.</p>
       </div>
     </div>
     <?php
