@@ -9,14 +9,14 @@
  * that starts the plugin.
  *
  * @link              https://partners.vitalibis.com/login
- * @since             0.2.2
+ * @since             0.2.3
  * @package           Gigfilliate_Order_For_Customer
  *
  * @wordpress-plugin
  * Plugin Name:       Gigfilliate Order For Customer
  * Plugin URI:        https://partners.vitalibis.com/login
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:           0.2.2
+ * Version:           0.2.3
  * Author:            Gigfilliate
  * Author URI:        https://partners.vitalibis.com/login
  * License:           GPL-2.0+
@@ -30,7 +30,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'GIGFILLIATE_ORDER_FOR_CUSTOMER_VERSION', '0.2.2' );
+define( 'GIGFILLIATE_ORDER_FOR_CUSTOMER_VERSION', '0.2.3' );
 
 /**
  * The code that runs during plugin activation.

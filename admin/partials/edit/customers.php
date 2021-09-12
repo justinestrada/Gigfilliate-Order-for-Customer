@@ -42,6 +42,6 @@ $customers_data = $this->helpers->get_customers($affiliate_user_id);
     </div>
     <?php
   } else { ?>
-    <p>You do not have any <?php // $this->core_settings->affiliate_term; ?> referred customers, yet.</p>
+    <p>You do not have any affiliate referred customers, yet.</p>
   <?php } ?>
 </div>

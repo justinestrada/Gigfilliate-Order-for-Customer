@@ -29,26 +29,47 @@ const OrderForCustomer = {
         const customers_obj = res.customers_data.customers
         if (Object.keys(customers_obj).length) {
           let new_customers = ''
-          Object.keys(customers_obj).forEach( key => {
+          Object.keys(customers_obj).forEach( (key) => {
             const customer = customers_obj[key]
-            new_customers += '<div class="gofc-customers-list_item" customer_email="' + customer.email + '" customer_full-name="' + customer.full_name + '">\
-              <div class="v-row">\
-                <div class="gofc-customers-list-item-name v-col-lg-2">\
-                  <strong style="text-transform: capitalize;">' + customer.full_name + '</strong>\
-                  <br>\
-                  <span>' + customer.email + '</span>\
+            const $existing_customers = $('.gofc-customer')
+            let match = false
+            $existing_customers.each(function() {
+              const this_customer_email = $(this).attr('customer_email')
+              if (this_customer_email === customer.email) {
+                const $this_orders_count = $(this).find('.gofc-customer_orders-count')
+                const new_orders_count = parseInt($this_orders_count.text()) + customer.orders_count
+                // console.log(parseInt($this_orders_count.text()), customer.orders_count, new_orders_count)
+                $this_orders_count.text( new_orders_count )
+                const $this_total_spend = $(this).find('.gofc-customer_total-spend')
+                const new_total_spend = parseInt($this_total_spend.text().replace('$', '')) + customer.total_spend
+                // console.log(parseInt($this_total_spend.text().replace('$', '')), customer.total_spend, new_total_spend)
+                $this_total_spend.text( '$' + Utilities.formatCurrency(new_total_spend) )
+                const $this_aov = $(this).find('.gofc-customer_aov')
+                const new_aov = parseFloat(new_total_spend / new_orders_count)
+                $this_aov.text( '$' + Utilities.formatCurrency(new_aov) )
+                match = true
+              }
+            })
+            if (!match) {
+              new_customers += '<div class="gofc-customer" customer_email="' + customer.email + '" customer_full-name="' + customer.full_name + '">\
+                <div class="v-row">\
+                  <div class="v-col-lg-2">\
+                    <strong class="gofc-customer_full-name">' + customer.full_name + '</strong>\
+                    <br>\
+                    <span>' + customer.email + '</span>\
+                  </div>\
+                  <div class="gofc-customers-list-item_last-order-date v-col-lg-2 v-text-center">\
+                    <div>' + customer.last_order_date + '</div>\
+                  </div>\
+                  <div class="gofc-customer_orders-count v-col-lg-2 gwp-text-center">' + customer.orders_count + '</div>\
+                  <div class="gofc-customer_total-spend v-col-lg-2 gwp-text-center">$' + Utilities.formatCurrency(customer.total_spend) + '</div>\
+                  <div class="gofc-customer_aov v-col-lg-2 gwp-text-center">$' + Utilities.formatCurrency(customer.aov) + '</div>\
+                  <div class="v-col-lg-2 gwp-text-lg-right d-flex justify-content-end align-items-center">\
+                    <button type="button" class="gofc-btn-place-order v-btn v-btn-primary" customer-email="' + customer.email + '">Place Order</button>\
+                  </div>\
                 </div>\
-                <div class="gofc-customers-list-item-last-order-date v-col-lg-2 v-text-center">\
-                  <div>' + customer.last_order_date + '</div>\
-                </div>\
-                <div class="v-col-lg-2 v-text-center">' + customer.orders_count + '</div>\
-                <div class="v-col-lg-2 v-text-center">$' + customer.total_spend + '</div>\
-                <div class="v-col-lg-2 v-text-center">$' + customer.aov + '</div>\
-                <div class="gofc-customers-list-item-form v-col-lg-2 gofc-text-lg-right d-flex justify-content-end align-items-center">\
-                  <button type="button" class="gofc-btn-place-order v-btn v-btn-primary gofc-customers-list-item-place-order-btn" customer-email="' + customer.email + '">Place Order</button>\
-                </div>\
-              </div>\
-            </div>'
+              </div>'
+            }
           })
           $('#gofc-customers-list').append(new_customers)
           $customers_list.attr('offset', (offset + res.customers_data.orders_found))
@@ -57,6 +78,7 @@ const OrderForCustomer = {
           // No more customers, finished loading!
           $('#gof-customer-list_skeleton').hide()
         }
+        OrderForCustomer.onBtnClickPlaceOrder()
       } else {
         console.error(res)
       }
@@ -87,7 +109,7 @@ const OrderForCustomer = {
   onSearchCustomers: function() {
     $('#search_customer').on('keyup', function() {
       const to_search_val = $(this).val()
-      const $customers = $('.gofc-customers-list_item')
+      const $customers = $('.gofc-customer')
       $customers.each(function() {
         const customer_email = $(this).attr('customer_email')
         const customer_email_match = customer_email !== '' ? new RegExp(to_search_val, 'i').test(customer_email) : false
@@ -99,7 +121,7 @@ const OrderForCustomer = {
           $(this).removeClass('v-d-block').addClass('v-d-none')
         }
       })
-      if (!$('.gofc-customers-list_item.v-d-block').length) {
+      if (!$('.gofc-customer.v-d-block').length) {
         $('#gofc-no-results-found').show()
       } else {
         $('#gofc-no-results-found').hide()
@@ -283,6 +305,7 @@ const OrderForCustomer = {
     });
   },
   onBtnClickPlaceOrder: function() {
+    $('.gofc-btn-place-order').off()
     $('.gofc-btn-place-order').on('click', function() {
       const email = $(this).attr('customer-email')
       OrderForCustomer.startPlaceOrderForCustomer(email)
@@ -384,7 +407,10 @@ const Utilities = {
   isEmailValid: function(email) {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     return re.test(String(email).toLowerCase())
-  },  
+  },
+	formatCurrency: function( amount ) {
+		return amount.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+	},  
 }
 
 $(document).ready(function() {

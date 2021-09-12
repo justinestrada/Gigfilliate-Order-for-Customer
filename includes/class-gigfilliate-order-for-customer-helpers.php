@@ -75,7 +75,7 @@ class Gigfilliate_Order_For_Customer_Helpers {
       // $new_customer['last_order'] = $order; // unused
       // $new_customer['order_affiliate_id'] = get_post_meta($order->ID, 'v_order_affiliate_id', true); // unused
       $new_customer['orders_count'] = 1;
-      $new_customer['total_spend'] = $wc_order->get_total();
+      $new_customer['total_spend'] = (float)$wc_order->get_total();
       $new_customer['aov'] = (float)($new_customer['total_spend']/$new_customer['orders_count']);
       $new_customer['last_order_date'] = $wc_order->get_date_created()->date('F j, Y, g:i a');
       $res['customers'][$customer_email] = $new_customer;
