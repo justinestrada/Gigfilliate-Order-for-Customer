@@ -29,7 +29,9 @@ $customers_data = $this->helpers->get_customers($affiliate_user_id);
             </div>
             <div class="gofc-customers-list-item-last-order-date v-col-lg-6">
               Last Order Date
-              <div><?php echo $customer['last_order']->get_date_created()->date('F j, Y, g:i:a'); ?></div>
+              <div>
+                <?php echo $customer['last_order_date']; ?>
+              </div>
             </div>
           </div>
         </div>

@@ -44,7 +44,7 @@ const OrderForCustomer = {
               <div class="v-row">\
                 <div class="gofc-customers-list-item-name v-col-lg-4">\
                   <strong style="text-transform: capitalize;">';
-                    new_customers += (customer.user) ? customer.user.display_name : customer.email
+                    new_customers += (customer.user) ? customer.user.data.display_name : customer.email
                   new_customers += '</strong>\
                   <br>\
                   <span>' + customer.email + '</span>\
