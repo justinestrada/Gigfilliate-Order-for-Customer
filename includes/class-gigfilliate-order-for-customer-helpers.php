@@ -53,9 +53,11 @@ class Gigfilliate_Order_For_Customer_Helpers {
     foreach ($orders as $key => $order) {
       $wc_order = new WC_Order( $order->ID );
       $customer_email = $wc_order->get_billing_email();
+      $customer_fname = $wc_order->get_billing_first_name();
+      $customer_lname = $wc_order->get_billing_last_name();
       // if customer already exists skip
       if (isset($res['customers'][$customer_email])) {
-        // TODO: Increment the orders already placed count
+        $res['customers'][$customer_email]['orders_count']++;
         continue;
       }
       $new_customer = [
@@ -63,22 +65,18 @@ class Gigfilliate_Order_For_Customer_Helpers {
       ];
       $order_user = $wc_order->get_user();
       if ($order_user !== false && $order_user !== null) {
-        $customer_email = $order_user->user_email;
-        /*
-         * Skip if customer is current user
-         * Dont think this is necessary now since we check if user is not PERSONAL volume
-        if ($current_user->user_email === $order_user->user_email) {
-          continue;
-        }
-        */
         // Skip if past customer is now an active affiliate
         if (vitalibis_is_active_affiliate((int)$order_user->ID)) {
           continue;
         }
-        $new_customer['user'] = $order_user;
+        // $new_customer['user'] = $order_user; // unused
       }
-      // $new_customer['last_order'] = $order;
-      // $new_customer['order_affiliate_id'] = get_post_meta($order->ID, 'v_order_affiliate_id', true);
+      $new_customer['full_name'] = $customer_fname . ' ' . $customer_lname;
+      // $new_customer['last_order'] = $order; // unused
+      // $new_customer['order_affiliate_id'] = get_post_meta($order->ID, 'v_order_affiliate_id', true); // unused
+      $new_customer['orders_count'] = 1;
+      $new_customer['total_spend'] = $wc_order->get_total();
+      $new_customer['aov'] = (float)($new_customer['total_spend']/$new_customer['orders_count']);
       $new_customer['last_order_date'] = $wc_order->get_date_created()->date('F j, Y, g:i a');
       $res['customers'][$customer_email] = $new_customer;
     }

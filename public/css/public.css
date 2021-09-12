@@ -1,10 +1,10 @@
-/**
- * All of the CSS for your public-facing functionality should be
- * included in this file.
- */
+
+.v-text-center {
+  text-align: center;
+}
 
 .secondary-text {
-	color: #989898;
+  color: #989898;
 }
 
 @media (min-width: 992px) {

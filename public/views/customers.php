@@ -1,7 +1,13 @@
 
 <style>
-#gofc-customers-list {
+#gof-customers-list_headers,
+#gofc-customers-list,
+#gof-customer-list_skeleton {
   margin-bottom: 1rem;
+}
+#gof-customer-list_skeleton .v-skeleton-block,
+#gof-customer-list_skeleton .v-skeleton-block .v-line {
+  height: 24px;
 }
 </style>
 <section id="gofc_customer_section" style="display: <?php echo (!isset($_COOKIE[$this->cookie_name]) ? 'block' : 'none'); ?>;">
@@ -23,30 +29,68 @@
       <div>
         <?php
         if (!empty($this->my_customers)) { ?>
-          <div id="gofc-customers-list">
+          <div id="gof-customers-list_headers">
+            <div class="v-row">
+              <div class="v-col-lg-2">
+                Name
+              </div>
+              <div class="v-col-lg-2 v-text-center">
+                Last Order Date
+              </div>
+              <div class="v-col-lg-2 v-text-center">
+                Orders Count
+              </div>
+              <div class="v-col-lg-2 v-text-center">
+                Average Order Value<!--(AOV)-->
+              </div>
+              <div class="v-col-lg-2 v-text-center">
+                Total Spend
+              </div>
+              <!-- <div class="v-col-lg-2">
+                Sort
+              </div> -->
+            </div>
+          </div>
+          <div id="gofc-customers-list" offset="<?php echo $this->my_customers['orders_found']; ?>" affiliate-user-id="<?php echo $this->current_user_id; ?>">
             <?php foreach ($this->my_customers['customers'] as $key => $customer) { ?>
-              <div class="gofc-customers-list_item" customer_email="<?php echo $customer['email']; ?>" customer_display-name="<?php echo (isset($customer['user'])) ? $customer['user']->display_name : ''; ?>">
-                <div class=" v-row">
-                  <div class="gofc-customers-list-item-name v-col-lg-4">
+              <div class="gofc-customers-list_item" customer_email="<?php echo $customer['email']; ?>" customer_full-name="<?php echo $customer['full_name']; ?>">
+                <div class="v-row">
+                  <div class="gofc-customers-list-item-name v-col-lg-2">
                     <strong style="text-transform: capitalize;">
-                      <?php echo (isset($customer['user'])) ? $customer['user']->display_name : $customer['email']; ?>
+                      <?php echo $customer['full_name']; ?>
                     </strong>
                     <br>
                     <span><?php echo $customer['email']; ?></span>
                   </div>
-                  <div class="gofc-customers-list-item-last-order-date v-col-lg-4">
-                    Last Order Date
-                    <div><?php echo $customer['last_order_date']; ?></div>
+                  <div class="gofc-customers-list-item-last-order-date v-col-lg-2 v-text-center">
+                    <?php echo $customer['last_order_date']; ?>
                   </div>
-                  <div class="gofc-customers-list-item-form v-col-lg-4 gofc-text-lg-right d-flex justify-content-end align-items-center">
+                  <div class="v-col-lg-2 v-text-center">
+                    <?php echo $customer['orders_count']; ?>
+                  </div>
+                  <div class="v-col-lg-2 v-text-center">
+                    $<?php echo $customer['total_spend']; ?>
+                  </div>
+                  <div class="v-col-lg-2 v-text-center">
+                    $<?php echo $customer['aov']; ?>
+                  </div>
+                  <div class="gofc-customers-list-item-form v-col-lg-2 gofc-text-lg-right d-flex justify-content-end align-items-center">
                     <button type="button" class="gofc-btn-place-order v-btn v-btn-primary gofc-customers-list-item-place-order-btn" customer-email="<?php echo $customer['email']; ?>">Place Order</button>
                   </div>
                 </div>
               </div>
             <?php } ?>
           </div>
-          <div>
-            <button type="button" id="load-more-customers" class="v-btn v-btn-primary" offset="<?php echo $this->my_customers['orders_found']; ?>" affiliate-user-id="<?php echo $this->current_user_id; ?>">Load More Customers</button>
+          <div id="gof-customer-list_skeleton">
+            <div class="v-skeleton-block">
+              <div class="v-line"></div>
+            </div>
+            <div class="v-skeleton-block" style="width: 75%;">
+              <div class="v-line"></div>
+            </div>
+            <div class="v-skeleton-block" style="width: 25%;">
+              <div class="v-line"></div>
+            </div>
           </div>
         <?php } else { ?>
           <p>You do not have any <?php $this->core_settings->affiliate_term; ?> referred customers, yet.</p>
