@@ -19,15 +19,23 @@ const OrderForCustomer = {
   },
   onSearchCustomers: function() {
     $('#search_customer').on('keyup', function() {
-      let to_search = $(this)
-      let customers = $('.gofc-customers-list-item')
-      for (let i = 0; i < customers.length; i++) {
-        const customer = $(customers[i])
-        if (new RegExp(to_search.val(), 'i').test(customer.data('customer_name'))) {
-          customer.attr('style', '')
+      const to_search_val = $(this).val()
+      const $customers = $('.gofc-customers-list_item')
+      $customers.each(function() {
+        const customer_email = $(this).attr('customer_email')
+        const customer_email_match = customer_email !== '' ? new RegExp(to_search_val, 'i').test(customer_email) : false
+        const display_name = $(this).attr('customer_display-name')
+        const display_name_match = display_name !== '' ? new RegExp(to_search_val, 'i').test(display_name) : false
+        if (customer_email_match || display_name_match) {
+          $(this).removeClass('v-d-none').addClass('v-d-block')
         } else {
-          customer.attr('style', 'display: none !important;')
+          $(this).removeClass('v-d-block').addClass('v-d-none')
         }
+      })
+      if (!$('.gofc-customers-list_item.v-d-block').length) {
+        $('#gofc-no-results-found').show()
+      } else {
+        $('#gofc-no-results-found').hide()
       }
     })
   },

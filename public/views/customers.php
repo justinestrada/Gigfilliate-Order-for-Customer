@@ -18,14 +18,12 @@
       <div class="gofc-customers-list">
         <?php
         if (!empty($this->my_customers)) {
-          foreach ($this->my_customers as $key => $customer) {
-            // TODO: replace data-customer_name with data-customer_email
-            ?>
-            <div class="gofc-customers-list_item" data-customer_name="<?php echo $customer['email']; ?>">
+          foreach ($this->my_customers as $key => $customer) { ?>
+            <div class="gofc-customers-list_item" customer_email="<?php echo $customer['email']; ?>" customer_display-name="<?php echo (isset($customer['user'])) ? $customer['user']->display_name : ''; ?>">
               <div class=" v-row">
                 <div class="gofc-customers-list-item-name v-col-lg-4">
                   <strong style="text-transform: capitalize;">
-                    <?php echo isset($customer['user']) ? $customer['user']->display_name : $customer['email']; ?>
+                    <?php echo (isset($customer['user'])) ? $customer['user']->display_name : $customer['email']; ?>
                   </strong>
                   <br>
                   <span><?php echo $customer['email']; ?></span>
@@ -44,6 +42,9 @@
         } else { ?>
           <p>You do not have any <?php $this->core_settings->affiliate_term; ?> referred customers, yet.</p>
         <?php } ?>
+      </div>
+      <div id="gofc-no-results-found" style="display: none;">
+        <p>No customers found.</p>
       </div>
     </div>
   </div>
