@@ -128,7 +128,7 @@ class Gigfilliate_Order_For_Customer_Public
         $this->current_user_id = get_current_user_id();
         $this->current_user = wp_get_current_user();
         $this->primary_affiliate_coupon_code = get_user_meta($this->current_user_id, 'primary_affiliate_coupon_code', true);
-        $this->my_customers = $this->helpers->get_customers($this->current_user_id, $this->current_user, -1);
+        $this->my_customers = $this->helpers->get_customers($this->current_user_id, $this->current_user, 20);
         require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/customers.php';
       }
       echo ob_get_clean();
@@ -194,7 +194,7 @@ class Gigfilliate_Order_For_Customer_Public
       $args['s'] = $_POST['search'];
     }
     if (isset($this->core_settings->dashboard->excluded_product_ids_from_order_for_customer) && $this->core_settings->dashboard->excluded_product_ids_from_order_for_customer != null) {
-      $args['post__not_in'] = explode(",", $this->core_settings->dashboard->excluded_product_ids_from_order_for_customer);
+      $args['post__not_in'] = explode(',', $this->core_settings->dashboard->excluded_product_ids_from_order_for_customer);
     }
     $products = (new WP_Query($args))->posts;
     $res['success'] = true;
@@ -256,10 +256,10 @@ class Gigfilliate_Order_For_Customer_Public
   }
 
   public function send_new_customer_from_bp_email($email) {
-    if (!function_exists("vitalibis_send_email") || !function_exists("vitalibis_get_notification_by_slug")) {
+    if (!function_exists('vitalibis_send_email') || !function_exists('vitalibis_get_notification_by_slug')) {
       return;
     }
-    $notification = vitalibis_get_notification_by_slug("new-customer-by-bp");
+    $notification = vitalibis_get_notification_by_slug('new-customer-by-bp');
     if (!$notification->enabled) {
       return;
     }
@@ -277,16 +277,16 @@ class Gigfilliate_Order_For_Customer_Public
 
   public function woocommerce_checkout_update_order_meta($order_id) {
     if (isset($_POST['new_billing_email'])) {
-      update_post_meta($order_id, 'v_order_affiliate_id', (int)get_user_meta(get_current_user_id(), 'v_affiliate_id', true));
+      $current_user_id = get_current_user_id();
+      update_post_meta($order_id, 'v_order_affiliate_id', (int)get_user_meta($current_user_id, 'v_affiliate_id', true));
       update_post_meta($order_id, 'ordered_by', wp_get_current_user()->user_email);
-      update_post_meta($order_id, '_customer_user', esc_attr(get_current_user_id()));
+      update_post_meta($order_id, '_customer_user', esc_attr($current_user_id));
     }
   }
 
   public function woocommerce_admin_order_data_after_billing_address($order) {
     $ordered_by = get_post_meta($order->get_id(), 'ordered_by', true);
-    if ($ordered_by) {
-      ?>
+    if ($ordered_by) { ?>
       <p>
         <strong>Ordered By</strong><br>
         <?php echo $ordered_by; ?>

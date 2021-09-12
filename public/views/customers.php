@@ -1,4 +1,9 @@
 
+<style>
+#gofc-customers-list {
+  margin-bottom: 1rem;
+}
+</style>
 <section id="gofc_customer_section" style="display: <?php echo (!isset($_COOKIE[$this->cookie_name]) ? 'block' : 'none'); ?>;">
   <div id="gofc-customer-search" class="v-card gofc-customer-search">
     <div class="v-card-body">
@@ -15,35 +20,38 @@
           </button>
         </div>
       </div>
-      <div class="gofc-customers-list">
+      <div>
         <?php
-        if (!empty($this->my_customers)) {
-          foreach ($this->my_customers['customers'] as $key => $customer) { ?>
-            <div class="gofc-customers-list_item" customer_email="<?php echo $customer['email']; ?>" customer_display-name="<?php echo (isset($customer['user'])) ? $customer['user']->display_name : ''; ?>">
-              <div class=" v-row">
-                <div class="gofc-customers-list-item-name v-col-lg-4">
-                  <strong style="text-transform: capitalize;">
-                    <?php echo (isset($customer['user'])) ? $customer['user']->display_name : $customer['email']; ?>
-                  </strong>
-                  <br>
-                  <span><?php echo $customer['email']; ?></span>
-                </div>
-                <div class="gofc-customers-list-item-last-order-date v-col-lg-4">
-                  Last Order Date
-                  <div><?php echo $customer['last_order']->get_date_created()->date('F j, Y, g:i:a'); ?></div>
-                </div>
-                <div class="gofc-customers-list-item-form v-col-lg-4 gofc-text-lg-right d-flex justify-content-end align-items-center">
-                  <button type="button" class="gofc-btn-place-order v-btn v-btn-primary gofc-customers-list-item-place-order-btn" customer-email="<?php echo $customer['email']; ?>">Place Order</button>
+        if (!empty($this->my_customers)) { ?>
+          <div id="gofc-customers-list">
+            <?php foreach ($this->my_customers['customers'] as $key => $customer) { ?>
+              <div class="gofc-customers-list_item" customer_email="<?php echo $customer['email']; ?>" customer_display-name="<?php echo (isset($customer['user'])) ? $customer['user']->display_name : ''; ?>">
+                <div class=" v-row">
+                  <div class="gofc-customers-list-item-name v-col-lg-4">
+                    <strong style="text-transform: capitalize;">
+                      <?php echo (isset($customer['user'])) ? $customer['user']->display_name : $customer['email']; ?>
+                    </strong>
+                    <br>
+                    <span><?php echo $customer['email']; ?></span>
+                  </div>
+                  <div class="gofc-customers-list-item-last-order-date v-col-lg-4">
+                    Last Order Date
+                    <div><?php echo $customer['last_order_date']; ?></div>
+                  </div>
+                  <div class="gofc-customers-list-item-form v-col-lg-4 gofc-text-lg-right d-flex justify-content-end align-items-center">
+                    <button type="button" class="gofc-btn-place-order v-btn v-btn-primary gofc-customers-list-item-place-order-btn" customer-email="<?php echo $customer['email']; ?>">Place Order</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          <?php } ?>
+            <?php } ?>
+          </div>
           <div>
-            <button type="button" class="v-btn v-btn-primary" onclick="alert('todo')" offset="<?php echo $this->my_customers['orders_found']; ?>">Load More Customers</button>
+            <button type="button" id="load-more-customers" class="v-btn v-btn-primary" onclick="alert('todo')" offset="<?php echo $this->my_customers['orders_found']; ?>" affiliate-user-id="<?php echo $this->current_user_id; ?>">Load More Customers</button>
           </div>
         <?php } else { ?>
           <p>You do not have any <?php $this->core_settings->affiliate_term; ?> referred customers, yet.</p>
         <?php } ?>
+      </div>
       </div>
       <div id="gofc-no-results-found" style="display: none;">
         <p>No customers found.</p>

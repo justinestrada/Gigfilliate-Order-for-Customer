@@ -4,7 +4,7 @@ class Gigfilliate_Order_For_Customer_Helpers {
 
   public function __construct() { }
 
-  public function get_customers( $affiliate_user_id = false, $current_user = false, $limit = 10, $offset = false ) {
+  public function get_customers( $affiliate_user_id = false, $current_user = false, $limit = 20, $offset = false ) {
     $res = [
       'orders_found' => 0,
       'customers' => [],
@@ -49,8 +49,6 @@ class Gigfilliate_Order_For_Customer_Helpers {
       $order_user = $order->get_user();
       if ($order_user !== false && $order_user !== null) {
         $customer_email = $order_user->user_email;
-        // var_dump($order_user, $billing_email);
-        // wp_die();
         // Skip if customer is current user
         if ($current_user->user_email === $order_user->user_email) {
           continue;
@@ -61,8 +59,8 @@ class Gigfilliate_Order_For_Customer_Helpers {
         }
         $new_customer['user'] = $order_user;
       }
-      $new_customer['last_order'] = $order;
-      $new_customer['last_order_date'] = $order->get_date_created()->date('F j, Y, g:i:a');
+      // $new_customer['last_order'] = $order;
+      $new_customer['last_order_date'] = $order->get_date_created()->date('F j, Y, g:i a');
       $res['customers'][$customer_email] = $new_customer;
     }
     return $res;

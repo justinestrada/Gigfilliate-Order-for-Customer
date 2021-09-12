@@ -4,6 +4,10 @@
 const OrderForCustomer = {
   init: function() {
     if ($('.woocommerce-MyAccount-content.account.brand-partner-customers').length) {
+      this.onClickLoadMoreCustomers()
+      setTimeout(function() {
+        OrderForCustomer.onLoadMoreCustomers()
+      }, 500)
       this.onSearchCustomers()
       this.onSearchProducts()
       this.onGetProducts()
@@ -16,6 +20,77 @@ const OrderForCustomer = {
     }
     this.giveWarningWhenLeavingTheCheckout()
     this.exitFromOrderForCustomerIfNotOnValidPage()
+  },
+  onClickLoadMoreCustomers: function() {
+    $('#load-more-customers').on('click', function() {
+      OrderForCustomer.onLoadMoreCustomers()
+    })
+  },
+  onLoadMoreCustomers: function() {
+    const $load_more_customers = $('#load-more-customers')
+    $load_more_customers.text('Loading...').prop('disabled', true)
+    const affiliate_user_id = parseInt($load_more_customers.attr('affiliate-user-id'))
+    const offset = parseInt($load_more_customers.attr('offset'))
+    OrderForCustomer.loadMoreCustomers(affiliate_user_id, offset).then( function(res) {
+      res = JSON.parse(res)
+      if (res.success) {
+        // console.log(res, res.customers_data.customers.length)
+        const customers_obj = res.customers_data.customers
+        if (Object.keys(customers_obj).length) {
+          let new_customers = ''
+          Object.keys(customers_obj).forEach( key => {
+            const customer = customers_obj[key]
+            new_customers += '<div class="gofc-customers-list_item">\
+              <div class="v-row">\
+                <div class="gofc-customers-list-item-name v-col-lg-4">\
+                  <strong style="text-transform: capitalize;">';
+                    new_customers += (customer.user) ? customer.user.display_name : customer.email
+                  new_customers += '</strong>\
+                  <br>\
+                  <span>' + customer.email + '</span>\
+                </div>\
+                <div class="gofc-customers-list-item-last-order-date v-col-lg-4">\
+                  Last Order Date\
+                  <div>' + customer.last_order_date + '</div>\
+                </div>\
+                <div class="gofc-customers-list-item-form v-col-lg-4 gofc-text-lg-right d-flex justify-content-end align-items-center">\
+                  <button type="button" class="gofc-btn-place-order v-btn v-btn-primary gofc-customers-list-item-place-order-btn" customer-email="' + customer.email + '">Place Order</button>\
+                </div>\
+              </div>\
+            </div>'
+          })
+          $('#gofc-customers-list').append(new_customers)
+          $load_more_customers.text('Load More Customers').prop('disabled', false).removeAttr('disabled')
+        } else {
+          $load_more_customers.text('Loaded All Customers').prop('disabled', true)
+        }
+        $('#load-more-customers').attr('offset', (offset + res.customers_data.orders_found))
+      } else {
+        console.error(res)
+      }
+    }).catch(function(err) {
+      console.error(err)
+    })
+  },
+  loadMoreCustomers: function(affiliate_user_id, offset) {
+    return new Promise( (resolve, reject) => {
+      $.ajax({
+        url: Vitalibis_WP.admin_ajax,
+        data: {
+          action: 'gofc_get_customers',
+          affiliate_user_id: affiliate_user_id,
+          // limit: 20,
+          offset: offset,
+        },
+        type: 'POST',
+        config: { headers: {'Content-Type': 'multipart/form-data' }},
+      }).done(function(res) {
+        // const json_res = JSON.parse(res)
+        resolve(res)
+      }).fail(function(err) {
+        reject(err)
+      })
+    })
   },
   onSearchCustomers: function() {
     $('#search_customer').on('keyup', function() {
