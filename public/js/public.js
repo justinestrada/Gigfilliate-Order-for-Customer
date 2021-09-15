@@ -329,21 +329,49 @@ const OrderForCustomer = {
     })
   },
   startPlaceOrderForCustomer: function( email ) {
-    Cookie.create(GOFC.cookie_name, email, 1)
-    $('#gofc_customer_section').slideUp()
-    $('#gofc_products_section').slideDown()
-    $('#alert-placing-for-customer #alert_customer_email').html(email)
+    $('#gofc-model').modal('show')
+    $('#gofc-model .modal-body').html('<p>You\'re entering \'Place Order for Customers\' Mode, you\'re cart items will be removed</p>');
+    $('#gofc-model .confirm-btn').unbind('click');
+    $('#gofc-model .confirm-btn').on('click', function() {
+      $('#gofc-model .confirm-btn').html('Loading...');
+      $('#gofc-model .confirm-btn').attr('disabled','disabled');
+      OrderForCustomer.resetUserCart().done(function (res) {
+        $('#gofc-model .confirm-btn').html('Yes');
+        $('#gofc-model .confirm-btn').removeAttr('disabled');
+        $('#gofc-model').modal('hide');
+        Cookie.create(GOFC.cookie_name, email, 1)
+        $('#gofc_customer_section').slideUp()
+        $('#gofc_products_section').slideDown()
+        $('#alert-placing-for-customer #alert_customer_email').html(email)
+      })
+    })
   },
   onExitPlaceOrderForCustomer: function() {
     $('.gofc_exit_place_order_for_customer').on('click', function(e) {
-      Cookie.erase(GOFC.cookie_name);
-      $.get(GOFC.ajax_url, {
-        action: 'gofc_reset_cart'
-      });
-      $('#gofc_customer_section').slideDown();
-      $('#gofc_products_section').slideUp();
-      $('#gofc_products_section .ajax_add_to_cart.added').html('Add to Cart');
-      $('#gofc_products_section .ajax_add_to_cart').removeClass('added');
+        $('#gofc-model').modal('show')
+        $('#gofc-model .modal-body').html("<p>When you leave \'Place Order for Customers\' Mode the items are removed from your cart</p>");
+        $('#gofc-model .confirm-btn').unbind('click');
+        $('#gofc-model .confirm-btn').on('click', function() {
+          $('#gofc-model .confirm-btn').html('Loading...');
+          $('#gofc-model .confirm-btn').attr('disabled','disabled');
+          OrderForCustomer.resetUserCart().done(function (res) {
+            $('#gofc-model .confirm-btn').html('Yes');
+            $('#gofc-model .confirm-btn').removeAttr('disabled');
+            $('#gofc-model').modal('hide');
+            Cookie.erase(GOFC.cookie_name);
+            $('#gofc_customer_section').slideDown();
+            $('#gofc_products_section').slideUp();
+            $('#gofc_products_section .ajax_add_to_cart.added').html('Add to Cart');
+            $('#gofc_products_section .ajax_add_to_cart').removeClass('added');
+          })
+        });
+    });
+  },
+  resetUserCart: function() {
+    return $.get(GOFC.ajax_url, {
+      action: 'gofc_reset_cart',
+    }).done(function (res) {
+      $(document.body).trigger('wc_reload_fragments');
     });
   },
   exitFromOrderForCustomerIfNotOnValidPage: function() {
