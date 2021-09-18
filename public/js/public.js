@@ -330,7 +330,7 @@ const OrderForCustomer = {
   },
   startPlaceOrderForCustomer: function( email ) {
     $('#gofc-model').modal('show')
-    $('#gofc-model .modal-body').html('<p>You\'re entering \'Place Order for Customers\' Mode, you\'re cart items will be removed</p>');
+    $('#gofc-model .modal-body').html('<p>You\'re entering \'Place Order for Customers\' Mode, you\'re cart items will be removed.</p>');
     $('#gofc-model .confirm-btn').unbind('click');
     $('#gofc-model .confirm-btn').on('click', function() {
       $('#gofc-model .confirm-btn').html('Loading...');
