@@ -330,63 +330,66 @@ const OrderForCustomer = {
   },
   startPlaceOrderForCustomer: function( email ) {
     $('#gofc-model').modal('show')
-    $('#gofc-model .modal-body').html('<p>You\'re entering \'Place Order for Customers\' Mode, you\'re cart items will be removed.</p>');
-    $('#gofc-model .confirm-btn').unbind('click');
+    $('#gofc-model .modal-body').html('<p>You\'re entering \'Place Order for Customers\' Mode, you\'re cart items will be removed.</p>')
+    $('#gofc-model .confirm-btn').unbind('click')
     $('#gofc-model .confirm-btn').on('click', function() {
-      $('#gofc-model .confirm-btn').html('Loading...');
-      $('#gofc-model .confirm-btn').attr('disabled','disabled');
+      $('#gofc-model .confirm-btn').html('Loading...')
+      $('#gofc-model .confirm-btn').attr('disabled','disabled')
       OrderForCustomer.resetUserCart().done(function (res) {
-        $('#gofc-model .confirm-btn').html('Yes');
-        $('#gofc-model .confirm-btn').removeAttr('disabled');
-        $('#gofc-model').modal('hide');
+        console.log(res)
+        $('#gofc-model .confirm-btn').html('Yes')
+        $('#gofc-model .confirm-btn').removeAttr('disabled')
+        $('#gofc-model').modal('hide')
         Cookie.create(GOFC.cookie_name, email, 1)
         $('#gofc_customer_section').slideUp()
         $('#gofc_products_section').slideDown()
         $('#alert-placing-for-customer #alert_customer_email').html(email)
+        $('body').addClass('page-place-order-for-customer-mode')
       })
     })
   },
   onExitPlaceOrderForCustomer: function() {
     $('.gofc_exit_place_order_for_customer').on('click', function(e) {
-        $('#gofc-model').modal('show')
-        $('#gofc-model .modal-body').html("<p>When you leave \'Place Order for Customers\' Mode the items are removed from your cart</p>");
-        $('#gofc-model .confirm-btn').unbind('click');
-        $('#gofc-model .confirm-btn').on('click', function() {
-          $('#gofc-model .confirm-btn').html('Loading...');
-          $('#gofc-model .confirm-btn').attr('disabled','disabled');
-          OrderForCustomer.resetUserCart().done(function (res) {
-            $('#gofc-model .confirm-btn').html('Yes');
-            $('#gofc-model .confirm-btn').removeAttr('disabled');
-            $('#gofc-model').modal('hide');
-            Cookie.erase(GOFC.cookie_name);
-            $('#gofc_customer_section').slideDown();
-            $('#gofc_products_section').slideUp();
-            $('#gofc_products_section .ajax_add_to_cart.added').html('Add to Cart');
-            $('#gofc_products_section .ajax_add_to_cart').removeClass('added');
-          })
-        });
-    });
+      $('#gofc-model').modal('show')
+      $('#gofc-model .modal-body').html("<p>When you leave \'Place Order for Customers\' Mode the items are removed from your cart</p>")
+      $('#gofc-model .confirm-btn').unbind('click')
+      $('#gofc-model .confirm-btn').on('click', function() {
+        $('#gofc-model .confirm-btn').html('Loading...')
+        $('#gofc-model .confirm-btn').attr('disabled','disabled')
+        OrderForCustomer.resetUserCart().done(function (res) {
+          $('#gofc-model .confirm-btn').html('Yes')
+          $('#gofc-model .confirm-btn').removeAttr('disabled')
+          $('#gofc-model').modal('hide')
+          Cookie.erase(GOFC.cookie_name)
+          $('#gofc_customer_section').slideDown()
+          $('#gofc_products_section').slideUp()
+          $('#gofc_products_section .ajax_add_to_cart.added').html('Add to Cart')
+          $('#gofc_products_section .ajax_add_to_cart').removeClass('added')
+          $('body').removeClass('page-place-order-for-customer-mode')
+        })
+      })
+    })
   },
   resetUserCart: function() {
     return $.get(GOFC.ajax_url, {
       action: 'gofc_reset_cart',
     }).done(function (res) {
-      $(document.body).trigger('wc_reload_fragments');
-    });
+      $(document.body).trigger('wc_reload_fragments')
+    })
   },
   exitFromOrderForCustomerIfNotOnValidPage: function() {
     if (!this.isCurrentURLValid() && Cookie.read(GOFC.cookie_name) !== null) {
       $.get(GOFC.ajax_url, {
         action: 'gofc_reset_cart'
-      });
-      Cookie.erase(GOFC.cookie_name);
+      })
+      Cookie.erase(GOFC.cookie_name)
       $('.GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE').toast('show')
     }
   },
   isCurrentURLValid: function() {
     const location_href = window.location.href
     // TODO: Checkout /{affiliate-term}-customers
-    const valid_pages = ['/account/brand-partner-customers/', '/my-account/brand-partner-customers/', '/checkout/', '/cart/'];
+    const valid_pages = ['/account/brand-partner-customers/', '/my-account/brand-partner-customers/', '/checkout/', '/cart/']
     let is_valid = false
     valid_pages.forEach(function(valid_page) {
       if (location_href.includes(valid_page)) {

@@ -16,6 +16,17 @@
   }
 }
 
+.page-place-order-for-customer-mode {
+  padding-top: 0;
+}
+
+.page-place-order-for-customer-mode .top-navbar,
+.page-place-order-for-customer-mode header,
+.page-place-order-for-customer-mode nav.woocommerce-MyAccount-navigation,
+.page-place-order-for-customer-mode footer.page-footer {
+  display: none;
+}
+
 #gofc-customer-search {
   border: 1px solid #dee2e6;
   box-shadow: none;

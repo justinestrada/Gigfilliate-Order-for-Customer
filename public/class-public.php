@@ -54,6 +54,7 @@ class Gigfilliate_Order_For_Customer_Public
     add_action('cfw_after_customer_info_tab_login', [$this, 'customer_notice'], 10, 3);
     add_action('cfw_checkout_after_login', [$this, 'customer_notice'], 10, 3);
     add_action('xoo_wsc_cart_after_head', [$this, 'customer_notice'], 10, 3);
+    add_filter( 'body_class', [$this, 'body_classes'] );
     add_action('woocommerce_checkout_update_order_meta', [$this, 'woocommerce_checkout_update_order_meta']);
     add_action('woocommerce_admin_order_data_after_billing_address', [$this, 'woocommerce_admin_order_data_after_billing_address'], 10, 1);
     add_action('woocommerce_checkout_process', [$this, 'woocommerce_checkout_process']);
@@ -164,6 +165,13 @@ class Gigfilliate_Order_For_Customer_Public
       <input type="hidden" name="new_billing_email" value="<?php echo ($customer != null ? $customer->user_email : $_COOKIE[$this->cookie_name]); ?>">
     <?php
     }
+  }
+
+  public function body_classes( $classes ) {
+    if (isset($_COOKIE[$this->cookie_name])) {
+      $classes[] = 'page-place-order-for-customer-mode';
+    }
+    return $classes;
   }
 
   public function apply_default_coupon( $coupon_code ) {
