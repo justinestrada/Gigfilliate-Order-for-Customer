@@ -30,49 +30,44 @@
         <?php
         if (!empty($this->my_customers)) { ?>
           <div id="gof-customers-list_headers">
-            <div class="v-row">
-              <div class="v-col-lg-2">
-                Name
+            <div class="v-row align-items-center">
+              <div class="v-col-lg-4">
+                User Info
               </div>
-              <div class="v-col-lg-2 gwp-text-center">
-                Last Order Date
-              </div>
-              <div class="v-col-lg-2 gwp-text-center">
-                Orders Count
+              <div class="v-col-lg-4">
+                Order Info
               </div>
               <div class="v-col-lg-2 gwp-text-center">
                 Total Spend
               </div>
-              <div class="v-col-lg-2 gwp-text-center">
-                Average Order Value<!--(AOV)-->
+              <div class="v-col-lg-2">
+                <select class="form-control d-block" id="customer-sort">
+                  <!-- <option value="mo">Sort by most orders</option> -->
+                  <option value="az" selected>Sort A - Z</option>
+                  <option value="za">Sort Z - A</option>
+                </select>
               </div>
-              <!-- <div class="v-col-lg-2">
-                Sort
-              </div> -->
             </div>
           </div>
           <div id="gofc-customers-list" offset="<?php echo $this->my_customers['orders_found']; ?>" affiliate-user-id="<?php echo $this->current_user_id; ?>">
             <?php foreach ($this->my_customers['customers'] as $key => $customer) { ?>
-              <div class="gofc-customer" customer_email="<?php echo $customer['email']; ?>" customer_full-name="<?php echo $customer['full_name']; ?>">
+              <div class="gofc-customer" customer_email="<?php echo $customer['email']; ?>" customer_full-name="<?php echo $customer['full_name']; ?>" orders_count="<?php echo $customer['orders_count']; ?>">
                 <div class="v-row">
-                  <div class="v-col-lg-2">
+                  <div class="v-col-lg-4">
                     <strong class="gofc-customer_full-name">
                       <?php echo $customer['full_name']; ?>
                     </strong>
                     <br>
-                    <span><?php echo $customer['email']; ?></span>
+                    <span><?php echo $customer['email']; ?></span><br>
+                    <span class="text-black-50"><?php echo $customer['city'] .', '.$customer['state']; ?></span>
                   </div>
-                  <div class="gofc-customer_last-order-date v-col-lg-2 gwp-text-center">
-                    <?php echo $customer['last_order_date']; ?>
-                  </div>
-                  <div class="gofc-customer_orders-count v-col-lg-2 gwp-text-center">
-                    <?php echo $customer['orders_count']; ?>
+                  <div class="v-col-lg-4">
+                    <span class="text-black-50">Last Order At:</span> <strong><?php echo $customer['last_order_date']; ?></strong><br>
+                    <span class="text-black-50">Total Orders:</span> <strong><?php echo $customer['orders_count']; ?></strong><br>
+                    <span class="text-black-50">Average Order Value:</span> <strong>$<?php echo $customer['aov']; ?></strong><br>
                   </div>
                   <div class="gofc-customer_total-spend v-col-lg-2 gwp-text-center">
                     $<?php echo $customer['total_spend']; ?>
-                  </div>
-                  <div class="gofc-customer_aov v-col-lg-2 gwp-text-center">
-                    $<?php echo $customer['aov']; ?>
                   </div>
                   <div class="v-col-lg-2 gwp-text-lg-right d-flex justify-content-end align-items-center">
                     <button type="button" class="gofc-btn-place-order v-btn v-btn-primary" customer-email="<?php echo $customer['email']; ?>">Place Order</button>

@@ -59,6 +59,7 @@ class Gigfilliate_Order_For_Customer_Public
     add_action('woocommerce_admin_order_data_after_billing_address', [$this, 'woocommerce_admin_order_data_after_billing_address'], 10, 1);
     add_action('woocommerce_checkout_process', [$this, 'woocommerce_checkout_process']);
     add_action('wp_footer', [$this, 'toast']);
+    add_filter('gigfilliatewp_order_volume_type', [$this,'gigfilliatewp_order_volume_type'], 20, 3 );
   }
 
   /**
@@ -85,6 +86,11 @@ class Gigfilliate_Order_For_Customer_Public
         'cookie_name' => $this->cookie_name
       ]
     );
+  }
+
+  public function gigfilliatewp_order_volume_type($volume_type) {
+    $volume_type = (isset($_COOKIE[$this->cookie_name])?'CUSTOMER':'PERSONAL');
+    return $volume_type;
   }
 
   public function new_account_page() {
@@ -160,7 +166,7 @@ class Gigfilliate_Order_For_Customer_Public
       ?>
       <div class="alert alert-info" role="alert">
         <i class="fa fa-info-circle mr-1" aria-hidden="true"></i>
-        You're placing an order for <?php echo ($customer !== null ? ($customer->first_name . ' ' . $customer->last_name) : $_COOKIE[$this->cookie_name]); ?>.
+        You're placing an order for <?php echo $_COOKIE[$this->cookie_name]; ?>.
       </div>
       <input type="hidden" name="new_billing_email" value="<?php echo ($customer != null ? $customer->user_email : $_COOKIE[$this->cookie_name]); ?>">
     <?php
@@ -231,7 +237,7 @@ class Gigfilliate_Order_For_Customer_Public
     $user = get_user_by('email', $_COOKIE[$this->cookie_name]);
     if ($user != null) {
       $customer = new WC_Customer($user->ID); ?>
-      <span id="gofc_customer_billing" data-email="<?php echo $customer->get_billing_email(); ?>" data-firstName="<?php echo $customer->get_billing_first_name(); ?>" data-lastName="<?php echo $customer->get_billing_last_name(); ?>" data-company="<?php echo $customer->get_billing_company(); ?>" data-address1="<?php echo $customer->get_billing_address_1(); ?>" data-address2="<?php echo $customer->get_billing_address_2(); ?>" data-city="<?php echo $customer->get_billing_city(); ?>" data-state="<?php echo $customer->get_billing_state(); ?>" data-postcode="<?php echo $customer->get_billing_postcode(); ?>" data-country="<?php echo $customer->get_billing_country(); ?>" data-phone="<?php echo $customer->get_billing_phone(); ?>"></span>
+      <span id="gofc_customer_billing" data-email="<?php echo $_COOKIE[$this->cookie_name]; ?>" data-firstName="<?php echo $customer->get_billing_first_name(); ?>" data-lastName="<?php echo $customer->get_billing_last_name(); ?>" data-company="<?php echo $customer->get_billing_company(); ?>" data-address1="<?php echo $customer->get_billing_address_1(); ?>" data-address2="<?php echo $customer->get_billing_address_2(); ?>" data-city="<?php echo $customer->get_billing_city(); ?>" data-state="<?php echo $customer->get_billing_state(); ?>" data-postcode="<?php echo $customer->get_billing_postcode(); ?>" data-country="<?php echo $customer->get_billing_country(); ?>" data-phone="<?php echo $customer->get_billing_phone(); ?>"></span>
       <?php
     } else {
       ?>
