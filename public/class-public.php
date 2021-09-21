@@ -200,10 +200,34 @@ class Gigfilliate_Order_For_Customer_Public
     $args = [
       'post_type' => 'product',
       'posts_per_page' => -1,
+      'orderby' => 'title',
       'order' => 'ASC',
-      'post_status' => array('publish'),
-      // TODO: Only get Woo Products with Visibility Shop & Catalogue
+      'post_status' => ['publish'], 
+      'tax_query'   => [ [
+        'taxonomy'  => 'product_visibility',
+        'terms'     => ['exclude-from-catalog'],
+        'field'     => 'name',
+        'operator'  => 'NOT IN',
+      ]]
     ];
+    $order_by = $_POST['order_by'];
+    if($order_by == 'title_z_a') {
+      $args['order'] = 'DESC';
+    }
+    if($order_by == 'latest') {
+      $args['order'] = 'ASC';
+      $args['orderby'] = 'publish_date';
+    }
+    if($order_by == 'price_low_high') {
+      $args['order'] = 'ASC';
+      $args['orderby'] = 'meta_value_num';
+      $args['meta_key'] = '_price';
+    }
+    if($order_by == 'price_high_low') {
+      $args['order'] = 'DESC';
+      $args['orderby'] = 'meta_value_num';
+      $args['meta_key'] = '_price';
+    }
     if (isset($_POST['search'])) {
       $args['s'] = $_POST['search'];
     }

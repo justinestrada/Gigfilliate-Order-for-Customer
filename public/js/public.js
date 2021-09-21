@@ -12,6 +12,7 @@ const OrderForCustomer = {
       this.onBtnClickPlaceOrder()
       this.onExitPlaceOrderForCustomer()
       this.onChangeCustomerSort();
+      this.onChangeProductSort();
     }
     if ($('#gofc_customer_billing').length) {
       this.setupCustomerBilling()
@@ -261,13 +262,20 @@ const OrderForCustomer = {
       console.error(err)
     })
   },
+  onChangeProductSort: function() {
+    const $this = this;
+    $('#products-sorting-order').on('change', function() {
+      $this.onGetProducts()
+    });
+  },
   getProducts: function() {
     return new Promise( (resolve, reject) => {
       $.ajax({
         url: GOFC.ajax_url,
         data: {
           action: 'gofc_get_products',
-          search: $('#search_product').val()
+          search: $('#search_product').val(),
+          order_by: $('#products-sorting-order').find(':selected').val()
         },
         type: 'POST',
         config: { headers: {'Content-Type': 'multipart/form-data' }},
