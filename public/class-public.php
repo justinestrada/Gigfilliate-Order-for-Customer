@@ -137,6 +137,9 @@ class Gigfilliate_Order_For_Customer_Public
         $this->primary_affiliate_coupon_code = get_user_meta($this->current_user_id, 'primary_affiliate_coupon_code', true);
         $this->my_customers = $this->helpers->get_customers($this->current_user_id, $this->current_user, 20);
         require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/customers.php';
+        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/modal/add-new-customer.php';
+        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/products.php';
+        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/modal/are-you-sure.php';
       }
       echo ob_get_clean();
       ?>
