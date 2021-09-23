@@ -57,25 +57,7 @@ const OrderForCustomer = {
                 }
               })
               if (!match) {
-                new_customers += '<div class="gofc-customer" customer_email="' + customer.email + '" customer_full-name="' + customer.full_name + '">\
-                  <div class="v-row">\
-                    <div class="v-col-lg-4">\
-                      <strong class="gofc-customer_full-name">' + customer.full_name + '</strong>\
-                      <br>\
-                      <span>' + customer.email + '</span><br>\
-                      <span class="text-black-50">'+customer.city+', '+customer.state+'</span>\
-                    </div>\
-                    <div class="v-col-lg-4">\
-                      <span class="text-black-50">Last Order At:</span> <strong>'+customer.last_order_date+'</strong><br>\
-                      <span class="text-black-50">Total Orders:</span> <strong>'+customer.orders_count+'</strong><br>\
-                      <span class="text-black-50">Average Order Value:</span> <strong>' + Utilities.formatCurrency(customer.aov) + '</strong><br>\
-                    </div>\
-                    <div class="v-col-lg-2 gwp-text-center">$' + Utilities.formatCurrency(customer.total_spend) + '</div>\
-                    <div class="v-col-lg-2 gwp-text-lg-right d-flex justify-content-end align-items-center">\
-                      <button type="button" class="gofc-btn-place-order v-btn v-btn-primary" customer-email="' + customer.email + '">Place Order</button>\
-                    </div>\
-                  </div>\
-                </div>'
+                new_customers += OrderForCustomer.newCustomerHTML(customer)
               }
             })
             $('#gofc-customers-list').append(new_customers)
@@ -99,6 +81,9 @@ const OrderForCustomer = {
     const affiliate_user_id = parseInt($customers_list.attr('affiliate-user-id'))
     const offset = parseInt($customers_list.attr('offset'))
     const sort_type = $('#customer-sort').find(":selected").val()
+    this.onLoadCustomersBatch(affiliate_user_id, offset, sort_type)
+  },
+  onLoadCustomersBatch: function(affiliate_user_id, offset, sort_type) {
     OrderForCustomer.loadCustomersBatch(affiliate_user_id, offset, sort_type).then( function(res) {
       res = JSON.parse(res)
       if (res.success) {
@@ -128,25 +113,7 @@ const OrderForCustomer = {
               }
             })
             if (!match) {
-              new_customers += '<div class="gofc-customer" customer_email="' + customer.email + '" customer_full-name="' + customer.full_name + '">\
-                <div class="v-row">\
-                  <div class="v-col-lg-4">\
-                    <strong class="gofc-customer_full-name">' + customer.full_name + '</strong>\
-                    <br>\
-                    <span>' + customer.email + '</span><br>\
-                    <span class="text-black-50">'+customer.city+', '+customer.state+'</span>\
-                  </div>\
-                  <div class="v-col-lg-4">\
-                    <span class="text-black-50">Last Order At:</span> <strong>'+customer.last_order_date+'</strong><br>\
-                    <span class="text-black-50">Total Orders:</span> <strong>'+customer.orders_count+'</strong><br>\
-                    <span class="text-black-50">Average Order Value:</span> <strong>' + Utilities.formatCurrency(customer.aov) + '</strong><br>\
-                  </div>\
-                  <div class="v-col-lg-2 gwp-text-center">$' + Utilities.formatCurrency(customer.total_spend) + '</div>\
-                  <div class="v-col-lg-2 gwp-text-lg-right d-flex justify-content-end align-items-center">\
-                    <button type="button" class="gofc-btn-place-order v-btn v-btn-primary" customer-email="' + customer.email + '">Place Order</button>\
-                  </div>\
-                </div>\
-              </div>'
+              new_customers += OrderForCustomer.newCustomerHTML(customer)
             }
           })
           $('#gofc-customers-list').append(new_customers)
@@ -184,6 +151,28 @@ const OrderForCustomer = {
         reject(err)
       })
     })
+  },
+  newCustomerHTML: function(customer) {
+    new_customer_html = '<div class="gofc-customer" customer_email="' + customer.email + '" customer_full-name="' + customer.full_name + '">\
+      <div class="v-row">\
+        <div class="v-col-lg-4">\
+          <strong class="gofc-customer_full-name">' + customer.full_name + '</strong>\
+          <br>\
+          <span>' + customer.email + '</span><br>\
+          <span class="text-black-50">'+customer.city+', '+customer.state+'</span>\
+        </div>\
+        <div class="v-col-lg-4">\
+          <span class="text-black-50">Last Order At:</span> <strong>'+customer.last_order_date+'</strong><br>\
+          <span class="text-black-50">Total Orders:</span> <strong>'+customer.orders_count+'</strong><br>\
+          <span class="text-black-50">Average Order Value:</span> <strong>' + Utilities.formatCurrency(customer.aov) + '</strong><br>\
+        </div>\
+        <div class="v-col-lg-2 gwp-text-center">$' + Utilities.formatCurrency(customer.total_spend) + '</div>\
+        <div class="v-col-lg-2 gwp-text-lg-right d-flex justify-content-end align-items-center">\
+          <button type="button" class="gofc-btn-place-order v-btn v-btn-primary" customer-email="' + customer.email + '">Place Order</button>\
+        </div>\
+      </div>\
+    </div>'
+    return new_customer_html
   },
   onSearchCustomers: function() {
     $('#search_customer').on('keyup', function() {
