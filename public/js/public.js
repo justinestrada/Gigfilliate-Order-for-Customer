@@ -12,6 +12,7 @@ const OrderForCustomer = {
       this.onBtnClickPlaceOrder()
       this.onExitPlaceOrderForCustomer()
       this.onChangeCustomerSort();
+      this.onChangeProductSort();
     }
     if ($('#gofc_customer_billing').length) {
       this.setupCustomerBilling()
@@ -22,83 +23,20 @@ const OrderForCustomer = {
   onChangeCustomerSort: function() {
     $('#customer-sort').on('change', function() {
       const $customers_list = $('#gofc-customers-list')
-      $customers_list.html('');
-      $customers_list.attr('offset',0);
-      const affiliate_user_id = parseInt($customers_list.attr('affiliate-user-id'))
-      const offset = parseInt($customers_list.attr('offset'))
-      const sort_type = $('#customer-sort').find(":selected").val()
+      $customers_list.html('').attr('offset', 0);
       $('#gof-customer-list_skeleton').show()
-      OrderForCustomer.loadCustomersBatch(affiliate_user_id, offset, sort_type).then( function(res) {
-        res = JSON.parse(res)
-        if (res.success) {
-          const customers_obj = res.customers_data.customers
-          if (Object.keys(customers_obj).length) {
-            let new_customers = ''
-            Object.keys(customers_obj).forEach( (key) => {
-              const customer = customers_obj[key]
-              const $existing_customers = $('.gofc-customer')
-              let match = false
-              $existing_customers.each(function() {
-                const this_customer_email = $(this).attr('customer_email')
-                if (this_customer_email === customer.email) {
-                  const $this_orders_count = $(this).find('.gofc-customer_orders-count')
-                  const new_orders_count = parseInt($this_orders_count.text()) + customer.orders_count
-                  // console.log(parseInt($this_orders_count.text()), customer.orders_count, new_orders_count)
-                  $this_orders_count.text( new_orders_count )
-                  const $this_total_spend = $(this).find('.gofc-customer_total-spend')
-                  const new_total_spend = parseInt($this_total_spend.text().replace('$', '')) + customer.total_spend
-                  // console.log(parseInt($this_total_spend.text().replace('$', '')), customer.total_spend, new_total_spend)
-                  $this_total_spend.text( '$' + Utilities.formatCurrency(new_total_spend) )
-                  const $this_aov = $(this).find('.gofc-customer_aov')
-                  const new_aov = parseFloat(new_total_spend / new_orders_count)
-                  $this_aov.text( '$' + Utilities.formatCurrency(new_aov) )
-                  match = true
-                }
-              })
-              if (!match) {
-                new_customers += '<div class="gofc-customer" customer_email="' + customer.email + '" customer_full-name="' + customer.full_name + '">\
-                  <div class="v-row">\
-                    <div class="v-col-lg-4">\
-                      <strong class="gofc-customer_full-name">' + customer.full_name + '</strong>\
-                      <br>\
-                      <span>' + customer.email + '</span><br>\
-                      <span class="text-black-50">'+customer.city+', '+customer.state+'</span>\
-                    </div>\
-                    <div class="v-col-lg-4">\
-                      <span class="text-black-50">Last Order At:</span> <strong>'+customer.last_order_date+'</strong><br>\
-                      <span class="text-black-50">Total Orders:</span> <strong>'+customer.orders_count+'</strong><br>\
-                      <span class="text-black-50">Average Order Value:</span> <strong>' + Utilities.formatCurrency(customer.aov) + '</strong><br>\
-                    </div>\
-                    <div class="v-col-lg-2 gwp-text-center">$' + Utilities.formatCurrency(customer.total_spend) + '</div>\
-                    <div class="v-col-lg-2 gwp-text-lg-right d-flex justify-content-end align-items-center">\
-                      <button type="button" class="gofc-btn-place-order v-btn v-btn-primary" customer-email="' + customer.email + '">Place Order</button>\
-                    </div>\
-                  </div>\
-                </div>'
-              }
-            })
-            $('#gofc-customers-list').append(new_customers)
-            $customers_list.attr('offset', (offset + res.customers_data.orders_found))
-            OrderForCustomer.continuouslyLoadCustomers()
-          } else {
-            // No more customers, finished loading!
-            $('#gof-customer-list_skeleton').hide()
-          }
-          OrderForCustomer.onBtnClickPlaceOrder()
-        } else {
-          console.error(res)
-        }
-      }).catch(function(err) {
-        console.error(err)
-      })
+      OrderForCustomer.onLoadCustomersBatch()
     })
   },
   continuouslyLoadCustomers: function() {
+    this.onLoadCustomersBatch()
+  },
+  onLoadCustomersBatch: function() {
     const $customers_list = $('#gofc-customers-list')
     const affiliate_user_id = parseInt($customers_list.attr('affiliate-user-id'))
     const offset = parseInt($customers_list.attr('offset'))
     const sort_type = $('#customer-sort').find(":selected").val()
-    OrderForCustomer.loadCustomersBatch(affiliate_user_id, offset, sort_type).then( function(res) {
+    this.loadCustomersBatch(affiliate_user_id, offset, sort_type).then( function(res) {
       res = JSON.parse(res)
       if (res.success) {
         // console.log(res, res.customers_data.customers.length)
@@ -127,25 +65,7 @@ const OrderForCustomer = {
               }
             })
             if (!match) {
-              new_customers += '<div class="gofc-customer" customer_email="' + customer.email + '" customer_full-name="' + customer.full_name + '">\
-                <div class="v-row">\
-                  <div class="v-col-lg-4">\
-                    <strong class="gofc-customer_full-name">' + customer.full_name + '</strong>\
-                    <br>\
-                    <span>' + customer.email + '</span><br>\
-                    <span class="text-black-50">'+customer.city+', '+customer.state+'</span>\
-                  </div>\
-                  <div class="v-col-lg-4">\
-                    <span class="text-black-50">Last Order At:</span> <strong>'+customer.last_order_date+'</strong><br>\
-                    <span class="text-black-50">Total Orders:</span> <strong>'+customer.orders_count+'</strong><br>\
-                    <span class="text-black-50">Average Order Value:</span> <strong>' + Utilities.formatCurrency(customer.aov) + '</strong><br>\
-                  </div>\
-                  <div class="v-col-lg-2 gwp-text-center">$' + Utilities.formatCurrency(customer.total_spend) + '</div>\
-                  <div class="v-col-lg-2 gwp-text-lg-right d-flex justify-content-end align-items-center">\
-                    <button type="button" class="gofc-btn-place-order v-btn v-btn-primary" customer-email="' + customer.email + '">Place Order</button>\
-                  </div>\
-                </div>\
-              </div>'
+              new_customers += OrderForCustomer.newCustomerHTML(customer)
             }
           })
           $('#gofc-customers-list').append(new_customers)
@@ -154,6 +74,7 @@ const OrderForCustomer = {
         } else {
           // No more customers, finished loading!
           $('#gof-customer-list_skeleton').hide()
+          $('#gofc-customer-sort-col').show()
         }
         OrderForCustomer.onBtnClickPlaceOrder()
       } else {
@@ -183,6 +104,32 @@ const OrderForCustomer = {
         reject(err)
       })
     })
+  },
+  newCustomerHTML: function(customer) {
+    const new_customer_html = '<div class="gofc-customer" customer_email="' + customer.email + '" customer_full-name="' + customer.full_name + '">\
+      <div class="v-row">\
+        <div class="v-col-lg-4">\
+          <div>\
+            <strong class="gofc-customer_full-name">' + customer.full_name + '</strong>\
+            <br>\
+            <span>' + customer.email + '</span><br>\
+            <span class="text-black-50">'+customer.city+', '+customer.state+'</span>\
+          </div>\
+        </div>\
+        <div class="v-col-lg-4">\
+          <div>\
+            <span class="text-black-50">Last Order At:</span> <strong>'+customer.last_order_date+'</strong><br>\
+            <span class="text-black-50">Total Orders:</span> <strong>'+customer.orders_count+'</strong><br>\
+            <span class="text-black-50">Average Order Value:</span> <strong>' + Utilities.formatCurrency(customer.aov) + '</strong><br>\
+          </div>\
+        </div>\
+        <div class="gofc-customer_total-spend v-col-lg-2 gwp-text-center">$' + Utilities.formatCurrency(customer.total_spend) + '</div>\
+        <div class="v-col-lg-2 gwp-text-lg-right d-flex justify-content-end align-items-center">\
+          <button type="button" class="gofc-btn-place-order v-btn v-btn-primary" customer-email="' + customer.email + '">Place Order</button>\
+        </div>\
+      </div>\
+    </div>'
+    return new_customer_html
   },
   onSearchCustomers: function() {
     $('#search_customer').on('keyup', function() {
@@ -261,13 +208,20 @@ const OrderForCustomer = {
       console.error(err)
     })
   },
+  onChangeProductSort: function() {
+    const $this = this;
+    $('#products-sorting-order').on('change', function() {
+      $this.onGetProducts()
+    });
+  },
   getProducts: function() {
     return new Promise( (resolve, reject) => {
       $.ajax({
         url: GOFC.ajax_url,
         data: {
           action: 'gofc_get_products',
-          search: $('#search_product').val()
+          search: $('#search_product').val(),
+          order_by: $('#products-sorting-order').find(':selected').val()
         },
         type: 'POST',
         config: { headers: {'Content-Type': 'multipart/form-data' }},

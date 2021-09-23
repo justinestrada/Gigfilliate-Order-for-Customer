@@ -137,6 +137,9 @@ class Gigfilliate_Order_For_Customer_Public
         $this->primary_affiliate_coupon_code = get_user_meta($this->current_user_id, 'primary_affiliate_coupon_code', true);
         $this->my_customers = $this->helpers->get_customers($this->current_user_id, $this->current_user, 20);
         require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/customers.php';
+        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/modal/add-new-customer.php';
+        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/products.php';
+        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/modal/are-you-sure.php';
       }
       echo ob_get_clean();
       ?>
@@ -200,10 +203,34 @@ class Gigfilliate_Order_For_Customer_Public
     $args = [
       'post_type' => 'product',
       'posts_per_page' => -1,
+      'orderby' => 'title',
       'order' => 'ASC',
-      'post_status' => array('publish'),
-      // TODO: Only get Woo Products with Visibility Shop & Catalogue
+      'post_status' => ['publish'], 
+      'tax_query'   => [ [
+        'taxonomy'  => 'product_visibility',
+        'terms'     => ['exclude-from-catalog'],
+        'field'     => 'name',
+        'operator'  => 'NOT IN',
+      ]]
     ];
+    $order_by = $_POST['order_by'];
+    if($order_by == 'title_z_a') {
+      $args['order'] = 'DESC';
+    }
+    if($order_by == 'latest') {
+      $args['order'] = 'ASC';
+      $args['orderby'] = 'publish_date';
+    }
+    if($order_by == 'price_low_high') {
+      $args['order'] = 'ASC';
+      $args['orderby'] = 'meta_value_num';
+      $args['meta_key'] = '_price';
+    }
+    if($order_by == 'price_high_low') {
+      $args['order'] = 'DESC';
+      $args['orderby'] = 'meta_value_num';
+      $args['meta_key'] = '_price';
+    }
     if (isset($_POST['search'])) {
       $args['s'] = $_POST['search'];
     }
@@ -252,7 +279,7 @@ class Gigfilliate_Order_For_Customer_Public
         <button type="button" class="ml-2 mb-1 text-white close" data-dismiss="toast">&times;</button>
       </div>
       <div class="toast-body">
-        <p class="mb-0">You exited from 'Place Order for Customer' mode.</p>
+        <p class="mb-0">You exited from 'Place Order for Customer Mode'.</p>
       </div>
     </div>
     <?php

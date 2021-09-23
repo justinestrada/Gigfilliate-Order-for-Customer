@@ -17,7 +17,7 @@
 }
 
 .page-place-order-for-customer-mode {
-  padding-top: 0;
+  padding-top: 0 !important;
 }
 
 .page-place-order-for-customer-mode .top-navbar,
@@ -51,8 +51,17 @@
   margin-bottom: 0;
 }
 
+.gofc-customer [class*="v-col"] {
+  display: flex;
+  align-items: center;
+}
+
 .gofc-customer_full-name {
   text-transform: capitalize;
+}
+
+.gofc-customer_total-spend {
+  justify-content: center;
 }
 
 .gofc-products-list-item-add-to-cart-btn .added_to_cart_label,

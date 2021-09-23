@@ -40,13 +40,16 @@
               <div class="v-col-lg-2 gwp-text-center">
                 Total Spend
               </div>
-              <div class="v-col-lg-2">
+              <!-- TODO: The Customers sort should only load after all the customers are loaded in, then we just sort with JavaScript on the Frontend -->
+              <?php /*
+              <div id="gofc-customer-sort-col" class="v-col-lg-2" style="display: none;">
                 <select class="form-control d-block" id="customer-sort">
                   <!-- <option value="mo">Sort by most orders</option> -->
                   <option value="az" selected>Sort A - Z</option>
                   <option value="za">Sort Z - A</option>
                 </select>
               </div>
+              */ ?>
             </div>
           </div>
           <div id="gofc-customers-list" offset="<?php echo $this->my_customers['orders_found']; ?>" affiliate-user-id="<?php echo $this->current_user_id; ?>">
@@ -54,17 +57,21 @@
               <div class="gofc-customer" customer_email="<?php echo $customer['email']; ?>" customer_full-name="<?php echo $customer['full_name']; ?>" orders_count="<?php echo $customer['orders_count']; ?>">
                 <div class="v-row">
                   <div class="v-col-lg-4">
-                    <strong class="gofc-customer_full-name">
-                      <?php echo $customer['full_name']; ?>
-                    </strong>
-                    <br>
-                    <span><?php echo $customer['email']; ?></span><br>
-                    <span class="text-black-50"><?php echo $customer['city'] .', '.$customer['state']; ?></span>
+                    <div>
+                      <strong class="gofc-customer_full-name">
+                        <?php echo $customer['full_name']; ?>
+                      </strong>
+                      <br>
+                      <span><?php echo $customer['email']; ?></span><br>
+                      <span class="text-black-50"><?php echo $customer['city'] .', '.$customer['state']; ?></span>
+                    </div>
                   </div>
                   <div class="v-col-lg-4">
-                    <span class="text-black-50">Last Order At:</span> <strong><?php echo $customer['last_order_date']; ?></strong><br>
-                    <span class="text-black-50">Total Orders:</span> <strong><?php echo $customer['orders_count']; ?></strong><br>
-                    <span class="text-black-50">Average Order Value:</span> <strong>$<?php echo $customer['aov']; ?></strong><br>
+                    <div>
+                      <span class="text-black-50">Last Order At:</span> <strong><?php echo $customer['last_order_date']; ?></strong><br>
+                      <span class="text-black-50">Total Orders:</span> <strong><?php echo $customer['orders_count']; ?></strong><br>
+                      <span class="text-black-50">Average Order Value:</span> <strong>$<?php echo $customer['aov']; ?></strong><br>
+                    </div>
                   </div>
                   <div class="gofc-customer_total-spend v-col-lg-2 gwp-text-center">
                     $<?php echo $customer['total_spend']; ?>
@@ -97,74 +104,3 @@
     </div>
   </div>
 </section>
-
-<div class="modal fade" id="addNewCustomerModal" tabindex="-1" role="dialog" aria-labelledby="addNewCustomerModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addNewCustomerModalLabel">Add New Customer</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form id="gofc-add-customer-form" action="POST">
-          <div class="v-skeleton-block" style="display: none; height: 40px; margin-bottom: 1rem;">
-            <div class="v-line" style="height: 40px; margin: 0;"></div>
-          </div>
-          <div class="form-group md-form mt-2">
-            <label for="new-gofc-customer">New Email Address</label>
-            <input type="email" id="new-gofc-customer" name="new_gofc_customer" class="form-control" aria-describedby="emailHelp" required/>
-            <div class="invalid-feedback">Please enter a valid email.</div>
-          </div>
-          <input name="action" type="hidden" value="customer_order_form_submit"/>
-          <button type="submit" class="v-btn v-btn-primary"><i class="fa fa-plus mr-1" aria-hidden="true"></i>Add New Customer</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="gofc_products_section" style="display: <?php echo (isset($_COOKIE[$this->cookie_name]) ? 'block' : 'none'); ?> ;">
-  <div class="alert alert-info" role="alert" id="alert-placing-for-customer">
-    <i class="fa fa-info-circle mr-1" aria-hidden="true"></i>
-    You're placing an order for <span id="alert_customer_email"><?php echo isset($_COOKIE[$this->cookie_name]) ? $_COOKIE[$this->cookie_name] : ''; ?></span>. You can use your <?php echo $this->core_settings->affiliate_term; ?> customer coupon: <strong><?php echo $this->primary_affiliate_coupon_code; ?></strong>, but not your personal <?php echo $this->core_settings->affiliate_term; ?> coupon.
-  </div>
-  <div id="gofc-customer-search" class="card gofc-customer-search">
-    <div class="card-body">
-      <div class="row mb-3">
-        <div class="col-sm-6">
-          <div class="form-group md-form mt-2 mb-0">
-            <label for="search_product">Filter by Product Name</label>
-            <input type="text" name="search_product" id="search_product" class="form-control"/>
-          </div>
-        </div>
-        <div class="col-sm-6 d-flex align-items-center justify-content-sm-end">
-          <button class="v-btn v-btn-outline-primary gofc_exit_place_order_for_customer">Exit 'Place Order For Customer' Mode</button>
-        </div>
-      </div>
-      <div class="gofc-products-list">
-        <!-- Products listed here via js -->
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal" tabindex="-1" role="dialog" id="gofc-model">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Are You Sure?</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="v-btn v-btn-outline-primary" data-dismiss="modal">No</button>
-        <button type="button" class="v-btn v-btn-primary confirm-btn">Yes</button>
-      </div>
-    </div>
-  </div>
-</div>
