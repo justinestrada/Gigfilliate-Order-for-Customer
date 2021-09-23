@@ -40,7 +40,8 @@
               <div class="v-col-lg-2 gwp-text-center">
                 Total Spend
               </div>
-              <div class="v-col-lg-2">
+              <!-- TODO: The Customers sort should only load after all the customers are loaded in, then we just sort with JavaScript on the Frontend -->
+              <div id="gofc-customer-sort-col" class="v-col-lg-2" style="display: none;">
                 <select class="form-control d-block" id="customer-sort">
                   <!-- <option value="mo">Sort by most orders</option> -->
                   <option value="az" selected>Sort A - Z</option>
@@ -54,17 +55,21 @@
               <div class="gofc-customer" customer_email="<?php echo $customer['email']; ?>" customer_full-name="<?php echo $customer['full_name']; ?>" orders_count="<?php echo $customer['orders_count']; ?>">
                 <div class="v-row">
                   <div class="v-col-lg-4">
-                    <strong class="gofc-customer_full-name">
-                      <?php echo $customer['full_name']; ?>
-                    </strong>
-                    <br>
-                    <span><?php echo $customer['email']; ?></span><br>
-                    <span class="text-black-50"><?php echo $customer['city'] .', '.$customer['state']; ?></span>
+                    <div>
+                      <strong class="gofc-customer_full-name">
+                        <?php echo $customer['full_name']; ?>
+                      </strong>
+                      <br>
+                      <span><?php echo $customer['email']; ?></span><br>
+                      <span class="text-black-50"><?php echo $customer['city'] .', '.$customer['state']; ?></span>
+                    </div>
                   </div>
                   <div class="v-col-lg-4">
-                    <span class="text-black-50">Last Order At:</span> <strong><?php echo $customer['last_order_date']; ?></strong><br>
-                    <span class="text-black-50">Total Orders:</span> <strong><?php echo $customer['orders_count']; ?></strong><br>
-                    <span class="text-black-50">Average Order Value:</span> <strong>$<?php echo $customer['aov']; ?></strong><br>
+                    <div>
+                      <span class="text-black-50">Last Order At:</span> <strong><?php echo $customer['last_order_date']; ?></strong><br>
+                      <span class="text-black-50">Total Orders:</span> <strong><?php echo $customer['orders_count']; ?></strong><br>
+                      <span class="text-black-50">Average Order Value:</span> <strong>$<?php echo $customer['aov']; ?></strong><br>
+                    </div>
                   </div>
                   <div class="gofc-customer_total-spend v-col-lg-2 gwp-text-center">
                     $<?php echo $customer['total_spend']; ?>
