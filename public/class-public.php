@@ -164,7 +164,7 @@ class Gigfilliate_Order_For_Customer_Public
   public function customer_notice() {
     if (isset($_COOKIE[$this->cookie_name])) {
       $customer = get_user_by('email', $_COOKIE[$this->cookie_name]);
-      $primary_coupon_code = get_user_meta($customer->ID, 'primary_affiliate_coupon_code', true);
+      $primary_coupon_code = get_user_meta(get_current_user_id(), 'primary_affiliate_coupon_code', true);
       $this->apply_default_coupon($primary_coupon_code);
       ?>
       <div class="alert alert-info" role="alert">
