@@ -83,7 +83,9 @@ class Gigfilliate_Order_For_Customer_Public
       'GOFC',
       [
         'ajax_url' => admin_url('admin-ajax.php'),
-        'cookie_name' => $this->cookie_name
+        'cookie_name' => $this->cookie_name,
+        'cart_url' => wc_get_cart_url(),
+        'customers_url' => get_site_url().'/account/brand-partner-customers/',
       ]
     );
   }

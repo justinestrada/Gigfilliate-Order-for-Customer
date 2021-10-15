@@ -14,11 +14,10 @@ const OrderForCustomer = {
       this.onChangeCustomerSort();
       this.onChangeProductSort();
     }
-    if ($('#gofc_customer_billing').length) {
-      this.setupCustomerBilling()
-    }
+    this.setupCustomerBilling()
     this.giveWarningWhenLeavingTheCheckout()
     this.exitFromOrderForCustomerIfNotOnValidPage()
+    this.changeReturnToCart();
   },
   onChangeCustomerSort: function() {
     $('#customer-sort').on('change', function() {
@@ -234,10 +233,13 @@ const OrderForCustomer = {
     })
   },
   setupCustomerBilling: function() {
+    if (!$('#gofc_customer_billing').length) {
+      return;
+    }
     const $gofc_customer_billing = $('#gofc_customer_billing')
     const $billing_email = $('[name="billing_email"]')
-    const $first_name = $('[name="first_name"]')
-    const $last_name = $('[name="last_name"]')
+    const $first_name = $('[name="billing_first_name"]')
+    const $last_name = $('[name="billing_last_name"]')
     const $billing_address_1 = $('[name="billing_address_1"]')
     const $billing_address_2 = $('[name="billing_address_2"]')
     const $billing_company = $('[name="billing_company"]')
@@ -247,38 +249,55 @@ const OrderForCustomer = {
     const $billing_city = $('[name="billing_city"]')
     const $billing_phone = $('[name="billing_phone"]')
     if ($billing_email.length) {
-      $billing_email.removeClass('garlic-auto-save').val($gofc_customer_billing.data('email'))
+      $billing_email.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('email'))).attr('value',this.clearInputField($gofc_customer_billing.data('email')))
     }
     if ($first_name.length) {
-      $first_name.removeClass('garlic-auto-save').val($gofc_customer_billing.data('firstname'))
+      $first_name.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('firstname'))).attr('value',this.clearInputField($gofc_customer_billing.data('firstname')))
     }
     if ($last_name.length) {
-      $last_name.removeClass('garlic-auto-save').val($gofc_customer_billing.data('lastname'))
+      $last_name.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('lastname'))).attr('value',this.clearInputField($gofc_customer_billing.data('lastname')))
     }
     if ($billing_address_1.length) {
-      $billing_address_1.removeClass('garlic-auto-save').val($gofc_customer_billing.data('address1'))
+      $billing_address_1.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('address1'))).attr('value',this.clearInputField($gofc_customer_billing.data('address1')))
     }
     if ($billing_address_2.length) {
-      $billing_address_2.removeClass('garlic-auto-save').val($gofc_customer_billing.data('address2'))
+      $billing_address_2.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('address2'))).attr('value',this.clearInputField($gofc_customer_billing.data('address2')))
     }
     if ($billing_company.length) {
-      $billing_company.removeClass('garlic-auto-save').val($gofc_customer_billing.data('company'))
+      $billing_company.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('company'))).attr('value',this.clearInputField($gofc_customer_billing.data('company')))
     }
     if ($billing_country.length) {
-      $billing_country.removeClass('garlic-auto-save').val($gofc_customer_billing.data('country')).change()
+      let country_option = $billing_country.find('option:selected').first()
+      if(country_option) {
+        country_option.removeAttr('selected')
+      }
+      $billing_country.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('country'))).change()
     }
     if ($billing_postcode.length) {
-      $billing_postcode.removeClass('garlic-auto-save').val($gofc_customer_billing.data('postcode'))
+      $billing_postcode.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('postcode'))).attr('value',this.clearInputField($gofc_customer_billing.data('postcode')))
     }
     if ($billing_state.length) {
-      $billing_state.removeClass('garlic-auto-save').val($gofc_customer_billing.data('state')).change()
+      let state_option = $billing_state.find('option:selected').first()
+      if(state_option) {
+        state_option.removeAttr('selected')
+      }
+      $billing_state.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('state'))).change()
     }
     if ($billing_city.length) {
-      $billing_city.removeClass('garlic-auto-save').val($gofc_customer_billing.data('city'))
+      $billing_city.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('city'))).attr('value',this.clearInputField($gofc_customer_billing.data('city')))
     }
     if ($billing_phone.length) {
-      $billing_phone.removeClass('garlic-auto-save').val($gofc_customer_billing.data('phone'))
+      $billing_phone.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('phone'))).attr('value',this.clearInputField($gofc_customer_billing.data('phone')))
     }
+  },
+  clearInputField: function(data) {
+    return data?data:'';
+  },
+  changeReturnToCart: function() {
+    if (!this.isCurrentURLValid() || Cookie.read(GOFC.cookie_name) === null) {
+      return;
+    }
+    $(".previous-button a[href='"+GOFC.cart_url+"']").attr("href",GOFC.customers_url).html('« Return to affiliate customers')
   },
   onAddNewCustomer: function() {
     const self = this
