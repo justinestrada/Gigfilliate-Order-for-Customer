@@ -297,7 +297,7 @@ const OrderForCustomer = {
     if (!this.isCurrentURLValid() || Cookie.read(GOFC.cookie_name) === null) {
       return;
     }
-    $(".previous-button a[href='"+GOFC.cart_url+"']").attr("href",GOFC.customers_url).html('« Return to affiliate customers')
+    $(".previous-button a[href='"+GOFC.cart_url+"']").attr("href",GOFC.customers_url).html('« Return to Brand Partner Customers')
   },
   onAddNewCustomer: function() {
     const self = this
