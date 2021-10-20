@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       Gigfilliate WP Customers
  * Plugin URI:        https://partners.vitalibis.com/login
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Description:       Affiliates can view, manage and order for their customers.
  * Version:           1.0.1
  * Author:            Gigfilliate
  * Author URI:        https://partners.vitalibis.com/login
