@@ -117,7 +117,7 @@ const OrderForCustomer = {
         </div>\
         <div class="v-col-lg-4">\
           <div>\
-            <span class="text-black-50">Last Order At:</span> <strong>'+customer.last_order_date+'</strong><br>\
+            <span class="text-black-50">Last Order:</span> <strong>'+customer.last_order_date+'</strong><br>\
             <span class="text-black-50">Total Orders:</span> <strong>'+customer.orders_count+'</strong><br>\
             <span class="text-black-50">Average Order Value:</span> <strong>' + Utilities.formatCurrency(customer.aov) + '</strong><br>\
           </div>\
@@ -164,11 +164,12 @@ const OrderForCustomer = {
   },
   onGetProducts: function() {
     let $products_list = $('.gofc-products-list');
-    $products_list.html('<div class="loading-spinner"><div class="loading-animation"><div></div></div></div>'); // TODO: Use skeleton loaders
+    $products_list.html('<div class="loading-spinner"><div class="loading-animation"><div></div></div></div>');
     this.getProducts().then( function(res) {
       $products_list.html('')
       if (!res || res === 0) {
         alert('Network Error. Try Again.')
+        console.error('Network Error. Try Again.')
         return
       }
       res = JSON.parse(res);
@@ -249,22 +250,22 @@ const OrderForCustomer = {
     const $billing_city = $('[name="billing_city"]')
     const $billing_phone = $('[name="billing_phone"]')
     if ($billing_email.length) {
-      $billing_email.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('email'))).attr('value',this.clearInputField($gofc_customer_billing.data('email')))
+      $billing_email.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('email'))).attr('value', this.clearInputField($gofc_customer_billing.data('email')))
     }
     if ($first_name.length) {
-      $first_name.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('firstname'))).attr('value',this.clearInputField($gofc_customer_billing.data('firstname')))
+      $first_name.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('firstname'))).attr('value', this.clearInputField($gofc_customer_billing.data('firstname')))
     }
     if ($last_name.length) {
-      $last_name.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('lastname'))).attr('value',this.clearInputField($gofc_customer_billing.data('lastname')))
+      $last_name.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('lastname'))).attr('value', this.clearInputField($gofc_customer_billing.data('lastname')))
     }
     if ($billing_address_1.length) {
-      $billing_address_1.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('address1'))).attr('value',this.clearInputField($gofc_customer_billing.data('address1')))
+      $billing_address_1.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('address1'))).attr('value', this.clearInputField($gofc_customer_billing.data('address1')))
     }
     if ($billing_address_2.length) {
-      $billing_address_2.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('address2'))).attr('value',this.clearInputField($gofc_customer_billing.data('address2')))
+      $billing_address_2.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('address2'))).attr('value', this.clearInputField($gofc_customer_billing.data('address2')))
     }
     if ($billing_company.length) {
-      $billing_company.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('company'))).attr('value',this.clearInputField($gofc_customer_billing.data('company')))
+      $billing_company.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('company'))).attr('value', this.clearInputField($gofc_customer_billing.data('company')))
     }
     if ($billing_country.length) {
       let country_option = $billing_country.find('option:selected').first()
@@ -297,7 +298,7 @@ const OrderForCustomer = {
     if (!this.isCurrentURLValid() || Cookie.read(GOFC.cookie_name) === null) {
       return;
     }
-    $(".previous-button a[href='"+GOFC.cart_url+"']").attr("href",GOFC.customers_url).html('« Return to Brand Partner Customers')
+    $('.previous-button a[href="' + GOFC.cart_url + '"]').attr('href', GOFC.customers_url).html('« Return to ' + Vitalibis_WP.affiliate_term + ' customers')
   },
   onAddNewCustomer: function() {
     const self = this

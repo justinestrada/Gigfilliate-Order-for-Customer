@@ -124,11 +124,11 @@ class Gigfilliate_Order_For_Customer_Public
 
   public function new_account_page_content() {
     $this->is_user_logged_in = is_user_logged_in();
+    ob_start();
     ?>
     <div style="margin-bottom: 1rem;">
       <h1><?php echo $this->core_settings->affiliate_term ?> Customers</h1>
       <?php
-      ob_start();
       if (!$this->is_user_logged_in) {
         ?>
         <p>Not logged in, you must be logged in and an active <?php echo $this->core_settings->affiliate_term ?> to see your customers.</p>
@@ -138,15 +138,15 @@ class Gigfilliate_Order_For_Customer_Public
         $this->current_user = wp_get_current_user();
         $this->primary_affiliate_coupon_code = get_user_meta($this->current_user_id, 'primary_affiliate_coupon_code', true);
         $this->my_customers = $this->helpers->get_customers($this->current_user_id, $this->current_user, 20);
-        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/customers.php';
-        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/modal/add-new-customer.php';
-        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/products.php';
-        require_once WP_PLUGIN_DIR . '/gigfilliate-order-for-customer/public/views/modal/are-you-sure.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/views/customers.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/views/modal/add-new-customer.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/views/products.php';
+        require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/views/modal/are-you-sure.php';
       }
-      echo ob_get_clean();
       ?>
     </div>
     <?php
+    echo ob_get_clean();
   }
 
   public function ajax_check_email_exists( ) {
