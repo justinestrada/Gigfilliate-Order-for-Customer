@@ -12,7 +12,7 @@ Gigfilliate WordPress plugin extension. This plugin requires the core Gigfilliat
 
 == Description ==
 
-Coming soon.
+Affiliates can view, manage and order for their customers.
 
 == Installation ==
 
