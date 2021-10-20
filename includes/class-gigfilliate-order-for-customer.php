@@ -74,7 +74,7 @@ class Gigfilliate_Order_For_Customer {
 		} else {
 			$this->version = '0.0.1';
 		}
-		$this->plugin_name = 'gigfilliate-order-for-customer';
+		$this->plugin_name = 'gigfilliate-wp-customers';
 
 		$this->load_dependencies();
 		$this->set_locale();

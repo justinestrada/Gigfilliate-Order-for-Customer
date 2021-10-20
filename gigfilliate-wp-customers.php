@@ -13,7 +13,7 @@
  * @package           Gigfilliate_Order_For_Customer
  *
  * @wordpress-plugin
- * Plugin Name:       Gigfilliate Order For Customer
+ * Plugin Name:       Gigfilliate WP Customers
  * Plugin URI:        https://partners.vitalibis.com/login
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
  * Version:           1.0.1
@@ -21,7 +21,7 @@
  * Author URI:        https://partners.vitalibis.com/login
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       gigfilliate-order-for-customer
+ * Text Domain:       gigfilliate-wp-customers
  * Domain Path:       /languages
  */
 

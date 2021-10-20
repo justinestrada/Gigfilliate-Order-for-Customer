@@ -35,7 +35,7 @@ class Gigfilliate_Order_For_Customer_i18n {
 	public function load_plugin_textdomain() {
 
 		load_plugin_textdomain(
-			'gigfilliate-order-for-customer',
+			'gigfilliate-wp-customers',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);
