@@ -1,14 +1,11 @@
 <?php
 
-class Gigfilliate_Order_For_Customer_Helpers
-{
+class Gigfilliate_Order_For_Customer_Helpers {
 
-  public function __construct()
-  {
+  public function __construct() {
   }
 
-  public function get_customers($affiliate_user_id = false, $current_user = false, $limit = 20, $offset = false, $order_by = 'az')
-  {
+  public function get_customers($affiliate_user_id = false, $current_user = false, $limit = 20, $offset = false, $order_by = 'az') {
     $res = [
       'orders_found' => 0,
       'customers' => [],

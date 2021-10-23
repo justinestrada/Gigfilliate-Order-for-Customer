@@ -51,9 +51,15 @@
   margin-bottom: 0;
 }
 
-.gofc-customer [class*="v-col"] {
-  display: flex;
-  align-items: center;
+@media (min-width: 992px) {
+  .gofc-customer [class*="v-col"] {
+    display: flex;
+    align-items: center;
+  }
+
+  .gofc-customer [class*="v-col"]:not(:first-child) {
+    justify-content: center;
+  }
 }
 
 .gofc-customer_full-name {

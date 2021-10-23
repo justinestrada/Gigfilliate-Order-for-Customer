@@ -138,7 +138,7 @@ class Gigfilliate_Order_For_Customer_Admin
     $offset = (isset($_POST['offset'])) ? $_POST['offset'] : false;
     $limit = (isset($_POST['limit'])) ? $_POST['limit'] : 10;
     $order_by = (isset($_POST['order_by'])) ? $_POST['order_by'] : 'az';
-    $res['customers_data'] = $this->helpers->get_customers( $affiliate_user_id, false, $limit, $offset, $order_by);
+    $res['customers_data'] = $this->helpers->get_customers( $affiliate_user_id, false, $limit, $offset, $order_by );
     // $res['success'] = !empty($res['customers_data']['customers']) ? true : false;
     $res['success'] = true;
     exit(json_encode($res));

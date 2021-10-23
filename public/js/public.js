@@ -53,7 +53,7 @@ const OrderForCustomer = {
                 const new_orders_count = parseInt($this_orders_count.text()) + customer.orders_count
                 // console.log(parseInt($this_orders_count.text()), customer.orders_count, new_orders_count)
                 $this_orders_count.text( new_orders_count )
-                const $this_total_spend = $(this).find('.gofc-customer_total-spend')
+                const $this_total_spend = $(this).find('.gofc-customer_total-spend .total-spend_value')
                 const new_total_spend = parseInt($this_total_spend.text().replace('$', '')) + customer.total_spend
                 // console.log(parseInt($this_total_spend.text().replace('$', '')), customer.total_spend, new_total_spend)
                 $this_total_spend.text( '$' + Utilities.formatCurrency(new_total_spend) )
@@ -83,7 +83,7 @@ const OrderForCustomer = {
       console.error(err)
     })
   },
-  loadCustomersBatch: function(affiliate_user_id, offset, order_by = 'az') {
+  loadCustomersBatch: function(affiliate_user_id, offset, order_by = 'za') {
     return new Promise( (resolve, reject) => {
       $.ajax({
         url: Vitalibis_WP.admin_ajax,
@@ -107,7 +107,7 @@ const OrderForCustomer = {
   newCustomerHTML: function(customer) {
     const new_customer_html = '<div class="gofc-customer" customer_email="' + customer.email + '" customer_full-name="' + customer.full_name + '">\
       <div class="v-row">\
-        <div class="v-col-lg-4">\
+        <div class="v-col-lg-3 text-center text-lg-left mb-3 mb-lg-0">\
           <div>\
             <strong class="gofc-customer_full-name">' + customer.full_name + '</strong>\
             <br>\
@@ -115,15 +115,19 @@ const OrderForCustomer = {
             <span class="text-black-50">'+customer.city+', '+customer.state+'</span>\
           </div>\
         </div>\
-        <div class="v-col-lg-4">\
+        <div class="v-col-lg-2 gwp-text-center">\
+          <span class="d-lg-none mr-1">Last Order Date:</span>' + customer.last_order_date + '\
+        </div>\
+        <div class="v-col-lg-1 gwp-text-center">\
+          <span class="d-lg-none mr-1">Total Order Count:</span>' + customer.orders_count + '\
+        </div>\
+        <div class="v-col-lg-2 gwp-text-center">\
           <div>\
-            <span class="text-black-50">Last Order:</span> <strong>'+customer.last_order_date+'</strong><br>\
-            <span class="text-black-50">Total Orders:</span> <strong>'+customer.orders_count+'</strong><br>\
-            <span class="text-black-50">Average Order Value:</span> <strong>' + Utilities.formatCurrency(customer.aov) + '</strong><br>\
+            <span class="d-lg-none mr-1">Average Order Value:</span>$' + Utilities.formatCurrency(customer.aov) + '\
           </div>\
         </div>\
-        <div class="gofc-customer_total-spend v-col-lg-2 gwp-text-center">$' + Utilities.formatCurrency(customer.total_spend) + '</div>\
-        <div class="v-col-lg-2 gwp-text-lg-right d-flex justify-content-end align-items-center">\
+        <div class="gofc-customer_total-spend v-col-lg-2 gwp-text-center mb-3 mb-lg-0">$' + Utilities.formatCurrency(customer.total_spend) + '</div>\
+        <div class="v-col-lg-2 gwp-text-lg-right d-flex justify-content-center justify-content-lg-end align-items-center">\
           <button type="button" class="gofc-btn-place-order v-btn v-btn-primary" customer-email="' + customer.email + '">Place Order</button>\
         </div>\
       </div>\

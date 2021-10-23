@@ -137,7 +137,7 @@ class Gigfilliate_Order_For_Customer_Public
         $this->current_user_id = get_current_user_id();
         $this->current_user = wp_get_current_user();
         $this->primary_affiliate_coupon_code = get_user_meta($this->current_user_id, 'primary_affiliate_coupon_code', true);
-        $this->my_customers = $this->helpers->get_customers($this->current_user_id, $this->current_user, 20);
+        $this->my_customers = $this->helpers->get_customers($this->current_user_id, $this->current_user, 20, false, 'za');
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/views/customers.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/views/modal/add-new-customer.php';
         require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/views/products.php';
