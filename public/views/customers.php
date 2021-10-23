@@ -1,23 +1,4 @@
 
-<style>
-#gof-customers-list_headers {
-  display: none;
-}
-@media (min-width: 992px) {
-  #gof-customers-list_headers {
-    display: block;
-  }
-}
-#gof-customers-list_headers,
-#gofc-customers-list,
-#gof-customer-list_skeleton {
-  margin-bottom: 1rem;
-}
-#gof-customer-list_skeleton .v-skeleton-block,
-#gof-customer-list_skeleton .v-skeleton-block .v-line {
-  height: 24px;
-}
-</style>
 <section id="gofc_customer_section" style="display: <?php echo (!isset($_COOKIE[$this->cookie_name]) ? 'block' : 'none'); ?>;">
   <div id="gofc-customer-search" class="v-card gofc-customer-search">
     <div class="v-card-body">
@@ -81,21 +62,45 @@
                     </div>
                   </div>
                   <div class="v-col-lg-2 gwp-text-center">
-                    <span class="d-lg-none mr-1">Last Order Date:</span>
-                    <?php echo $customer['last_order_date']; ?>
+                    <div>
+                      <span class="d-lg-none mr-1">Last Order Date:</span>
+                      <div class="gofc-customer_value">
+                        <?php echo $customer['last_order_date']; ?>
+                      </div>
+                    </div>
                   </div>
                   <div class="v-col-lg-1 gwp-text-center">
-                    <span class="d-lg-none mr-1">Total Order Count:</span>
-                    <?php echo $customer['orders_count']; ?>
+                    <div>
+                      <span class="d-lg-none mr-1">Total Orders:</span>
+                      <div class="gofc-customer_value gofc-customer_total-orders-value">
+                        <?php echo $customer['orders_count']; ?>
+                        <div class="v-skeleton-block">
+                          <div class="v-line"></div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div class="v-col-lg-2 gwp-text-center">
                     <div>
-                      <span class="d-lg-none mr-1">Average Order Value:</span>$<?php echo $customer['aov']; ?>
+                      <span class="d-lg-none mr-1">Average Order Value:</span>
+                      <div class="gofc-customer_value gofc-customer_aov-value">
+                        $<?php echo $customer['aov']; ?>
+                        <div class="v-skeleton-block">
+                          <div class="v-line"></div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="gofc-customer_total-spend v-col-lg-2 gwp-text-center mb-3 mb-lg-0">
-                    <span class="d-lg-none mr-1">Total Spend:</span>
-                    <span class="total-spend_value">$<?php echo $customer['total_spend']; ?></span>
+                    <div>
+                      <span class="d-lg-none mr-1">Total Spend:</span>
+                      <span class="gofc-customer_value total-spend_value">
+                        $<?php echo $customer['total_spend']; ?>
+                        <div class="v-skeleton-block">
+                          <div class="v-line"></div>
+                        </div>
+                      </span>
+                    </div>
                   </div>
                   <div class="v-col-lg-2 gwp-text-lg-right d-flex justify-content-center justify-content-lg-end align-items-center">
                     <button type="button" class="gofc-btn-place-order v-btn v-btn-primary" customer-email="<?php echo $customer['email']; ?>">Place Order</button>

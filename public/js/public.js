@@ -72,7 +72,7 @@ const OrderForCustomer = {
           OrderForCustomer.continuouslyLoadCustomers()
         } else {
           // No more customers, finished loading!
-          $('#gof-customer-list_skeleton').hide()
+          $('#gof-customer-list_skeleton, .gofc-customer .v-skeleton-block').hide()
           $('#gofc-customer-sort-col').show()
         }
         OrderForCustomer.onBtnClickPlaceOrder()
@@ -119,7 +119,7 @@ const OrderForCustomer = {
           <span class="d-lg-none mr-1">Last Order Date:</span>' + customer.last_order_date + '\
         </div>\
         <div class="v-col-lg-1 gwp-text-center">\
-          <span class="d-lg-none mr-1">Total Order Count:</span>' + customer.orders_count + '\
+          <span class="d-lg-none mr-1">Total Orders:</span>' + customer.orders_count + '\
         </div>\
         <div class="v-col-lg-2 gwp-text-center">\
           <div>\

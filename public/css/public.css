@@ -173,3 +173,54 @@
 	color: #ffffff !important;
   border-radius: 3px !important;
 }
+
+#gof-customers-list_headers {
+  display: none;
+}
+
+@media (min-width: 992px) {
+  #gof-customers-list_headers {
+    display: block;
+  }
+}
+
+#gof-customers-list_headers,
+#gofc-customers-list,
+#gof-customer-list_skeleton {
+  margin-bottom: 1rem;
+}
+
+#gof-customer-list_skeleton .v-skeleton-block,
+#gof-customer-list_skeleton .v-skeleton-block .v-line {
+  height: 24px;
+}
+
+.gofc-customer_value {
+  display: inline-block;
+  position: relative;
+}
+
+.gofc-customer_value .v-skeleton-block {
+  position: absolute;
+  top: 0;
+  width: 24px;
+  left: -8px;
+  height: 24px;
+}
+
+.gofc-customer_value .v-skeleton-block .v-line {
+  margin: 0;
+  height: 24px;
+}
+
+.gofc-customer_value.gofc-customer_total-orders-value .v-skeleton-block {
+  width: 24px;
+}
+
+.gofc-customer_value.gofc-customer_aov-value .v-skeleton-block {
+  width: 60px;
+}
+
+.gofc-customer_value.total-spend_value .v-skeleton-block {
+  width: 48px;
+}
