@@ -66,6 +66,10 @@
   text-transform: capitalize;
 }
 
+.gofc-customer_email {
+  word-break: break-all;
+}
+
 .gofc-customer_total-spend {
   justify-content: center;
 }

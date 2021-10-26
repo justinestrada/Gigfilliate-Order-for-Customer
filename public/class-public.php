@@ -91,7 +91,7 @@ class Gigfilliate_Order_For_Customer_Public
   }
 
   public function gigfilliatewp_order_volume_type($volume_type) {
-    $volume_type = (isset($_COOKIE[$this->cookie_name])?'CUSTOMER':'PERSONAL');
+    $volume_type = (isset($_COOKIE[$this->cookie_name]) ? 'CUSTOMER' : 'PERSONAL');
     return $volume_type;
   }
 
@@ -104,6 +104,7 @@ class Gigfilliate_Order_For_Customer_Public
     // Add new query var
     add_filter('query_vars', function ($vars) {
       $vars[] = 'brand-partner-customers';
+      $vars[] = 'test';
       return $vars;
     }, 0);
     // Insert the new endpoint into the My Account menu

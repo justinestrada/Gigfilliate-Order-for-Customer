@@ -111,7 +111,7 @@ const OrderForCustomer = {
           <div>\
             <strong class="gofc-customer_full-name">' + customer.full_name + '</strong>\
             <br>\
-            <span>' + customer.email + '</span><br>\
+            <span class="gofc-customer_email">' + customer.email + '</span><br>\
             <span class="text-black-50">'+customer.city+', '+customer.state+'</span>\
           </div>\
         </div>\
