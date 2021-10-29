@@ -57,7 +57,7 @@
                         <?php echo $customer['full_name']; ?>
                       </strong>
                       <br>
-                      <span><?php echo $customer['email']; ?></span><br>
+                      <span class="gofc-customer_email"><?php echo $customer['email']; ?></span><br>
                       <span class="text-black-50"><?php echo $customer['city'] .', '.$customer['state']; ?></span>
                     </div>
                   </div>
