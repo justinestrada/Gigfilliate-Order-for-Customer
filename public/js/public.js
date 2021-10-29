@@ -15,6 +15,7 @@ const OrderForCustomer = {
       this.onChangeProductSort();
     }
     this.setupCustomerBilling()
+    this.setupCustomerShipping()
     this.giveWarningWhenLeavingTheCheckout()
     this.exitFromOrderForCustomerIfNotOnValidPage()
     this.changeReturnToCart();
@@ -242,57 +243,31 @@ const OrderForCustomer = {
       return;
     }
     const $gofc_customer_billing = $('#gofc_customer_billing')
-    const $billing_email = $('[name="billing_email"]')
-    const $first_name = $('[name="billing_first_name"]')
-    const $last_name = $('[name="billing_last_name"]')
-    const $billing_address_1 = $('[name="billing_address_1"]')
-    const $billing_address_2 = $('[name="billing_address_2"]')
-    const $billing_company = $('[name="billing_company"]')
-    const $billing_country = $('[name="billing_country"]')
-    const $billing_postcode = $('[name="billing_postcode"]')
-    const $billing_state = $('[name="billing_state"]')
-    const $billing_city = $('[name="billing_city"]')
-    const $billing_phone = $('[name="billing_phone"]')
-    if ($billing_email.length) {
-      $billing_email.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('email'))).attr('value', this.clearInputField($gofc_customer_billing.data('email')))
+    const fields_to_update = ['billing_email', 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_address_2', 'billing_company', 'billing_country', 'billing_postcode', 'billing_state', 'billing_city', 'billing_phone']
+    this.updateCheckoutFields(fields_to_update, $gofc_customer_billing);
+  },
+  setupCustomerShipping: function() {
+    if (!$('#gofc_customer_shipping').length) {
+      return;
     }
-    if ($first_name.length) {
-      $first_name.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('firstname'))).attr('value', this.clearInputField($gofc_customer_billing.data('firstname')))
-    }
-    if ($last_name.length) {
-      $last_name.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('lastname'))).attr('value', this.clearInputField($gofc_customer_billing.data('lastname')))
-    }
-    if ($billing_address_1.length) {
-      $billing_address_1.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('address1'))).attr('value', this.clearInputField($gofc_customer_billing.data('address1')))
-    }
-    if ($billing_address_2.length) {
-      $billing_address_2.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('address2'))).attr('value', this.clearInputField($gofc_customer_billing.data('address2')))
-    }
-    if ($billing_company.length) {
-      $billing_company.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('company'))).attr('value', this.clearInputField($gofc_customer_billing.data('company')))
-    }
-    if ($billing_country.length) {
-      let country_option = $billing_country.find('option:selected').first()
-      if(country_option) {
-        country_option.removeAttr('selected')
+    const $gofc_customer_shipping = $('#gofc_customer_shipping')
+    const fields_to_update = ['shipping_email', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_address_2', 'shipping_company', 'shipping_country', 'shipping_postcode', 'shipping_state', 'shipping_city', 'shipping_phone']
+    this.updateCheckoutFields(fields_to_update, $gofc_customer_shipping);
+  },
+  updateCheckoutFields: function(fields, data_element) {
+    for (let i = 0; i < fields.length; i++) {
+      let field = fields[i]
+      const $element = $('[name="'+field+'"]')
+      field = field.replace('billing_','')
+      field = field.replace('shipping_','')
+      field = field.replace('_','')
+      if ($element.length) {
+        const element_option = $element.find('option:selected').first()
+        if(element_option) {
+          element_option.removeAttr('selected')
+        }
+        $element.removeClass('garlic-auto-save').val(this.clearInputField(data_element.data(field))).attr('value', this.clearInputField(data_element.data(field))).change()
       }
-      $billing_country.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('country'))).change()
-    }
-    if ($billing_postcode.length) {
-      $billing_postcode.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('postcode'))).attr('value',this.clearInputField($gofc_customer_billing.data('postcode')))
-    }
-    if ($billing_state.length) {
-      let state_option = $billing_state.find('option:selected').first()
-      if(state_option) {
-        state_option.removeAttr('selected')
-      }
-      $billing_state.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('state'))).change()
-    }
-    if ($billing_city.length) {
-      $billing_city.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('city'))).attr('value',this.clearInputField($gofc_customer_billing.data('city')))
-    }
-    if ($billing_phone.length) {
-      $billing_phone.removeClass('garlic-auto-save').val(this.clearInputField($gofc_customer_billing.data('phone'))).attr('value',this.clearInputField($gofc_customer_billing.data('phone')))
     }
   },
   clearInputField: function(data) {
