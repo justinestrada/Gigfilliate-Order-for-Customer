@@ -264,9 +264,16 @@ class Gigfilliate_Order_For_Customer_Public
     if (!isset($_COOKIE[$this->cookie_name])) {
       return;
     }
-    $user = get_user_by('email', $_COOKIE[$this->cookie_name]);
-    if ($user != null) {
-      $customer = new WC_Customer($user->ID); 
+    $orders = wc_get_orders( array(
+      'limit'        => 1,
+      'post_status' => array( 'wc-completed', 'wc-processing' ),
+      'orderby' => 'date',
+      'order' => 'DESC',
+      'meta_key'     => '_billing_email',
+      'meta_value' => $_COOKIE[$this->cookie_name]
+    ));
+    if ($orders != null) {
+      $customer = $orders[0]; 
       ?>
       <span id="gofc_customer_billing" data-email="<?php echo $_COOKIE[$this->cookie_name]; ?>" data-firstName="<?php echo $customer->get_billing_first_name(); ?>" data-lastName="<?php echo $customer->get_billing_last_name(); ?>" data-company="<?php echo $customer->get_billing_company(); ?>" data-address1="<?php echo $customer->get_billing_address_1(); ?>" data-address2="<?php echo $customer->get_billing_address_2(); ?>" data-city="<?php echo $customer->get_billing_city(); ?>" data-state="<?php echo $customer->get_billing_state(); ?>" data-postcode="<?php echo $customer->get_billing_postcode(); ?>" data-country="<?php echo $customer->get_billing_country(); ?>" data-phone="<?php echo $customer->get_billing_phone(); ?>"></span>
       <span id="gofc_customer_shipping" data-email="<?php echo $_COOKIE[$this->cookie_name]; ?>" data-firstName="<?php echo $customer->get_shipping_first_name(); ?>" data-lastName="<?php echo $customer->get_shipping_last_name(); ?>" data-company="<?php echo $customer->get_shipping_company(); ?>" data-address1="<?php echo $customer->get_shipping_address_1(); ?>" data-address2="<?php echo $customer->get_shipping_address_2(); ?>" data-city="<?php echo $customer->get_shipping_city(); ?>" data-state="<?php echo $customer->get_shipping_state(); ?>" data-postcode="<?php echo $customer->get_shipping_postcode(); ?>" data-country="<?php echo $customer->get_shipping_country(); ?>"></span>
