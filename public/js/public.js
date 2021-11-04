@@ -263,16 +263,13 @@ const OrderForCustomer = {
       field = field.replace('_','')
       if ($element.length) {
         $element.removeClass('garlic-auto-save')
-        $element.removeAttr('autocomplete')
-        $element.removeAttr('data-saved-value')
-        $element.removeAttr('field_key')
         $element.val(this.clearInputField(data_element.data(field)))
-        const element_option = $element.find('option:selected').first()
-        if(element_option) {
-          element_option.removeAttr('selected')
-          $element.attr('value', this.clearInputField(data_element.data(field)))
-          $element.change()
+        $element.attr('value', this.clearInputField(data_element.data(field)))
+        if($element.find('option').length){
+          $element.find('option:selected').first().removeAttr('selected')
+          $element.find('option[value="'+this.clearInputField(data_element.data(field))+'"]').attr('selected','')
         }
+        $element.change();
       }
     }
   },

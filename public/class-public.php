@@ -274,35 +274,6 @@ class Gigfilliate_Order_For_Customer_Public
   public function toast()
   {
     if (!isset($_COOKIE[$this->cookie_name])) {
-      $current_user_id = get_current_user_id();
-      $user = get_user_by('id', $current_user_id);
-      if ($user != null) {
-        $customer = new WC_Customer($user->ID);
-      ?>
-        <span id="gofc_customer_billing" data-email="<?php echo get_user_meta($current_user_id, 'billing_email', true); ?>" 
-        data-firstName="<?php echo get_user_meta($current_user_id, 'billing_first_name', true); ?>" 
-        data-lastName="<?php echo get_user_meta($current_user_id, 'billing_last_name', true);?>" 
-        data-company="<?php echo get_user_meta($current_user_id, 'billing_company', true);?>" 
-        data-address1="<?php echo get_user_meta($current_user_id, 'billing_address_1', true);?>" 
-        data-address2="<?php echo get_user_meta($current_user_id, 'billing_address_2', true);?>" 
-        data-city="<?php echo get_user_meta($current_user_id, 'billing_city', true);?>" 
-        data-state="<?php echo get_user_meta($current_user_id, 'billing_state', true);?>" 
-        data-postcode="<?php echo get_user_meta($current_user_id, 'billing_postcode', true)?>" 
-        data-country="<?php echo get_user_meta($current_user_id, 'billing_country', true)?>" 
-        data-phone="<?php echo get_user_meta($current_user_id, 'billing_phone', true);?>"></span>
-        <span id="gofc_customer_shipping" 
-        data-email="<?php echo $user->user_email; ?>" 
-        data-firstName="<?php echo get_user_meta($current_user_id, 'shipping_first_name', true); ?>" 
-        data-lastName="<?php echo get_user_meta($current_user_id, 'shipping_last_name', true); ?>" 
-        data-company="<?php echo get_user_meta($current_user_id, 'shipping_company', true); ?>" 
-        data-address1="<?php echo get_user_meta($current_user_id, 'shipping_address_1', true); ?>" 
-        data-address2="<?php echo get_user_meta($current_user_id, 'shipping_address_2', true); ?>" 
-        data-city="<?php echo get_user_meta($current_user_id, 'shipping_city', true); ?>" 
-        data-state="<?php echo get_user_meta($current_user_id, 'shipping_state', true); ?>" 
-        data-postcode="<?php echo get_user_meta($current_user_id, 'shipping_postcode', true); ?>" 
-        data-country="<?php echo get_user_meta($current_user_id, 'shipping_country', true); ?>"></span>
-      <?php
-      }
       return;
     }
     $cokkie_email = $_COOKIE[$this->cookie_name];
@@ -381,9 +352,53 @@ class Gigfilliate_Order_For_Customer_Public
   {
     if (isset($_POST['new_billing_email'])) {
       $current_user_id = get_current_user_id();
+      update_post_meta($order_id, 'customer_user', "");
       update_post_meta($order_id, 'v_order_affiliate_id', (int)get_user_meta($current_user_id, 'v_affiliate_id', true));
       update_post_meta($order_id, 'ordered_by', wp_get_current_user()->user_email);
       update_post_meta($order_id, '_customer_user', esc_attr($current_user_id));
+      $this->reset_current_user_address();
+    }
+  }
+
+  public function reset_current_user_address() {
+    $current_user = wp_get_current_user();
+    $current_user_id = $current_user->ID;
+    $orders = wc_get_orders(array(
+      'limit'        => 1,
+      'post_status' => array('wc-completed', 'wc-processing'),
+      'orderby' => 'date',
+      'order' => 'DESC',
+      'customer' => $current_user_id,
+      'meta_query' => [
+        [
+          'key'=>'ordered_by',
+          'compare' => 'NOT EXISTS'
+        ]
+      ]
+    ));
+    if ($orders != null) {
+      $current_user = $orders[0];
+      update_user_meta($current_user_id, 'billing_email', $current_user->user_email);
+      update_user_meta($current_user_id, 'billing_first_name', $current_user->get_billing_first_name());
+      update_user_meta($current_user_id, 'billing_last_name', $current_user->get_billing_last_name());
+      update_user_meta($current_user_id, 'billing_company', $current_user->get_billing_company());
+      update_user_meta($current_user_id, 'billing_address_1', $current_user->get_billing_address_1());
+      update_user_meta($current_user_id, 'billing_address_2', $current_user->get_billing_address_2());;
+      update_user_meta($current_user_id, 'billing_city', $current_user->get_billing_city());
+      update_user_meta($current_user_id, 'billing_state', $current_user->get_billing_state());
+      update_user_meta($current_user_id, 'billing_postcode', $current_user->get_billing_postcode());
+      update_user_meta($current_user_id, 'billing_country', $current_user->get_billing_country());
+      update_user_meta($current_user_id, 'billing_phone', $current_user->get_billing_phone());
+
+      update_user_meta($current_user_id, 'shipping_first_name', $current_user->get_shipping_first_name());
+      update_user_meta($current_user_id, 'shipping_last_name', $current_user->get_shipping_last_name());
+      update_user_meta($current_user_id, 'shipping_company', $current_user->get_shipping_company());
+      update_user_meta($current_user_id, 'shipping_address_1', $current_user->get_shipping_address_1());
+      update_user_meta($current_user_id, 'shipping_address_2', $current_user->get_shipping_address_2());
+      update_user_meta($current_user_id, 'shipping_city', $current_user->get_shipping_city());
+      update_user_meta($current_user_id, 'shipping_state', $current_user->get_shipping_state());
+      update_user_meta($current_user_id, 'shipping_postcode', $current_user->get_shipping_postcode());
+      update_user_meta($current_user_id, 'shipping_country', $current_user->get_shipping_country());
     }
   }
 
