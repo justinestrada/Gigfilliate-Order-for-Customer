@@ -262,11 +262,14 @@ const OrderForCustomer = {
       field = field.replace('shipping_','')
       field = field.replace('_','')
       if ($element.length) {
-        const element_option = $element.find('option:selected').first()
-        if(element_option) {
-          element_option.removeAttr('selected')
+        $element.removeClass('garlic-auto-save')
+        $element.val(this.clearInputField(data_element.data(field)))
+        $element.attr('value', this.clearInputField(data_element.data(field)))
+        if($element.find('option').length){
+          $element.find('option:selected').first().removeAttr('selected')
+          $element.find('option[value="'+this.clearInputField(data_element.data(field))+'"]').attr('selected','')
         }
-        $element.removeClass('garlic-auto-save').val(this.clearInputField(data_element.data(field))).attr('value', this.clearInputField(data_element.data(field))).change()
+        $element.change();
       }
     }
   },
