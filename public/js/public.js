@@ -263,12 +263,12 @@ const OrderForCustomer = {
       field = field.replace('_','')
       if ($element.length) {
         $element.removeClass('garlic-auto-save')
-        $element.val(this.clearInputField(data_element.data(field)))
-        $element.attr('value', this.clearInputField(data_element.data(field)))
         if($element.find('option').length){
           $element.find('option:selected').first().removeAttr('selected')
           $element.find('option[value="'+this.clearInputField(data_element.data(field))+'"]').attr('selected','')
         }
+        $element.attr('value', this.clearInputField(data_element.data(field)))
+        $element.val(this.clearInputField(data_element.data(field)))
         $element.change();
       }
     }
@@ -438,6 +438,12 @@ const OrderForCustomer = {
       window.onbeforeunload = function() {
         return "You are attempting to leave this page. When you leave you exit 'Place Order for Customer' mode. Are you sure you want to exit this page?"
       }
+      $('[name="woocommerce_checkout_place_order"]').on('click',function(_){
+        window.removeEventListener('onbeforeunload',()=>{})
+      });
+      $('[data-tab="#cfw-shipping-method"]').on('click',function(_){
+        window.removeEventListener('onbeforeunload',()=>{})
+      });
     }
   }
 }
