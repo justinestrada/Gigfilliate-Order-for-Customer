@@ -363,21 +363,29 @@ class Gigfilliate_Order_For_Customer_Public
   public function reset_current_user_address() {
     $current_user = wp_get_current_user();
     $current_user_id = $current_user->ID;
-    $orders = wc_get_orders(array(
+    $orders = get_posts(array(
+      'post_type' => 'shop_order',
       'limit'        => 1,
       'post_status' => array('wc-completed', 'wc-processing'),
       'orderby' => 'date',
       'order' => 'DESC',
       'customer' => $current_user_id,
       'meta_query' => [
+        'relation' => 'AND',
+        [
+          'key' => 'v_order_affiliate_volume_type',
+          'value' => 'PERSONAL',
+          'compare' => '=='
+        ],
         [
           'key'=>'ordered_by',
           'compare' => 'NOT EXISTS'
         ]
       ]
     ));
-    if ($orders != null) {
+    if ($orders != null && isset($orders[0])) {
       $current_user = $orders[0];
+      $current_user = new WC_Order($current_user->ID);
       update_user_meta($current_user_id, 'billing_email', $current_user->user_email);
       update_user_meta($current_user_id, 'billing_first_name', $current_user->get_billing_first_name());
       update_user_meta($current_user_id, 'billing_last_name', $current_user->get_billing_last_name());

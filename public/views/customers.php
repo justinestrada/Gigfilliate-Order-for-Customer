@@ -1,4 +1,3 @@
-
 <section id="gofc_customer_section" style="display: <?php echo (!isset($_COOKIE[$this->cookie_name]) ? 'block' : 'none'); ?>;">
   <div id="gofc-customer-search" class="v-card gofc-customer-search">
     <div class="v-card-body">
