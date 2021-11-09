@@ -438,11 +438,11 @@ const OrderForCustomer = {
       window.onbeforeunload = function() {
         return "You are attempting to leave this page. When you leave you exit 'Place Order for Customer' mode. Are you sure you want to exit this page?"
       }
-      $('[name="woocommerce_checkout_place_order"]').on('click',function(_){
-        window.removeEventListener('onbeforeunload',()=>{})
+      $('[name="woocommerce_checkout_place_order"]').click(function(_){
+        window.onbeforeunload = ""
       });
-      $('[data-tab="#cfw-shipping-method"]').on('click',function(_){
-        window.removeEventListener('onbeforeunload',()=>{})
+      $('#cfw-customer-info-action [data-tab="#cfw-payment-method').click(function(_){
+        window.onbeforeunload = ""
       });
     }
   }
