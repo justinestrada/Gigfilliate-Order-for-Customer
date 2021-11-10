@@ -240,11 +240,11 @@ const OrderForCustomer = {
   },
   setupCustomerBilling: function() {
     if (!$('#gofc_customer_billing').length) {
-      return;
+      return
     }
     const $gofc_customer_billing = $('#gofc_customer_billing')
     const fields_to_update = ['billing_email', 'billing_first_name', 'billing_last_name', 'billing_address_1', 'billing_address_2', 'billing_company', 'billing_country', 'billing_postcode', 'billing_state', 'billing_city', 'billing_phone']
-    this.updateCheckoutFields(fields_to_update, $gofc_customer_billing);
+    this.updateCheckoutFields(fields_to_update, $gofc_customer_billing)
   },
   setupCustomerShipping: function() {
     if (!$('#gofc_customer_shipping').length) {
@@ -252,7 +252,7 @@ const OrderForCustomer = {
     }
     const $gofc_customer_shipping = $('#gofc_customer_shipping')
     const fields_to_update = ['shipping_email', 'shipping_first_name', 'shipping_last_name', 'shipping_address_1', 'shipping_address_2', 'shipping_company', 'shipping_country', 'shipping_postcode', 'shipping_state', 'shipping_city', 'shipping_phone']
-    this.updateCheckoutFields(fields_to_update, $gofc_customer_shipping);
+    this.updateCheckoutFields(fields_to_update, $gofc_customer_shipping)
   },
   updateCheckoutFields: function(fields, data_element) {
     for (let i = 0; i < fields.length; i++) {
@@ -263,22 +263,22 @@ const OrderForCustomer = {
       field = field.replace('_','')
       if ($element.length) {
         $element.removeClass('garlic-auto-save')
-        $element.val(this.clearInputField(data_element.data(field)))
-        $element.attr('value', this.clearInputField(data_element.data(field)))
         if($element.find('option').length){
           $element.find('option:selected').first().removeAttr('selected')
           $element.find('option[value="'+this.clearInputField(data_element.data(field))+'"]').attr('selected','')
         }
-        $element.change();
+        $element.attr('value', this.clearInputField(data_element.data(field)))
+        $element.val(this.clearInputField(data_element.data(field)))
+        $element.change()
       }
     }
   },
   clearInputField: function(data) {
-    return data?data:'';
+    return data ? data : ''
   },
   changeReturnToCart: function() {
     if (!this.isCurrentURLValid() || Cookie.read(GOFC.cookie_name) === null) {
-      return;
+      return
     }
     $('.previous-button a[href="' + GOFC.cart_url + '"]').attr('href', GOFC.customers_url).html('« Return to ' + Vitalibis_WP.affiliate_term + ' customers')
   },
@@ -418,7 +418,7 @@ const OrderForCustomer = {
       })
       Cookie.erase(GOFC.cookie_name)
       $('.GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE').toast('show')
-      $('body').removeClass('page-place-order-for-customer-mode');
+      $('body').removeClass('page-place-order-for-customer-mode')
     }
   },
   isCurrentURLValid: function() {
@@ -438,6 +438,12 @@ const OrderForCustomer = {
       window.onbeforeunload = function() {
         return "You are attempting to leave this page. When you leave you exit 'Place Order for Customer' mode. Are you sure you want to exit this page?"
       }
+      $('[name="woocommerce_checkout_place_order"]').click(function(_) {
+        window.onbeforeunload = ""
+      })
+      $('#cfw-customer-info-action [data-tab="#cfw-payment-method').click(function(_) {
+        window.onbeforeunload = ""
+      })
     }
   }
 }
