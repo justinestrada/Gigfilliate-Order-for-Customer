@@ -119,6 +119,7 @@ class Gigfilliate_Order_For_Customer_Public
       $menu_links = array_slice($menu_links, 0, 1, true)
         + $new_menu_links
         + array_slice($menu_links, 1, NULL, true);
+      $menu_links['orders'] = __('My Orders', 'textdomain');
       return $menu_links;
     });
     // Add content to the new endpoint
@@ -357,6 +358,8 @@ class Gigfilliate_Order_For_Customer_Public
       update_post_meta($order_id, 'ordered_by', wp_get_current_user()->user_email);
       update_post_meta($order_id, '_customer_user', esc_attr($current_user_id));
       $this->reset_current_user_address();
+    } else {
+      
     }
   }
 
