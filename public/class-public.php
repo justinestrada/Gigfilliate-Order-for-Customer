@@ -357,6 +357,8 @@ class Gigfilliate_Order_For_Customer_Public
       update_post_meta($order_id, 'ordered_by', wp_get_current_user()->user_email);
       update_post_meta($order_id, '_customer_user', esc_attr($current_user_id));
       $this->reset_current_user_address();
+    } else {
+      
     }
   }
 
