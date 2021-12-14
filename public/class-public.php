@@ -119,7 +119,6 @@ class Gigfilliate_Order_For_Customer_Public
       $menu_links = array_slice($menu_links, 0, 1, true)
         + $new_menu_links
         + array_slice($menu_links, 1, NULL, true);
-      $menu_links['orders'] = __('My Orders', 'textdomain');
       return $menu_links;
     });
     // Add content to the new endpoint
