@@ -40,7 +40,7 @@ class Gigfilliate_Order_For_Customer_Helpers {
       ],
     ];
     if ($limit) {
-      $args['limit'] = $limit;
+      $args['numberposts'] = $limit;
     }
     if ($offset) {
       $args['offset'] = $offset;

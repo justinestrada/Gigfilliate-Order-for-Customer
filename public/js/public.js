@@ -16,7 +16,7 @@ const OrderForCustomer = {
     }
     this.setupCustomerBilling()
     this.setupCustomerShipping()
-    this.giveWarningWhenLeavingTheCheckout()
+    // this.giveWarningWhenLeavingTheCheckout()
     this.exitFromOrderForCustomerIfNotOnValidPage()
     this.changeReturnToCart();
   },
