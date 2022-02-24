@@ -265,7 +265,8 @@ class Gigfilliate_Order_For_Customer_Public
         "price" => $product->get_regular_price(),
         "sku" => $product->get_sku(),
         "add_to_cart_url" => $product->add_to_cart_url(),
-        "is_in_stock" => $product->is_in_stock()
+        "is_in_stock" => $product->is_in_stock(),
+        "wcsatt_schemes" => get_post_meta($post->ID, '_wcsatt_schemes', true)
       ];
     }
     exit(json_encode($res));

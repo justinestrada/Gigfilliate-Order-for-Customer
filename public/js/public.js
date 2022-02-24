@@ -194,15 +194,34 @@ const OrderForCustomer = {
                       <span class="gofc-products-list-item-price">$' + element['price'] + '</span>\
                     </span>\
                   </div>\
-                  <div class="v-col-4 d-flex align-items-center justify-content-sm-end">\
-                    <a href="' + (element['is_in_stock'] ? element['add_to_cart_url'] : 'javascript:void(0)') + '" value="' + element['id'] + '" data-product_id="' + element['id'] + '" data-product_sku="' + element['sku'] + '" aria-label="Add ' + element["name"] + ' to your cart"class="' + (element['is_in_stock'] ? 'ajax_add_to_cart add_to_cart_button' : '') + ' v-btn v-btn-primary gofc-products-list-item-add-to-cart-btn" ' + (element['is_in_stock'] ? '' : 'disabled') + '>\
-                      ' + (element['is_in_stock'] ? '<span class="added_to_cart_label">Added to Cart</span><span class="adding_to_cart_label">Adding to Cart</span><span class="add_to_cart_label">Add to Cart</span>' : 'Out Of Stock') + '\
-                    </a>\
-                  </div>\
+                  <div class="v-col-4 d-flex align-items-center justify-content-sm-end">';
+                  if (element['wcsatt_schemes']) {
+                    new_product += ' <div class="dropdown single-add-to-cart-button-dropdown">\
+                    <button class="add_to_cart_button v-btn v-btn-primary dropdown-toggle" type="button" id="single_add_to_cart_button_dropdown_' + element['id'] + '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" type="button" data-product_id="' + element['id'] + '" data-product_sku="' + element['sku'] + '" aria-label="Add “' + element['title'] + '” to your cart" ' + (element['is_in_stock'] ? '' : 'disabled') + '>\
+                      '+(element['is_in_stock']?'<span class="add_to_cart_label">Add to Cart</span>':'Out Of Stock')+'\
+                    </button>\
+                    <div class="dropdown-menu" aria-labelledby="single_add_to_cart_button_dropdown_' + element['id'] + '" style="margin-top: -16px; margin-left: 4px;">\
+                      <a class="dropdown-item one-time-purchase-action" href="javascript:void(0);">One Time Purchase</a>\
+                      <a class="dropdown-item refill-action" href="javascript:void(0);">Refill 10% Off</a>\
+                      <a class="dropdown-item back-action d-none" href="javascript:void(0);">\
+                        <i class="fa fa-angle-left" aria-hidden="true"></i> Back\
+                      </a>';
+                      element['wcsatt_schemes'].forEach(wcsatt_scheme => {
+                        new_product += '<a class="dropdown-item refill-action-option d-none" href="javascript:void(0)" data-product_id="' + element['id'] + '" subscription_period_interval="'+ wcsatt_scheme["subscription_period_interval"] +'" subscription_period="'+ wcsatt_scheme["subscription_period"] +'">Every '+ wcsatt_scheme["subscription_period_interval"] +' '+ (wcsatt_scheme["subscription_period_interval"]  === 1 ? wcsatt_scheme['subscription_period'] : wcsatt_scheme['subscription_period'] + 's' ) +' </a>';
+                      });
+                      new_product += '</div>\
+                  </div>';
+                  } else {
+                    new_product += '<a href="' + (element['is_in_stock'] ? element['add_to_cart_url'] : 'javascript:void(0)') + '" value="' + element['id'] + '" data-product_id="' + element['id'] + '" data-product_sku="' + element['sku'] + '" aria-label="Add ' + element["name"] + ' to your cart"class="' + (element['is_in_stock'] ? 'ajax_add_to_cart add_to_cart_button' : '') + ' v-btn v-btn-primary gofc-products-list-item-add-to-cart-btn" ' + (element['is_in_stock'] ? '' : 'disabled') + '>\
+                    ' + (element['is_in_stock'] ? '<span class="added_to_cart_label">Added to Cart</span><span class="adding_to_cart_label">Adding to Cart</span><span class="add_to_cart_label">Add to Cart</span>' : 'Out Of Stock') + '\
+                  </a>';
+                  }
+              new_product += '</div>\
                 </div>\
-              </div>'
+              </div>';
             $products_list.append(new_product)
           })
+          OrderForCustomer.setSubscribtionButtons();
         } else {
           $products_list.html('<p>No products found.</p>')
         }
@@ -445,7 +464,86 @@ const OrderForCustomer = {
         window.onbeforeunload = ""
       })
     }
-  }
+  },
+  setSubscribtionButtons: function() {
+    $('.single-add-to-cart-button-dropdown .one-time-purchase-action').on(
+      'click',
+      function () {
+        const closeste = $(this).parent().parent().find('.add_to_cart_button').first();
+        const productId = closeste.attr('data-product_id');
+        const sku = closeste.attr('data-product_sku');
+        OrderForCustomer.ajaxAddToCart(
+          productId,
+          sku,
+          0,
+          closeste
+        );
+      }
+    );
+    $('.single-add-to-cart-button-dropdown .refill-action').on(
+      'click',
+      function (e) {
+        e.stopPropagation();
+        $(
+          '.single-add-to-cart-button-dropdown .one-time-purchase-action, .single-add-to-cart-button-dropdown .refill-action'
+        ).addClass('d-none');
+        $(
+          '.single-add-to-cart-button-dropdown .refill-action-option, .single-add-to-cart-button-dropdown .back-action'
+        ).removeClass('d-none');
+      }
+    );
+    $('.single-add-to-cart-button-dropdown .back-action').on(
+      'click',
+      function (e) {
+        e.stopPropagation();
+        $(
+          '.single-add-to-cart-button-dropdown .one-time-purchase-action, .single-add-to-cart-button-dropdown .refill-action'
+        ).removeClass('d-none');
+        $(
+          '.single-add-to-cart-button-dropdown .refill-action-option, .single-add-to-cart-button-dropdown .back-action'
+        ).addClass('d-none');
+      }
+    );
+    $('.single-add-to-cart-button-dropdown .refill-action-option').on(
+      'click',
+      function () {
+        const closeste = $(this);
+        const productId = closeste.attr('data-product_id');
+        const sku = closeste.attr('data-product_sku')
+        const subscription_period = $(this).attr('subscription_period');
+        const subscription_period_interval = $(this).attr(
+          'subscription_period_interval');
+          OrderForCustomer.ajaxAddToCart(
+          productId,
+          sku,
+          subscription_period_interval+ '_' + subscription_period,
+          closeste
+        );
+      }
+    );
+  },
+  ajaxAddToCart: function (productId, sku, refill = '', closest) {
+    const refilId = 'convert_to_sub_'+productId;
+    const formData = {
+      'product_id': productId,
+      'product_sku': sku,
+      'refill_frequencies': refill,
+      'quantity': 1,
+      'add-to-cart': productId,
+      'action': 'xoo_wsc_add_to_cart',
+    };
+    formData[refilId] = refill;
+    $.ajax({
+      url: document.URL+'?wc-ajax=xoo_wsc_add_to_cart', // eslint-disable-line
+      type: 'POST',
+      data: formData,
+      dataType: 'json',
+      encode: true,
+    }).done(function (response) {
+      $(document.body).trigger('added_to_cart', [response.fragments, response.cart_hash, $(closest)]);
+      $(closest).parent().addClass('added');
+    });
+  },
 }
 
 const Cookie = {
