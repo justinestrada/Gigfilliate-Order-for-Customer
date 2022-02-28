@@ -65,8 +65,6 @@ class Gigfilliate_Order_For_Customer_Helpers {
     foreach ($orders as $order) {
       $wc_order = new WC_Order($order->ID);
       $customer_email = $wc_order->get_billing_email();
-      $customer_fname = $wc_order->get_billing_first_name();
-      $customer_lname = $wc_order->get_billing_last_name();
       $customer_state = $wc_order->get_billing_state();
       $customer_city = $wc_order->get_billing_city();
       // if customer already exists skip
@@ -74,10 +72,11 @@ class Gigfilliate_Order_For_Customer_Helpers {
         $res['customers'][$customer_email]['orders_count']++;
         $res['customers'][$customer_email]['total_spend'] += (float)$wc_order->get_total();
         $res['customers'][$customer_email]['aov'] = (float)number_format((float)($res['customers'][$customer_email]['total_spend'] / $res['customers'][$customer_email]['orders_count']), 2, '.', '');
+        $res['customers'][$customer_email]['last_order_date'] = $wc_order->get_date_created()->date('F j, Y, g:i a');
         continue;
       }
       $new_customer = [
-        'email' => $customer_email
+        'email' => $customer_email,
       ];
       $order_user = get_user_by('email', $customer_email);
       if ($order_user !== false && $order_user !== null) {
@@ -86,6 +85,10 @@ class Gigfilliate_Order_For_Customer_Helpers {
           continue;
         }
       }
+      $customer_fname = $wc_order->get_billing_first_name();
+      $customer_lname = $wc_order->get_billing_last_name();
+      $new_customer['fname'] = $customer_fname;
+      $new_customer['lname'] = $customer_lname;
       $new_customer['full_name'] = $customer_fname . ' ' . $customer_lname;
       $new_customer['state'] = $customer_state;
       $new_customer['city'] = $customer_city;
