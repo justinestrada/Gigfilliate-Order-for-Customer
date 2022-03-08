@@ -108,7 +108,7 @@ class Gigfilliate_Order_For_Customer_Public
     // Add new query var
     add_filter('query_vars', function ($vars) {
       $vars[] = 'brand-partner-customers';
-      $vars[] = 'test';
+      $vars[] = 'test'; // TODO: ? Why is this here?
       return $vars;
     }, 0);
     // Insert the new endpoint into the My Account menu
@@ -131,7 +131,7 @@ class Gigfilliate_Order_For_Customer_Public
   {
     $this->is_user_logged_in = is_user_logged_in();
     ob_start();
-?>
+    ?>
     <div style="margin-bottom: 1rem;">
       <h1><?php echo $this->core_settings->affiliate_term ?> Customers</h1>
       <?php
