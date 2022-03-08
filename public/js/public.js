@@ -184,18 +184,18 @@ const OrderForCustomer = {
             let new_product = `
               <div class="gofc-products-list-item">
                 <div class="v-row">
-                  <div class="v-col-md-3 v-col-lg-2">
+                  <div class="v-col-md-3 col-md-3 v-col-lg-2 mb-3 mb-md-0">
                     <div class="gofc-products-list-item_thumbnail-wrap">
                       <img class="gofc-products-list-item_thumbnail" src="${element['thumbnail_url']}" alt="${element['name']}"/>
                     </div>
                   </div>
-                  <div class="v-col-md-5 v-col-lg-6 d-flex align-items-center">
+                  <div class="v-col-6 v-col-md-5 v-col-lg-6 d-flex align-items-center">
                     <span class="gofc-products-list-item-name">
                       ${element['name']}
                       <span class="gofc-products-list-item-price">$${element['price']}</span>
                     </span>
                   </div>
-                  <div class="v-col-4 d-flex align-items-center justify-content-sm-end">`
+                  <div class="v-col-6 v-col-md-4 d-flex align-items-center justify-content-end">`
                     if (element['wcsatt_schemes']) {
                       new_product += `
                         <div class="dropdown single-add-to-cart-button-dropdown">
