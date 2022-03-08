@@ -180,48 +180,54 @@ const OrderForCustomer = {
       res = JSON.parse(res);
       if (res.success) {
         if (res.products.length) {
-          res.products.forEach( element => {
-            let new_product = '<div class="gofc-products-list-item">\
-                <div class="v-row">\
-                  <div class="v-col-md-3 v-col-lg-2">\
-                    <div class="gofc-products-list-item_thumbnail-wrap">\
-                      <img class="gofc-products-list-item_thumbnail" src="' + element['thumbnail_url'] + '" alt="' + element['name'] + '"/>\
-                    </div>\
-                  </div>\
-                  <div class="v-col-md-5 v-col-lg-6 d-flex align-items-center">\
-                    <span class="gofc-products-list-item-name">\
-                      ' + element["name"] + '\
-                      <span class="gofc-products-list-item-price">$' + element['price'] + '</span>\
-                    </span>\
-                  </div>\
-                  <div class="v-col-4 d-flex align-items-center justify-content-sm-end">';
-                  if (element['wcsatt_schemes']) {
-                    new_product += ' <div class="dropdown single-add-to-cart-button-dropdown">\
-                    <button class="add_to_cart_button v-btn v-btn-primary dropdown-toggle" type="button" id="single_add_to_cart_button_dropdown_' + element['id'] + '" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" type="button" data-product_id="' + element['id'] + '" data-product_sku="' + element['sku'] + '" aria-label="Add “' + element['title'] + '” to your cart" ' + (element['is_in_stock'] ? '' : 'disabled') + '>\
-                      '+(element['is_in_stock']?'<span class="add_to_cart_label">Add to Cart</span>':'Out Of Stock')+'\
-                    </button>\
-                    <div class="dropdown-menu" aria-labelledby="single_add_to_cart_button_dropdown_' + element['id'] + '" style="margin-top: -16px; margin-left: 4px;">\
-                      <a class="dropdown-item one-time-purchase-action" href="javascript:void(0);">One Time Purchase</a>\
-                      <a class="dropdown-item refill-action" href="javascript:void(0);">Refill 10% Off</a>\
-                      <a class="dropdown-item back-action d-none" href="javascript:void(0);">\
-                        <i class="fa fa-angle-left" aria-hidden="true"></i> Back\
-                      </a>';
-                      element['wcsatt_schemes'].forEach(wcsatt_scheme => {
-                        new_product += '<a class="dropdown-item refill-action-option d-none" href="javascript:void(0)" data-product_id="' + element['id'] + '" subscription_period_interval="'+ wcsatt_scheme["subscription_period_interval"] +'" subscription_period="'+ wcsatt_scheme["subscription_period"] +'">Every '+ wcsatt_scheme["subscription_period_interval"] +' '+ (wcsatt_scheme["subscription_period_interval"]  === 1 ? wcsatt_scheme['subscription_period'] : wcsatt_scheme['subscription_period'] + 's' ) +' </a>';
-                      });
-                      new_product += '</div>\
-                  </div>';
-                  } else {
-                    new_product += '<a href="' + (element['is_in_stock'] ? element['add_to_cart_url'] : 'javascript:void(0)') + '" value="' + element['id'] + '" data-product_id="' + element['id'] + '" data-product_sku="' + element['sku'] + '" aria-label="Add ' + element["name"] + ' to your cart"class="' + (element['is_in_stock'] ? 'ajax_add_to_cart add_to_cart_button' : '') + ' v-btn v-btn-primary gofc-products-list-item-add-to-cart-btn" ' + (element['is_in_stock'] ? '' : 'disabled') + '>\
-                    ' + (element['is_in_stock'] ? '<span class="added_to_cart_label">Added to Cart</span><span class="adding_to_cart_label">Adding to Cart</span><span class="add_to_cart_label">Add to Cart</span>' : 'Out Of Stock') + '\
-                  </a>';
-                  }
-              new_product += '</div>\
-                </div>\
-              </div>';
+          res.products.forEach( (element) => {
+            let new_product = `
+              <div class="gofc-products-list-item">
+                <div class="v-row">
+                  <div class="v-col-md-3 v-col-lg-2">
+                    <div class="gofc-products-list-item_thumbnail-wrap">
+                      <img class="gofc-products-list-item_thumbnail" src="${element['thumbnail_url']}" alt="${element['name']}"/>
+                    </div>
+                  </div>
+                  <div class="v-col-md-5 v-col-lg-6 d-flex align-items-center">
+                    <span class="gofc-products-list-item-name">
+                      ${element['name']}
+                      <span class="gofc-products-list-item-price">$${element['price']}</span>
+                    </span>
+                  </div>
+                  <div class="v-col-4 d-flex align-items-center justify-content-sm-end">`
+                    if (element['wcsatt_schemes']) {
+                      new_product += `
+                        <div class="dropdown single-add-to-cart-button-dropdown">
+                          <button class="add_to_cart_button v-btn v-btn-primary dropdown-toggle" type="button" id="single_add_to_cart_button_dropdown_${element['id']}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" type="button" data-product_id="${element['id']}" data-product_sku="${element['sku']}" aria-label="Add ${element['title']} to your cart" ${!element['is_in_stock'] ? 'disabled' : ''}>
+                            ${element['is_in_stock'] ? '<span class="add_to_cart_label">Add to Cart</span>' : 'Out Of Stock'}
+                          </button>
+                        <div class="dropdown-menu" aria-labelledby="single_add_to_cart_button_dropdown_${element['id']}" 
+                          style="margin-top: -16px; margin-left: 4px;">
+                          <a class="dropdown-item one-time-purchase-action" href="javascript:void(0);">One Time Purchase</a>
+                          <a class="dropdown-item refill-action" href="javascript:void(0);">Refill 10% Off</a>
+                          <a class="dropdown-item back-action d-none" href="javascript:void(0);">
+                            <i class="fa fa-angle-left" aria-hidden="true"></i> Back
+                          </a>`
+                          element['wcsatt_schemes'].forEach((wcsatt_scheme) => {
+                            new_product += `<a class="dropdown-item refill-action-option d-none" href="javascript:void(0)" data-product_id="${element['id']}" subscription_period_interval="${wcsatt_scheme['subscription_period_interval']}" subscription_period="${wcsatt_scheme['subscription_period']}">Every ${wcsatt_scheme['subscription_period_interval']} ${wcsatt_scheme['subscription_period_interval'] === '1' ? wcsatt_scheme['subscription_period'] : wcsatt_scheme['subscription_period'] + 's'}</a>`
+                          });
+                        new_product += `
+                        </div>
+                      </div>`
+                    } else {
+                      new_product += `
+                      <a href="${element['is_in_stock'] ? element['add_to_cart_url'] : 'javascript:void(0)'}" value="${element['id']}" data-product_id="${element['id']}" data-product_sku="${element['sku']}" aria-label="Add ${element['name']} to your cart" class="${element['is_in_stock'] ? 'ajax_add_to_cart add_to_cart_button' : ''} v-btn v-btn-primary gofc-products-list-item-add-to-cart-btn" ${!element['is_in_stock'] ? 'disabled' : ''}>
+                        ${element['is_in_stock'] ? '<span class="added_to_cart_label">Added to Cart</span><span class="adding_to_cart_label">Adding to Cart</span><span class="add_to_cart_label">Add to Cart</span>' : 'Out Of Stock'}
+                      </a>`
+                    }
+                  new_product += `
+                  </div>
+                </div>
+              </div>`
             $products_list.append(new_product)
           })
-          OrderForCustomer.setSubscribtionButtons();
+          OrderForCustomer.setSubscribtionButtons()
         } else {
           $products_list.html('<p>No products found.</p>')
         }
@@ -466,64 +472,47 @@ const OrderForCustomer = {
     }
   },
   setSubscribtionButtons: function() {
-    $('.single-add-to-cart-button-dropdown .one-time-purchase-action').on(
-      'click',
-      function () {
-        const closeste = $(this).parent().parent().find('.add_to_cart_button').first();
-        const productId = closeste.attr('data-product_id');
-        const sku = closeste.attr('data-product_sku');
-        OrderForCustomer.ajaxAddToCart(
+    $('.single-add-to-cart-button-dropdown .one-time-purchase-action').on('click', function () {
+      const $add_to_cart_button = $(this).parent().parent().find('.add_to_cart_button').first()
+      const productId = $add_to_cart_button.attr('data-product_id')
+      const sku = $add_to_cart_button.attr('data-product_sku')
+      OrderForCustomer.ajaxAddToCart(
           productId,
           sku,
           0,
-          closeste
-        );
-      }
-    );
-    $('.single-add-to-cart-button-dropdown .refill-action').on(
-      'click',
-      function (e) {
-        e.stopPropagation();
-        $(
-          '.single-add-to-cart-button-dropdown .one-time-purchase-action, .single-add-to-cart-button-dropdown .refill-action'
-        ).addClass('d-none');
-        $(
-          '.single-add-to-cart-button-dropdown .refill-action-option, .single-add-to-cart-button-dropdown .back-action'
-        ).removeClass('d-none');
-      }
-    );
-    $('.single-add-to-cart-button-dropdown .back-action').on(
-      'click',
-      function (e) {
-        e.stopPropagation();
-        $(
-          '.single-add-to-cart-button-dropdown .one-time-purchase-action, .single-add-to-cart-button-dropdown .refill-action'
-        ).removeClass('d-none');
-        $(
-          '.single-add-to-cart-button-dropdown .refill-action-option, .single-add-to-cart-button-dropdown .back-action'
-        ).addClass('d-none');
-      }
-    );
-    $('.single-add-to-cart-button-dropdown .refill-action-option').on(
-      'click',
-      function () {
-        const closeste = $(this);
-        const productId = closeste.attr('data-product_id');
-        const sku = closeste.attr('data-product_sku')
-        const subscription_period = $(this).attr('subscription_period');
-        const subscription_period_interval = $(this).attr(
-          'subscription_period_interval');
-          OrderForCustomer.ajaxAddToCart(
-          productId,
-          sku,
-          subscription_period_interval+ '_' + subscription_period,
-          closeste
-        );
-      }
-    );
+          $add_to_cart_button
+        )
+    })
+    $('.single-add-to-cart-button-dropdown .refill-action').on('click', function (e) {
+      e.stopPropagation()
+      $('.single-add-to-cart-button-dropdown .one-time-purchase-action, .single-add-to-cart-button-dropdown .refill-action'
+      ).addClass('d-none')
+      $('.single-add-to-cart-button-dropdown .refill-action-option, .single-add-to-cart-button-dropdown .back-action'
+      ).removeClass('d-none')
+    })
+    $('.single-add-to-cart-button-dropdown .back-action').on('click', function (e) {
+      e.stopPropagation()
+      $('.single-add-to-cart-button-dropdown .one-time-purchase-action, .single-add-to-cart-button-dropdown .refill-action'
+      ).removeClass('d-none')
+      $('.single-add-to-cart-button-dropdown .refill-action-option, .single-add-to-cart-button-dropdown .back-action'
+      ).addClass('d-none')
+    })
+    $('.single-add-to-cart-button-dropdown .refill-action-option').on('click', function () {
+      const $this = $(this)
+      const productId = $this.attr('data-product_id');
+      const sku = $this.attr('data-product_sku')
+      const subscription_period = $this.attr('subscription_period');
+      const subscription_period_interval = $this.attr('subscription_period_interval')
+      OrderForCustomer.ajaxAddToCart(
+        productId,
+        sku,
+        `${subscription_period_interval}_${subscription_period}`,
+        $this
+      )
+    })
   },
   ajaxAddToCart: function (productId, sku, refill = '', closest) {
-    const refilId = 'convert_to_sub_'+productId;
+    const refilId = `convert_to_sub_${productId}`
     const formData = {
       'product_id': productId,
       'product_sku': sku,
@@ -532,44 +521,44 @@ const OrderForCustomer = {
       'add-to-cart': productId,
       'action': 'xoo_wsc_add_to_cart',
     };
-    formData[refilId] = refill;
+    formData[refilId] = refill
     $.ajax({
-      url: document.URL+'?wc-ajax=xoo_wsc_add_to_cart', // eslint-disable-line
+      url: `${document.URL}?wc-ajax=xoo_wsc_add_to_cart`, // eslint-disable-line
       type: 'POST',
       data: formData,
       dataType: 'json',
       encode: true,
     }).done(function (response) {
-      $(document.body).trigger('added_to_cart', [response.fragments, response.cart_hash, $(closest)]);
-      $(closest).parent().addClass('added');
-    });
+      $(document.body).trigger('added_to_cart', [response.fragments, response.cart_hash, $(closest)])
+      $(closest).parent().addClass('added')
+    })
   },
 }
 
 const Cookie = {
   read: function(name) {
-    var nameEQ = name + '=';
-    var ca = document.cookie.split(';');
+    var nameEQ = name + '='
+    var ca = document.cookie.split(';')
     for (var i = 0; i < ca.length; i++) {
       var c = ca[i];
-      while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+      while (c.charAt(0) == ' ') c = c.substring(1, c.length)
+      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length)
     }
     return null;
   },
   create: function(name, value, days) {
-    let expires = '';
+    let expires = ''
     if (days) {
       var date = new Date();
-      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-      expires = '; expires=' + date.toGMTString();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000))
+      expires = '; expires=' + date.toGMTString()
     } else {
-      expires = '';
+      expires = ''
     }
-    document.cookie = name + '=' + value + expires + '; path=/';
+    document.cookie = name + '=' + value + expires + '; path=/'
   },
   erase: function(name) {
-    Cookie.create(name, '', -1);
+    Cookie.create(name, '', -1)
   },
 }
 
@@ -579,11 +568,11 @@ const Utilities = {
     return re.test(String(email).toLowerCase())
   },
 	formatCurrency: function( amount ) {
-		return amount.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+		return amount.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 	},  
 }
 
 $(document).ready(function() {
   OrderForCustomer.init()
 })
-})(jQuery);
+})(jQuery)
