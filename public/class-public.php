@@ -103,16 +103,18 @@ class Gigfilliate_Order_For_Customer_Public
     // Register new endpoint to use for My Account page
     // Any change here resave Permalinks or it will give 404 error
     add_action('init', function () {
+      if (!$this->is_it_valid_to_show_customer()) return;
       add_rewrite_endpoint('brand-partner-customers', EP_ROOT | EP_PAGES);
     });
     // Add new query var
     add_filter('query_vars', function ($vars) {
+      if (!$this->is_it_valid_to_show_customer()) return $vars;
       $vars[] = 'brand-partner-customers';
-      $vars[] = 'test'; // TODO: ? Why is this here?
       return $vars;
     }, 0);
     // Insert the new endpoint into the My Account menu
     add_filter('woocommerce_account_menu_items', function ($menu_links) {
+      if (!$this->is_it_valid_to_show_customer()) return $menu_links;
       $new_menu_links = [
         'brand-partner-customers' => $this->core_settings->affiliate_term . ' Customers'
       ];
@@ -123,8 +125,20 @@ class Gigfilliate_Order_For_Customer_Public
     });
     // Add content to the new endpoint
     add_action('woocommerce_account_brand-partner-customers_endpoint', function () {
+      if (!$this->is_it_valid_to_show_customer()) return;
       $this->new_account_page_content();
     });
+  }
+
+  public function is_it_valid_to_show_customer() {
+    if (!is_user_logged_in()){
+      return false;
+    }
+    $v_affiliate_status = get_user_meta(get_current_user_id(), 'v_affiliate_status', true);
+    if (!$v_affiliate_status || $v_affiliate_status != 'active'){
+      return false;
+    }
+    return true;
   }
 
   public function new_account_page_content()
