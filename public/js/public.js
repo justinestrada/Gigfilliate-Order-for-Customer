@@ -181,19 +181,23 @@ const OrderForCustomer = {
       if (res.success) {
         if (res.products.length) {
           res.products.forEach( (element) => {
+            const is_disabled = element['name'] === 'Essentials Collection' ? true : false
             let new_product = `
               <div class="gofc-products-list-item">
                 <div class="v-row">
-                  <div class="v-col-md-3 col-md-3 v-col-lg-2 mb-3 mb-md-0">
+                  <div class="v-col-md-3 col-md-3 v-col-lg-2 col-lg-2 mb-3 mb-md-0">
                     <div class="gofc-products-list-item_thumbnail-wrap">
                       <img class="gofc-products-list-item_thumbnail" src="${element['thumbnail_url']}" alt="${element['name']}"/>
                     </div>
                   </div>
                   <div class="v-col-6 v-col-md-5 v-col-lg-6 d-flex align-items-center">
-                    <span class="gofc-products-list-item-name">
-                      ${element['name']}
-                      <span class="gofc-products-list-item-price">$${element['price']}</span>
-                    </span>
+                    <div class="gofc-products-list-item-name">
+                      ${element['name']}`
+                      if (is_disabled) {
+                        new_product += `<div class="alert alert-danger">This product is not able to be purchased from Brand Partner Customers area at the moment.</div>`
+                      }
+                      new_product += `<span class="gofc-products-list-item-price">$${element['price']}</span>
+                    </div>
                   </div>
                   <div class="v-col-6 v-col-md-4 d-flex align-items-center justify-content-end">`
                     if (element['wcsatt_schemes']) {
@@ -216,10 +220,12 @@ const OrderForCustomer = {
                         </div>
                       </div>`
                     } else {
-                      new_product += `
-                      <a href="${element['is_in_stock'] ? element['add_to_cart_url'] : 'javascript:void(0)'}" value="${element['id']}" data-product_id="${element['id']}" data-product_sku="${element['sku']}" aria-label="Add ${element['name']} to your cart" class="${element['is_in_stock'] ? 'ajax_add_to_cart add_to_cart_button' : ''} v-btn v-btn-primary gofc-products-list-item-add-to-cart-btn" ${!element['is_in_stock'] ? 'disabled' : ''}>
-                        ${element['is_in_stock'] ? '<span class="added_to_cart_label">Added to Cart</span><span class="adding_to_cart_label">Adding to Cart</span><span class="add_to_cart_label">Add to Cart</span>' : 'Out Of Stock'}
-                      </a>`
+                      if (!is_disabled) {
+                        new_product += `
+                          <a href="${element['is_in_stock'] ? element['add_to_cart_url'] : 'javascript:void(0)'}" value="${element['id']}" data-product_id="${element['id']}" data-product_sku="${element['sku']}" aria-label="Add ${element['name']} to your cart" class="${element['is_in_stock'] ? 'ajax_add_to_cart add_to_cart_button' : ''} v-btn v-btn-primary gofc-products-list-item-add-to-cart-btn" ${!element['is_in_stock'] ? 'disabled' : ''}>
+                            ${element['is_in_stock'] ? '<span class="added_to_cart_label">Added to Cart</span><span class="adding_to_cart_label">Adding to Cart</span><span class="add_to_cart_label">Add to Cart</span>' : 'Out Of Stock'}
+                          </a>`
+                      }
                     }
                   new_product += `
                   </div>
