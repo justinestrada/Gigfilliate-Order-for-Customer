@@ -279,6 +279,7 @@ const OrderForCustomer = {
     $addToCartButton.attr('data-variant', JSON.stringify(selectedVariant));
     $addToCartButton.removeClass('disabled')
     $addToCartButton.off('click')
+    $addToCartButton.removeClass("ajax_add_to_cart")
     $addToCartButton.on('click', function (e) {
       e.preventDefault()
       const $this = $(this)
