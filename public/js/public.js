@@ -334,7 +334,7 @@ const OrderForCustomer = {
       unique_attributes[key] = uniqueChars
     }
     
-    let select_html = `<div class="d-flex flex-column" id="product-${product_object.id}-variations" data-variations="${JSON.stringify(product_object.variations)}">`
+    let select_html = `<div class="gofc-product-variations d-flex flex-column" id="product-${product_object.id}-variations" data-variations='${JSON.stringify(product_object.variations)}'>`
     for (const key in unique_attributes) {
       select_html += `
         <div class="form-group">
