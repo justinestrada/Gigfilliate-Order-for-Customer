@@ -168,6 +168,7 @@ const OrderForCustomer = {
     });
   },
   onGetProducts: function() {
+    const self = this;
     let $products_list = $('.gofc-products-list');
     $products_list.html('<div class="loading-spinner"><div class="loading-animation"><div></div></div></div>');
     this.getProducts().then( function(res) {
@@ -190,14 +191,15 @@ const OrderForCustomer = {
                       <img class="gofc-products-list-item_thumbnail" src="${element['thumbnail_url']}" alt="${element['name']}"/>
                     </div>
                   </div>
-                  <div class="v-col-6 v-col-md-5 v-col-lg-6 d-flex align-items-center">
+                  <div class="v-col-6 v-col-md-5 v-col-lg-6 d-flex flex-column justify-content-center">
                     <div class="gofc-products-list-item-name">
                       ${element['name']}`
                       if (is_disabled) {
                         new_product += `<div class="alert alert-danger">This product is not able to be purchased from Brand Partner Customers area at the moment.</div>`
                       }
-                      new_product += `<span class="gofc-products-list-item-price">$${element['price']}</span>
+                      new_product += `<span class="gofc-products-list-item-price">$${self.getProductPrice(element)}</span>
                     </div>
+                    ${self.variaitonsProductOptions(element)}
                   </div>
                   <div class="v-col-6 v-col-md-4 d-flex align-items-center justify-content-end">`
                     if (element['wcsatt_schemes']) {
@@ -234,6 +236,7 @@ const OrderForCustomer = {
             $products_list.append(new_product)
           })
           OrderForCustomer.setSubscribtionButtons()
+          OrderForCustomer.setVariationsButtons()
         } else {
           $products_list.html('<p>No products found.</p>')
         }
@@ -244,7 +247,117 @@ const OrderForCustomer = {
       console.error(err)
     })
   },
-  onChangeProductSort: function() {
+  setVariationsButtons: function() {
+    const $variationSelects = $('.variation_select')
+    if (!$variationSelects.length) {
+      return
+    }
+    $variationSelects.map((i, e)=>{
+      const product_id = $(e).attr('data-product_id')
+      if ($('option:selected', e).length != 0) {
+        $('.add_to_cart_button[data-product_id="'+product_id+'"]').addClass('disabled')
+      }
+    });
+    $variationSelects.on('change', function(){
+      const product_id = $(this).attr('data-product_id')
+      OrderForCustomer.checkAndSelectVariation(product_id)
+    });
+  },
+  checkAndSelectVariation: function(product_id) {
+    const $variationSelects = $(`.variation_select[data-product_id="${product_id}"]`)
+    const $addToCartButton = $(`.add_to_cart_button[data-product_id="${product_id}"]`)
+    $addToCartButton.addClass('disabled')
+    const selectedAttributes = {}
+    $variationSelects.map((i, e)=>{
+      const variationSelect = $(e);
+      const selectedOption = variationSelect.find('option:selected')
+      if (!selectedOption) return
+      const selectedOptionVal = selectedOption.val()
+      if (!selectedOptionVal) return
+      selectedAttributes[variationSelect.attr('name')] = selectedOptionVal;
+    });
+    if ($variationSelects.length != Object.keys(selectedAttributes).length) return
+    const $productVariations = $(`#product-${product_id}-variations`)
+    const variations = JSON.parse($productVariations.attr('data-variations'))
+    const selectedVariant = variations.filter(v=>{
+      return JSON.stringify(v.attributes) === JSON.stringify(selectedAttributes)
+    })
+    $addToCartButton.attr('data-variant', JSON.stringify(selectedVariant));
+    $addToCartButton.removeClass('disabled')
+    $addToCartButton.off('click')
+    $addToCartButton.on('click', function (e) {
+      e.preventDefault()
+      const $this = $(this)
+      const productId = $this.attr('data-product_id')
+      const sku = $this.attr('data-product_sku')
+      OrderForCustomer.ajaxAddToCart(
+        productId,
+        sku,
+        '',
+        $this
+      )
+    })
+  },
+  getProductPrice: function(product_object) {
+    if (!product_object.variations) {
+      return product_object.price
+    }
+    let min_price = 99999
+    let max_price = -1
+    product_object.variations.forEach(variation => {
+      if (min_price > variation.display_price) {
+        min_price = variation.display_price
+      }
+      if (min_price < variation.display_price) {
+        max_price = variation.display_price
+      }
+    })
+    return min_price + " - $" + max_price
+  },
+  variaitonsProductOptions: function(product_object) {
+    if (!product_object.variations) {
+      return ""
+    }
+    let filtered_attributes = []
+    product_object.variations.forEach(variation => {
+      for (const key in variation.attributes) {
+        if (filtered_attributes[key]) {
+          filtered_attributes[key].push(variation.attributes[key])
+        } else {
+          filtered_attributes[key] = []
+          filtered_attributes[key].push(variation.attributes[key])
+        }
+      }
+    });
+    let unique_attributes = []
+    for (const key in filtered_attributes) {
+      let uniqueChars = []
+      filtered_attributes[key].forEach((c) => {
+        if (!uniqueChars.includes(c)) {
+          uniqueChars.push(c)
+        }
+      });
+      unique_attributes[key] = uniqueChars
+    }
+    
+    let select_html = `<div class="d-flex flex-column" id="product-${product_object.id}-variations" data-variations='${JSON.stringify(product_object.variations)}'>`
+    for (const key in unique_attributes) {
+      select_html += `<div class="form-group">`
+      select_html += `<label for="${key}">${(key.replace('attribute_','').replace('-',' ').toUpperCase())}</label>`
+      select_html += `<select class="v-form-control form-control variation_select variation_select_${product_object.id}" data-product_id="${product_object.id}" name="${key}" id="${key}">`
+      if (unique_attributes[key].length > 1) {
+        select_html += `<option value="">Choose An Option</option>`
+      }
+      select_html += unique_attributes[key].map(ua=>{
+        return `<option value="${ua}" ${(unique_attributes[key].length <= 1)?'selected':''}>${ua}</option>`
+      })
+      select_html += `</select>`
+      select_html += `</div>`
+    }
+    select_html += `</div>`
+    return select_html;
+  },
+  onChangeProductSort: function(product) {
     const $this = this;
     $('#products-sorting-order').on('change', function() {
       $this.onGetProducts()
@@ -518,16 +631,28 @@ const OrderForCustomer = {
     })
   },
   ajaxAddToCart: function (productId, sku, refill = '', closest) {
-    const refilId = `convert_to_sub_${productId}`
+    let variant = closest.attr('data-variant')
     const formData = {
       'product_id': productId,
       'product_sku': sku,
-      'refill_frequencies': refill,
       'quantity': 1,
       'add-to-cart': productId,
       'action': 'xoo_wsc_add_to_cart',
     };
-    formData[refilId] = refill
+    if (variant) {
+      variant = JSON.parse(variant)[0];
+      formData['alg_variations'] = 'on'
+      formData['variation_id'] = variant.variation_id
+      for (const key in variant.attributes) {
+        formData[key] = variant.attributes[key]
+      }
+    }
+    if (refill) {
+      const refilId = `convert_to_sub_${productId}`
+      formData[refilId] = refill
+      formData['refill_frequencies'] = refill
+    }
+    console.log(formData)
     $.ajax({
       url: `${document.URL}?wc-ajax=xoo_wsc_add_to_cart`, // eslint-disable-line
       type: 'POST',

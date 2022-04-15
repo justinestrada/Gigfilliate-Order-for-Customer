@@ -280,7 +280,8 @@ class Gigfilliate_Order_For_Customer_Public
         "sku" => $product->get_sku(),
         "add_to_cart_url" => $product->add_to_cart_url(),
         "is_in_stock" => $product->is_in_stock(),
-        "wcsatt_schemes" => get_post_meta($post->ID, '_wcsatt_schemes', true)
+        "wcsatt_schemes" => get_post_meta($post->ID, '_wcsatt_schemes', true),
+        "variations" => ($product->is_type( 'variable' )?$product->get_available_variations():''),
       ];
     }
     exit(json_encode($res));
