@@ -182,7 +182,6 @@ const OrderForCustomer = {
       if (res.success) {
         if (res.products.length) {
           res.products.forEach( (element) => {
-            const is_disabled = element['name'] === 'Essentials Collection' ? true : false
             let new_product = `
               <div class="gofc-products-list-item">
                 <div class="v-row">
@@ -194,9 +193,6 @@ const OrderForCustomer = {
                   <div class="v-col-6 v-col-md-5 v-col-lg-6 d-flex flex-column justify-content-center">
                     <div class="gofc-products-list-item-name">
                       ${element['name']}`
-                      if (is_disabled) {
-                        new_product += `<div class="alert alert-danger">This product is not able to be purchased from Brand Partner Customers area at the moment.</div>`
-                      }
                       new_product += `<span class="gofc-products-list-item-price">$${self.getProductPrice(element)}</span>
                     </div>
                     ${self.variaitonsProductOptions(element)}
@@ -222,12 +218,10 @@ const OrderForCustomer = {
                         </div>
                       </div>`
                     } else {
-                      if (!is_disabled) {
-                        new_product += `
-                          <a href="${element['is_in_stock'] ? element['add_to_cart_url'] : 'javascript:void(0)'}" value="${element['id']}" data-product_id="${element['id']}" data-product_sku="${element['sku']}" aria-label="Add ${element['name']} to your cart" class="${element['is_in_stock'] ? 'ajax_add_to_cart add_to_cart_button' : ''} v-btn v-btn-primary gofc-products-list-item-add-to-cart-btn" ${!element['is_in_stock'] ? 'disabled' : ''}>
-                            ${element['is_in_stock'] ? '<span class="added_to_cart_label">Added to Cart</span><span class="adding_to_cart_label">Adding to Cart</span><span class="add_to_cart_label">Add to Cart</span>' : 'Out Of Stock'}
-                          </a>`
-                      }
+                      new_product += `
+                        <a href="${element['is_in_stock'] ? element['add_to_cart_url'] : 'javascript:void(0)'}" value="${element['id']}" data-product_id="${element['id']}" data-product_sku="${element['sku']}" aria-label="Add ${element['name']} to your cart" class="${element['is_in_stock'] ? 'ajax_add_to_cart add_to_cart_button' : ''} v-btn v-btn-primary gofc-products-list-item-add-to-cart-btn" ${!element['is_in_stock'] ? 'disabled' : ''}>
+                          ${element['is_in_stock'] ? '<span class="added_to_cart_label">Added to Cart</span><span class="adding_to_cart_label">Adding to Cart</span><span class="add_to_cart_label">Add to Cart</span>' : 'Out Of Stock'}
+                        </a>`
                     }
                   new_product += `
                   </div>
@@ -252,7 +246,7 @@ const OrderForCustomer = {
     if (!$variationSelects.length) {
       return
     }
-    $variationSelects.map((i, e)=>{
+    $variationSelects.map((i, e) => {
       const product_id = $(e).attr('data-product_id')
       if ($('option:selected', e).length != 0) {
         $('.add_to_cart_button[data-product_id="'+product_id+'"]').addClass('disabled')
@@ -304,7 +298,7 @@ const OrderForCustomer = {
     }
     let min_price = 99999
     let max_price = -1
-    product_object.variations.forEach(variation => {
+    product_object.variations.forEach((variation) => {
       if (min_price > variation.display_price) {
         min_price = variation.display_price
       }
@@ -340,19 +334,20 @@ const OrderForCustomer = {
       unique_attributes[key] = uniqueChars
     }
     
-    let select_html = `<div class="d-flex flex-column" id="product-${product_object.id}-variations" data-variations='${JSON.stringify(product_object.variations)}'>`
+    let select_html = `<div class="d-flex flex-column" id="product-${product_object.id}-variations" data-variations="${JSON.stringify(product_object.variations)}">`
     for (const key in unique_attributes) {
-      select_html += `<div class="form-group">`
-      select_html += `<label for="${key}">${(key.replace('attribute_','').replace('-',' ').toUpperCase())}</label>`
-      select_html += `<select class="v-form-control form-control variation_select variation_select_${product_object.id}" data-product_id="${product_object.id}" name="${key}" id="${key}">`
-      if (unique_attributes[key].length > 1) {
-        select_html += `<option value="">Choose An Option</option>`
-      }
-      select_html += unique_attributes[key].map(ua=>{
-        return `<option value="${ua}" ${(unique_attributes[key].length <= 1)?'selected':''}>${ua}</option>`
-      })
-      select_html += `</select>`
-      select_html += `</div>`
+      select_html += `
+        <div class="form-group">
+          <label for="${key}">${(key.replace('attribute_', '').replace('-', ' ').toUpperCase())}</label>
+          <select class="v-form-control form-control variation_select variation_select_${product_object.id}" data-product_id="${product_object.id}" name="${key}" id="${key}">`
+            if (unique_attributes[key].length > 1) {
+              select_html += `<option value="">Choose An Option</option>`
+            }
+            select_html += unique_attributes[key].map((ua) => {
+              return `<option value="${ua}" ${(unique_attributes[key].length <= 1) ? 'selected' : ''}>${ua}</option>`
+            })
+          select_html += `</select>
+        </div>`
     }
     select_html += `</div>`
     return select_html;
@@ -361,7 +356,7 @@ const OrderForCustomer = {
     const $this = this;
     $('#products-sorting-order').on('change', function() {
       $this.onGetProducts()
-    });
+    })
   },
   getProducts: function() {
     return new Promise( (resolve, reject) => {

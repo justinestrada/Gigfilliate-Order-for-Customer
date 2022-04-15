@@ -228,3 +228,7 @@
 .gofc-customer_value.total-spend_value .v-skeleton-block {
   width: 48px;
 }
+
+.v-btn-primary.disabled {
+  opacity: 0.5;
+}
