@@ -90,7 +90,6 @@
 .gofc-products-list-item-add-to-cart-btn.added {
   background: #b20838;
   color: #ffffff;
-  pointer-events: none;
 }
 
 .gofc-products-list-item .gofc-products-list-item_thumbnail-wrap {

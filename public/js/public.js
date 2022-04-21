@@ -510,7 +510,6 @@ const OrderForCustomer = {
       $('#gofc-model .confirm-btn').html('Loading...')
       $('#gofc-model .confirm-btn').attr('disabled','disabled')
       OrderForCustomer.resetUserCart().done(function (res) {
-        console.log(res)
         $('#gofc-model .confirm-btn').html('Yes')
         $('#gofc-model .confirm-btn').removeAttr('disabled')
         $('#gofc-model').modal('hide')
@@ -648,7 +647,6 @@ const OrderForCustomer = {
       formData[refilId] = refill
       formData['refill_frequencies'] = refill
     }
-    console.log(formData)
     $.ajax({
       url: `${document.URL}?wc-ajax=xoo_wsc_add_to_cart`, // eslint-disable-line
       type: 'POST',
