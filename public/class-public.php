@@ -134,6 +134,9 @@ class Gigfilliate_Order_For_Customer_Public
     if (!is_user_logged_in()){
       return false;
     }
+    if (current_user_can('administrator')){
+      return true;
+    }
     $v_affiliate_status = get_user_meta(get_current_user_id(), 'v_affiliate_status', true);
     if (!$v_affiliate_status || $v_affiliate_status != 'active'){
       return false;
@@ -146,7 +149,7 @@ class Gigfilliate_Order_For_Customer_Public
     $this->is_user_logged_in = is_user_logged_in();
     ob_start();
     ?>
-    <div style="margin-bottom: 1rem;">
+    <div style="margin-bottom: 1rem;" class="brand-partner-customers">
       <h1><?php echo $this->core_settings->affiliate_term ?> Customers</h1>
       <?php
       if (!$this->is_user_logged_in) {
