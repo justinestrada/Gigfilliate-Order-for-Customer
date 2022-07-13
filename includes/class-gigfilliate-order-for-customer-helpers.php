@@ -85,8 +85,8 @@ class Gigfilliate_Order_For_Customer_Helpers {
           continue;
         }
       }
-      $customer_fname = $wc_order->get_billing_first_name();
-      $customer_lname = $wc_order->get_billing_last_name();
+      $customer_fname = $wc_order->get_shipping_first_name();
+      $customer_lname = $wc_order->get_shipping_last_name();
       $new_customer['fname'] = $customer_fname;
       $new_customer['lname'] = $customer_lname;
       $new_customer['full_name'] = $customer_fname . ' ' . $customer_lname;
