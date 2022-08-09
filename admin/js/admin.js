@@ -63,7 +63,7 @@ const EditAffiliateCustomers = {
   loadMoreCustomers: function(affiliate_user_id, offset) {
     return new Promise( (resolve, reject) => {
       $.ajax({
-        url: Vitalibis_WP.admin_ajax,
+        url: Gigfilliate_WP.admin_ajax,
         data: {
           action: 'gofc_get_customers',
           affiliate_user_id: affiliate_user_id,

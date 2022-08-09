@@ -3,7 +3,7 @@
 
 const OrderForCustomer = {
   init: function() {
-    if ($('.woocommerce-MyAccount-content .brand-partner-customers').length) {
+    if ($('.template-my-account .brand-partner-customers').length) {
       this.continuouslyLoadCustomers()
       this.onSearchCustomers()
       this.onSearchProducts()
@@ -87,7 +87,7 @@ const OrderForCustomer = {
   loadCustomersBatch: function(affiliate_user_id, offset, order_by = 'za') {
     return new Promise( (resolve, reject) => {
       $.ajax({
-        url: Vitalibis_WP.admin_ajax,
+        url: Gigfilliate_WP.admin_ajax,
         data: {
           action: 'gofc_get_customers',
           affiliate_user_id: affiliate_user_id,
@@ -420,7 +420,7 @@ const OrderForCustomer = {
     if (!this.isCurrentURLValid() || Cookie.read(GOFC.cookie_name) === null) {
       return
     }
-    $('.previous-button a[href="' + GOFC.cart_url + '"]').attr('href', GOFC.customers_url).html('« Return to ' + Vitalibis_WP.affiliate_term + ' customers')
+    $('.previous-button a[href="' + GOFC.cart_url + '"]').attr('href', GOFC.customers_url).html('« Return to ' + Gigfilliate_WP.affiliate_term + ' customers')
   },
   onAddNewCustomer: function() {
     const self = this
