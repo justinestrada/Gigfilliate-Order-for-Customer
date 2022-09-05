@@ -102,7 +102,7 @@ class Gigfilliate_Order_For_Customer_Admin
 
   public function edit_affiliate_tabs() {
     $affiliate_tab = isset($_GET['affiliate_tab']) ? $_GET['affiliate_tab']: 'details'; ?>
-    <a href="<?php echo $this->site_url; ?>/wp-admin/admin.php?page=vitalibis&tab=affiliates&affiliate_id=<?php echo $_GET['affiliate_id']; ?>&action=edit&affiliate_tab=customers" class="nav-tab <?php echo ($affiliate_tab === 'customers') ? 'nav-tab-active' : ''; ?>">Customers</a>
+    <a href="<?php echo $this->site_url; ?>/wp-admin/admin.php?page=gigfilliate&tab=affiliates&affiliate_id=<?php echo $_GET['affiliate_id']; ?>&action=edit&affiliate_tab=customers" class="nav-tab <?php echo ($affiliate_tab === 'customers') ? 'nav-tab-active' : ''; ?>">Customers</a>
     <?php
   }
 
