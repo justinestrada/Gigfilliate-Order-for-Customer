@@ -44,17 +44,17 @@ class Gigfilliate_Order_For_Customer_Public
     $this->plugin_name = $plugin_name;
     $this->version = $version;
     $this->helpers = $helpers;
-    $this->cookie_name = 'GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER';
+    $this->cookie_name = 'wordpress_gigfilliate_placing_order_for_customer';
     $this->core_settings = json_decode(get_option('vitalibis_settings'));
     $this->new_account_page();
     add_action('wp_ajax_gofc_check_email_exists', [$this, 'ajax_check_email_exists']);
     add_action('wp_ajax_gofc_get_products', [$this, 'ajax_get_products']);
     add_action('wp_ajax_gofc_reset_cart', [$this, 'ajax_reset_cart']);
     add_action('woocommerce_before_cart_contents', [$this, 'customer_notice']);
-    add_action('cfw_after_customer_info_tab_login', [$this, 'customer_notice'], 10, 3);
-    add_action('cfw_checkout_after_login', [$this, 'customer_notice'], 10, 3);
-    add_action('cfw_after_customer_info_account_details', [$this, 'customer_notice'], 10, 3);
-    add_action('xoo_wsc_cart_after_head', [$this, 'customer_notice'], 10, 3);
+    add_action('cfw_after_customer_info_tab_login', [$this, 'customer_notice'], 10);
+    add_action('cfw_checkout_after_login', [$this, 'customer_notice'], 10);
+    add_action('cfw_after_customer_info_account_details', [$this, 'customer_notice'], 20);
+    add_action('xoo_wsc_cart_after_head', [$this, 'customer_notice']);
     add_filter('body_class', [$this, 'body_classes']);
     add_action('woocommerce_checkout_update_order_meta', [$this, 'woocommerce_checkout_update_order_meta']);
     add_action('woocommerce_admin_order_data_after_billing_address', [$this, 'woocommerce_admin_order_data_after_billing_address'], 10, 1);
@@ -131,15 +131,16 @@ class Gigfilliate_Order_For_Customer_Public
     });
   }
 
-  public function is_it_valid_to_show_customer() {
-    if (!is_user_logged_in()){
+  public function is_it_valid_to_show_customer()
+  {
+    if (!is_user_logged_in()) {
       return false;
     }
-    if (current_user_can('administrator')){
+    if (current_user_can('administrator')) {
       return true;
     }
     $v_affiliate_status = get_user_meta(get_current_user_id(), 'v_affiliate_status', true);
-    if (!$v_affiliate_status || $v_affiliate_status != 'active'){
+    if (!$v_affiliate_status || $v_affiliate_status != 'active') {
       return false;
     }
     return true;
@@ -149,7 +150,7 @@ class Gigfilliate_Order_For_Customer_Public
   {
     $this->is_user_logged_in = is_user_logged_in();
     ob_start();
-    ?>
+?>
     <div style="margin-bottom: 1rem;" class="brand-partner-customers">
       <h1><?php echo $this->core_settings->affiliate_term ?> Customers</h1>
       <?php
@@ -169,7 +170,7 @@ class Gigfilliate_Order_For_Customer_Public
       }
       ?>
     </div>
-    <?php
+  <?php
     echo ob_get_clean();
   }
 
@@ -190,18 +191,19 @@ class Gigfilliate_Order_For_Customer_Public
 
   public function customer_notice()
   {
-    if (isset($_COOKIE[$this->cookie_name])) {
-      $customer = get_user_by('email', $_COOKIE[$this->cookie_name]);
-      $primary_coupon_code = get_user_meta(get_current_user_id(), 'primary_affiliate_coupon_code', true);
-      $this->apply_default_coupon($primary_coupon_code);
-    ?>
-      <div class="alert alert-info" role="alert">
-        <i class="fa fa-info-circle mr-1" aria-hidden="true"></i>
-        You're placing an order for <?php echo $_COOKIE[$this->cookie_name]; ?>.
-      </div>
-      <input type="hidden" name="new_billing_email" value="<?php echo ($customer != null ? $customer->user_email : $_COOKIE[$this->cookie_name]); ?>">
-      <?php
+    if (!isset($_COOKIE[$this->cookie_name])) {
+      return;
     }
+    $customer = get_user_by('email', $_COOKIE[$this->cookie_name]);
+    $primary_coupon_code = get_user_meta(get_current_user_id(), 'primary_affiliate_coupon_code', true);
+    $this->apply_default_coupon($primary_coupon_code);
+  ?>
+    <div class="alert alert-info" role="alert">
+      <i class="fa fa-info-circle mr-1" aria-hidden="true"></i>
+      You're placing an order for <?php echo $_COOKIE[$this->cookie_name]; ?>.
+    </div>
+    <input type="hidden" name="new_billing_email" value="<?php echo ($customer != null ? $customer->user_email : $_COOKIE[$this->cookie_name]); ?>">
+    <?php
   }
 
   public function body_classes($classes)
@@ -285,7 +287,7 @@ class Gigfilliate_Order_For_Customer_Public
         "add_to_cart_url" => $product->add_to_cart_url(),
         "is_in_stock" => $product->is_in_stock(),
         "wcsatt_schemes" => get_post_meta($post->ID, '_wcsatt_schemes', true),
-        "variations" => ($product->is_type( 'variable' )?$product->get_available_variations():''),
+        "variations" => ($product->is_type('variable') ? $product->get_available_variations() : ''),
       ];
     }
     exit(json_encode($res));
@@ -306,7 +308,7 @@ class Gigfilliate_Order_For_Customer_Public
     ));
     if ($orders != null) {
       $customer = $orders[0];
-      ?>
+    ?>
       <span id="gofc_customer_billing" data-email="<?php echo $cokkie_email; ?>" data-firstName="<?php echo $customer->get_billing_first_name(); ?>" data-lastName="<?php echo $customer->get_billing_last_name(); ?>" data-company="<?php echo $customer->get_billing_company(); ?>" data-address1="<?php echo $customer->get_billing_address_1(); ?>" data-address2="<?php echo $customer->get_billing_address_2(); ?>" data-city="<?php echo $customer->get_billing_city(); ?>" data-state="<?php echo $customer->get_billing_state(); ?>" data-postcode="<?php echo $customer->get_billing_postcode(); ?>" data-country="<?php echo $customer->get_billing_country(); ?>" data-phone="<?php echo $customer->get_billing_phone(); ?>"></span>
       <span id="gofc_customer_shipping" data-email="<?php echo $cokkie_email; ?>" data-firstName="<?php echo $customer->get_shipping_first_name(); ?>" data-lastName="<?php echo $customer->get_shipping_last_name(); ?>" data-company="<?php echo $customer->get_shipping_company(); ?>" data-address1="<?php echo $customer->get_shipping_address_1(); ?>" data-address2="<?php echo $customer->get_shipping_address_2(); ?>" data-city="<?php echo $customer->get_shipping_city(); ?>" data-state="<?php echo $customer->get_shipping_state(); ?>" data-postcode="<?php echo $customer->get_shipping_postcode(); ?>" data-country="<?php echo $customer->get_shipping_country(); ?>"></span>
     <?php
@@ -382,7 +384,8 @@ class Gigfilliate_Order_For_Customer_Public
     }
   }
 
-  public function reset_current_user_address() {
+  public function reset_current_user_address()
+  {
     $current_user = wp_get_current_user();
     $current_user_id = $current_user->ID;
     $orders = get_posts(array(
@@ -400,7 +403,7 @@ class Gigfilliate_Order_For_Customer_Public
           'compare' => '=='
         ],
         [
-          'key'=>'ordered_by',
+          'key' => 'ordered_by',
           'compare' => 'NOT EXISTS'
         ]
       ]
