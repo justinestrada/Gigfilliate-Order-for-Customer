@@ -552,12 +552,21 @@ const OrderForCustomer = {
   },
   exitFromOrderForCustomerIfNotOnValidPage: function() {
     if (!this.isCurrentURLValid() && Cookie.read(GOFC.cookie_name) !== null) {
-      $.get(GOFC.ajax_url, {
-        action: 'gofc_reset_cart'
+      const GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE = $('.GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE')
+      GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE.modal('show')
+      GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE.find('.btn-primary').on('click', function () {
+        window.location.href = GOFC.customers_url
       })
-      Cookie.erase(GOFC.cookie_name)
-      $('.GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE').toast('show')
-      $('body').removeClass('page-place-order-for-customer-mode')
+      GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE.find('.btn-outline-secondary').on('click', function () {
+        $(this).html('Exiting...').attr('disabled','disabled')
+        Cookie.erase(GOFC.cookie_name)
+        $.get(GOFC.ajax_url, {
+          action: 'gofc_reset_cart'
+        }).then(function() {
+          GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE.modal('hide')
+          $('body').removeClass('page-place-order-for-customer-mode')
+        })
+      })
     }
   },
   isCurrentURLValid: function() {

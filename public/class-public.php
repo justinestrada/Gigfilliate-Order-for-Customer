@@ -61,6 +61,7 @@ class Gigfilliate_Order_For_Customer_Public
     add_action('woocommerce_checkout_process', [$this, 'woocommerce_checkout_process']);
     add_action('wp_footer', [$this, 'toast']);
     add_filter('gigfilliatewp_order_volume_type', [$this, 'gigfilliatewp_order_volume_type'], 20, 3);
+    add_action('woocommerce_thankyou', [$this, 'gigfilliate_woocommerce_thankyou']);
   }
 
   /**
@@ -91,6 +92,10 @@ class Gigfilliate_Order_For_Customer_Public
         'customers_url' => get_site_url() . '/account/brand-partner-customers/',
       ]
     );
+  }
+
+  public function gigfilliate_woocommerce_thankyou( $order_id ) {
+    setcookie($this->cookie_name, '', time() - 3600, '/');
   }
 
   public function gigfilliatewp_order_volume_type($volume_type)
@@ -319,14 +324,23 @@ class Gigfilliate_Order_For_Customer_Public
     <?php
     }
     ?>
-    <div class="toast ml-auto GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE bg-info text-white" data-autohide="false">
-      <div class="toast-header bg-info">
-        <i class="fa fa-info-circle text-white h6 mb-0 mr-1"></i>
-        <strong class="mr-auto text-white">Exited</strong>
-        <button type="button" class="ml-2 mb-1 text-white close" data-dismiss="toast">&times;</button>
-      </div>
-      <div class="toast-body">
-        <p class="mb-0">You exited from 'Place Order for Customer Mode'.</p>
+    <div class="modal GIGFILLIATE_PLACING_ORDER_FOR_CUSTOMER_DELETE" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Are You Sure?</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position: inherit;">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>You are exiting 'Place Order for Customers' Mode the items will be removed from your cart. Are you sure?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary">Take Me Back</button>
+            <button type="button" class="btn btn-outline-secondary">Exit</button>
+          </div>
+        </div>
       </div>
     </div>
     <style>
