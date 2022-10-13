@@ -376,7 +376,7 @@ class Gigfilliate_Order_For_Customer_Public
       $current_user_id = get_current_user_id();
       update_post_meta($order_id, 'customer_user', "");
       update_post_meta($order_id, 'v_order_affiliate_id', (int)get_user_meta($current_user_id, 'v_affiliate_id', true));
-      update_post_meta($order_id, 'ordered_by', wp_get_current_user()->user_email);
+      update_post_meta($order_id, 'gigfilliatewp_ordered_by', wp_get_current_user()->user_email);
       // Update post meta was not working for some reason for _customer_user
       delete_post_meta($order_id, '_customer_user');
       update_post_meta($order_id, '_customer_user', $current_user_id);
@@ -403,7 +403,7 @@ class Gigfilliate_Order_For_Customer_Public
           'compare' => '=='
         ],
         [
-          'key' => 'ordered_by',
+          'key' => 'gigfilliatewp_ordered_by',
           'compare' => 'NOT EXISTS'
         ]
       ]
@@ -438,11 +438,11 @@ class Gigfilliate_Order_For_Customer_Public
 
   public function woocommerce_admin_order_data_after_billing_address($order)
   {
-    $ordered_by = get_post_meta($order->get_id(), 'ordered_by', true);
-    if ($ordered_by) { ?>
+    $gigfilliatewp_ordered_by = get_post_meta($order->get_id(), 'gigfilliatewp_ordered_by', true);
+    if ($gigfilliatewp_ordered_by) { ?>
       <p>
         <strong>Ordered By</strong><br>
-        <?php echo $ordered_by; ?>
+        <?php echo $gigfilliatewp_ordered_by; ?>
       </p>
 <?php
     }
