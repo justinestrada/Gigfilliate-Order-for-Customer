@@ -450,15 +450,13 @@ class Gigfilliate_Order_For_Customer_Public
     }
   }
 
-  public function woocommerce_admin_order_data_after_billing_address($order)
-  {
+  public function woocommerce_admin_order_data_after_billing_address($order) {
     $gigfilliatewp_ordered_by = get_post_meta($order->get_id(), 'gigfilliatewp_ordered_by', true);
     if ($gigfilliatewp_ordered_by) { ?>
       <p>
         <strong>Ordered By</strong><br>
         <?php echo $gigfilliatewp_ordered_by; ?>
       </p>
-<?php
-    }
+    <?php }
   }
 }
